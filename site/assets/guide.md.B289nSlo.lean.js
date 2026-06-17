@@ -1,0 +1,1 @@
+import{_ as i,o as a,c as t,a6 as n}from"./chunks/framework.Dygbm21p.js";const g=JSON.parse('{"title":"复习指南","description":"","frontmatter":{},"headers":[],"relativePath":"guide.md","filePath":"guide.md"}'),l={name:"guide.md"};function h(e,s,d,p,k,r){return a(),t("div",null,[...s[0]||(s[0]=[n("",24)])])}const c=i(l,[["render",h]]);export{g as __pageData,c as default};
