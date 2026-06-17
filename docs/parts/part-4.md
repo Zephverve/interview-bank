@@ -134,7 +134,7 @@ partColor: #10b981
 
 **第二是工具体系**。OpenClaw 的工具体系更'平台化'——它集成了 50+ 第三方服务，通过 MCP 或类似协议发现和调用。这降低了用户的使用门槛——你不需要写代码，配置一下就能用。GenericAgent 的工具是原子化的——9 个基础工具，通过 code_run 动态扩展。它给你的是'创造工具的能力'而不是'现成的工具'。
 
-**第三是部署模式**。OpenClaw 强调 Docker 一行命令部署，目标是让非开发者也能用。GenericAgent 更偏开发者的定制化——你需要写 mykey.py 配置、理解 ReAct 循环逻辑、可能还需要自己加工具。
+**第三是部署模式**。OpenClaw 强调 Docker 一行命令部署，目标是让非开发者也能用。GenericAgent 更偏开发者的定制化——你需要写配置文件、理解 ReAct 循环逻辑、可能还需要自己加工具。
 
 如果从架构演进角度看，两者其实有互补性。OpenClaw 的 Gateway 模式解决了'Agent 怎么触达用户'的问题，GenericAgent 解决了'Agent 怎么自主完成任务'的问题。未来可能会出现'OpenClaw 做 Gateway + GenericAgent 做执行引擎'的组合方案。这也是我对 Agent 架构未来发展的判断——分工会越来越细，Gateway、执行引擎、工具注册中心会各自独立发展。"
 

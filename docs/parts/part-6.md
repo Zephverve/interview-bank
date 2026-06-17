@@ -272,7 +272,7 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 **第二层，我具体做了什么**。三件事：
 
 1. **SiliconFlow API + DeepSeek 系列模型接入**——写了调用协议适配、错误处理、和框架原有 5 类 Session 体系的对接，让框架能用国内 API 跑通。
-2. **全链路跑通与验证**——配置 mykey、跑通 CLI/Web 前端、用真实任务验证 ReAct 循环、工具调用、记忆读写。
+2. **全链路跑通与验证**——配置 API 密钥、跑通 CLI/Web 前端、用真实任务验证 ReAct 循环、工具调用、记忆读写。
 3. **系统性架构分析**——把 3K 行代码拆成接入层/执行引擎/工具层/记忆层，对比 Native Function Calling vs 文本协议、分析 code_run 安全边界、总结可改进点（human_confirmation、Token budget、pre-flight check）。
 
 **第三层，如果面试官问'你改进了什么'**。我会说：我设计了 human_confirmation 工具的方案（Q14）、扩展了 code_run 三层安全（Q15）、提出了 display_queue 升级到 Redis 多端分发（Q34）。这些是**设计方案**，部分尚未全部落地到代码——但我能讲清楚为什么改、怎么改。
