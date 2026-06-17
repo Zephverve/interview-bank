@@ -30,9 +30,18 @@ git push -u origin main
 
 ### 3. 开启 Pages
 
-仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
+仓库 **Settings → Pages → Build and deployment**：
 
-推送后 Actions 会自动构建部署，约 1–2 分钟可访问。
+| 选项 | 值 |
+|------|-----|
+| Source | **Deploy from a branch** |
+| Branch | **gh-pages** / **/ (root)** |
+
+首次 push 后 Actions 会自动创建 `gh-pages` 分支；若下拉没有，等 Actions 跑完再刷新。
+
+**若之前报 404**：不要用 GitHub Actions 作为 Source，改用上表设置，然后 **Actions → Re-run jobs**。
+
+推送后约 1–2 分钟可访问。
 
 ### 仓库名与访问地址
 
