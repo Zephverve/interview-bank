@@ -1,0 +1,356 @@
+---
+part: 1
+partTitle: Part 1 · RAG 深挖
+partColor: #0ea5e9
+---
+
+<div class="part-hero" style="--part-color: #0ea5e9">
+
+# Part 1 · RAG 深挖
+
+<p class="part-desc">Embedding · 切片 · 混合检索 · 微调</p>
+<span class="part-round">一面核心</span>
+
+</div>
+
+<div class="part-intro">
+
+> 追问路径：Embedding 选型 → 切片策略 → 召回提升 → Prompt/校验 → 微调 → 原理深度 → 延迟优化
+
+</div>
+
+---
+
+
+
+<div class="question-card" id="q12">
+
+<h2 class="question-title"><span class="q-badge">Q12</span> RAG 深度</h2>
+
+<div class="question-prompt"><strong>题目</strong>：为什么选 BGE-M3 做 embedding 而不是其他模型？你评估过哪些候选？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：Embedding 模型选型</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：BGE-M3：dense+sparse、中文好、多语言；对比 text2vec/GTE-Qwen2 用 120 问黄金集 Recall@5。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：为什么不用 OpenAI embedding？ · sparse 和 BM25 怎么配合？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"选 BGE-M3 的核心原因是它同时支持稠密检索和稀疏检索，而且中文效果好。
+
+我当时评估了三个候选：text2vec-large-chinese、BGE-M3 和 GTE-Qwen2。评估方式是用我的 120 问黄金集跑纯向量检索，看 Recall@5。
+
+text2vec 的问题是模型太老，在科研术语上的语义区分度不够。比如'GCN'和'GAT'在它的向量空间里距离很近，很多时候检索回来的结果是混在一起的。BGE-M3 因为训练数据更新、模型更大，在这种专业术语上的区分度好很多。
+
+GTE-Qwen2 在 Recall 上和 BGE-M3 差不多，但它不支持稀疏检索（Sparse Embedding）。我的方案里 BM25 做关键词检索，BGE-M3 的 Sparse Embedding 可以作为 BM25 的替代或补充——这让我的混合检索有两个可选方案。
+
+最终选 BGE-M3 还有一个工程考虑：它原生支持多语言。我的论文库有中文也有英文，不需要分别部署两个 embedding 模型。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q11">
+
+<h2 class="question-title"><span class="q-badge">Q11</span> RAG 深度</h2>
+
+<div class="question-prompt"><strong>题目</strong>：你的分层切片是子块 512 + 父块 2k token。为什么选 512 和 2k 这两个数字？如果换一个场景，比如法律文书检索，切片策略会怎么变？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：分层切片参数选型</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：512 覆盖论文信息单元，2k 覆盖小节论证；试过 256/1024/4k 有对比；法律场景要更小子块更大父块。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：父子块怎么关联？ · overlap 设多少？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"512 和 2k 不是拍脑袋定的，是做了对比实验的。
+
+子块 512 是检索粒度的选择。科研论文的核心信息单元——比如一段方法描述、一个公式、一个实验结果——通常在 300-500 token 这个量级。用 512 既能覆盖一个完整的信息单元，又不会因为块太大导致检索时混入无关内容。我试过 256 和 1024，256 太碎，一个公式拆成两段，召回不完整；1024 太粗，检索回来的块里 60% 的内容和查询无关。
+
+父块 2k 是为生成服务的。一篇论文的一个小节大概 1500-2000 token，包含了完整的论证逻辑。检索命中子块后，把父块作为上下文喂给 LLM 生成，LLM 有足够的背景信息给出准确的回答。试过 4k 的父块，生成质量没有明显提升，但 Token 消耗翻了一倍。
+
+法律文书检索的话，策略会完全不同。第一，法律文书的关键信息单元更小——一个法条引用可能就 50 token，一个案件事实可能 2000 token。我会用更小的子块（128-256 token）做检索，但用更大的父块（4k-8k）保上下文，因为法律推理需要完整的案件背景。第二，法律文书的结构化程度更高，我会利用文书固有的结构字段（案号、法院、案由、判决结果）做结构化索引，而不是纯靠语义切分。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q1">
+
+<h2 class="question-title"><span class="q-badge">Q1</span> 项目深挖 · RAG</h2>
+
+<div class="question-prompt"><strong>题目</strong>：你的科研问答系统 Recall@5 从 0.51 提升到 0.78，0.51 这个基线是怎么来的？你做了哪些具体改动导致了最大的提升？如果让你现在重新做，你会优先改什么？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：RAG 优化路径与基线设计</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：基线纯向量 0.51；最大一跳 BM25 混合到 0.63，重排到 0.71，改写+分层切片补 0.07；重做会优先改 PDF 解析。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：每步优化的 ablation 是否独立跑过？ · 120 问黄金集怎么构建的？ · 0.78 是检索指标还是端到端？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"0.51 这个基线是我用纯向量检索跑出来的。具体来说，我用 BGE-M3 把论文库做了 embedding，存到 Qdrant 里，查询不做任何改写，直接拿用户问题去做向量检索取 Top-5。这个基线其实很有代表性——它告诉你单纯靠语义相似度在这个场景下天花板很低，因为科研论文里很多术语的表达方式和日常提问差距很大。
+
+提升最大的一步是加了 BM25 混合检索。纯向量检索在长尾专业术语上召回很差，比如用户问'GCN 中的邻接矩阵归一化方式'，向量检索可能返回一堆讲 GCN 应用的论文而不是讲原理的，但 BM25 能精确命中'邻接矩阵'和'归一化'这些关键词。加 BM25 之后 Recall@5 大概从 0.51 跳到了 0.63 左右。
+
+第二步是 Cross-Encoder 重排。混合检索召回了更多候选，但 Top-5 里还是混着不太相关的。我用 BGE-Reranker 做 Cross-Encoder 对候选重排，这一步把 Recall@5 提到了 0.71 左右。
+
+第三步是查询改写和分层切片加起来贡献了最后 0.07。查询改写处理了用户口语化的问题——比如'这篇文章用了什么方法'在向量空间里和'本文提出了一种基于...的方法'距离很远，但改写后能对上。分层切片让检索更精准的同时保证生成的时候有足够的上下文。
+
+如果现在重新做，我会优先改 PDF 解析。现在用的是 pdfplumber 提取文本然后去页眉页脚，但遇到双栏论文、表格、公式的时候解析质量很不稳定。很多 Recall 失败 case 追溯到最后发现是解析阶段就把关键信息弄丢了。我会考虑用 MinerU 或者 Marker 这类专门做学术 PDF 解析的工具，预计还能再提 3-5 个点。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q13">
+
+<h2 class="question-title"><span class="q-badge">Q13</span> Prompt Engineering</h2>
+
+<div class="question-prompt"><strong>题目</strong>：你的 RAG 系统里提示词是怎么设计的？有没有遇到过 prompt 导致 LLM 行为异常的情况？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：RAG Prompt 与幻觉防控</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：四段 prompt；跨论文混淆用强制引用标注+校验节点，通过率 72%→86%；长上下文用位置重排。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：校验失败平均几轮通过？ · 引用校验具体怎么做？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"我的 prompt 设计有四段。
+
+第一段是角色定义——'你是一个科研助手，回答必须基于提供的论文片段，引用格式为 [论文标题, 段落X]'。这约束了输出风格和引用格式。
+
+第二段是检索到的上下文——直接把父块内容插进去。
+
+第三段是用户问题。
+
+第四段是输出约束——'如果检索内容不足以回答问题，请明确说"当前论文库中未找到相关信息"，不要编造'。这一条是专门防幻觉的。
+
+遇到过一个很头疼的问题：LLM 会把不同论文的信息混合起来。比如我问'A 论文用了什么激活函数'，检索结果里有 A 论文和 B 论文的片段，LLM 有时候会把 B 论文的 ReLU 安到 A 论文头上。我的解决方案是在 prompt 里强制要求每个引用标注来源——'回答中的每个事实陈述后必须标注 [论文标题]'。加上这个约束后，引用校验通过率从 72% 提到了 86%。
+
+另一个坑是 prompt 长度控制。父块 2k × 检索 5 个 = 10k token 的上下文，加上指令大概 11k。Qwen2.5-14B 的上下文窗口够用，但 LLM 对长上下文中靠后的内容注意力会衰减。所以我给检索结果排了序，把相关度最高的放在最前面和最末尾——利用了位置权重偏差。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q2">
+
+<h2 class="question-title"><span class="q-badge">Q2</span> 项目深挖 · 微调</h2>
+
+<div class="question-prompt"><strong>题目</strong>：你用 QLoRA 微调 Qwen2.5-14B，loss 收敛到 0.42。为什么选 QLoRA 而不是 full fine-tuning 或 LoRA？训练过程中遇到过什么坑？怎么判断模型没有过拟合？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：QLoRA 选型与过拟合判断</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：3090 24GB 只能 QLoRA；最大坑是数据质量，1.8k 真实数据后 loss 0.42；用验证集+人工抽检+引用通过率防过拟合。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：LoRA rank 多少？ · 负样本怎么构造？ · 微调后 RAG 还有必要吗？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"选 QLoRA 最直接的原因是显存。我在实验室用的 RTX 3090 Ti 只有 24GB，Qwen2.5-14B 做 full fine-tuning 估计需要 4×A100，我根本没这个条件。QLoRA 通过 4-bit 量化把模型参数压缩，再加上 LoRA 的 adapter 只训练一小部分参数，让我在单卡上就能跑起来。
+
+那为什么不用普通 LoRA？LoRA 本身也省显存，但 14B 模型即使用 LoRA，bf16 加载也要 28GB 左右，3090 还是放不下。4-bit 量化之后模型本体大概 8-9GB，加上 LoRA adapter 和训练中的中间激活，总共 16-18GB，刚好能在 24GB 显存里跑。
+
+训练中最大的坑是数据质量问题。我最开始用 ChatGPT 自动生成了大概 500 条问答对就去训练了，结果模型学会了'AI腔'——每句话开头都是'根据论文...'，格式千篇一律。后来我手工筛选了课题组的真实提问，又补充了引用格式校验的负样本，把数据扩到 1.8k 条，loss 才从 0.68 降到 0.42，输出风格也自然多了。
+
+过拟合的判断我主要看三点。第一是验证集 loss，训练过程中我单独留了 200 条做验证，loss 从 0.55 降到 0.50 就不动了，训练集还在降，差距在拉大，那大概在这个点我就停了。第二是人工抽检——我让课题组同学随机提 20 个问题，看模型的引用是否真的指向了正确的论文段落。第三是你简历里写的那个引用校验通过率，我把它作为一个定量指标，如果通过率开始下降就说明模型可能在'编造引用'——这是我们这个场景最怕的过拟合表现。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q19">
+
+<h2 class="question-title"><span class="q-badge">Q19</span> 技术深度</h2>
+
+<div class="question-prompt"><strong>题目</strong>：QLoRA 的 4-bit 量化具体是什么原理？为什么量化后模型精度没有显著下降？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：QLoRA/NF4 原理</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：NF4 非均匀量化匹配权重正态分布；双重量化压缩 scale factor；16-bit LoRA adapter 补偿精度损失。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：和 GPTQ 区别？ · 4-bit 推理和 4-bit 训练区别？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"QLoRA 用的是 NF4（NormalFloat4）数据类型加双重量化。
+
+NF4 是专门为正态分布数据设计的一种 4-bit 量化格式。普通均匀量化（比如把 fp16 的值线性映射到 0-15）在 LLM 权重上效果不好，因为 LLM 的权重分布接近正态分布——大部分值集中在 0 附近，少数值很大。用均匀量化，0 附近的很多细节都会被抹掉。
+
+NF4 的解法是把量化区间在 0 附近分得更密，在两极分得更疏——本质上是一个非均匀量化。它把一个 4-bit 的 16 个值按照正态分布的分位数来分配，低频的大值精度稍差，高频的中间值精度更高。
+
+双重量化是 QLoRA 的另一个关键创新。4-bit 量化后每个权重块需要一个 32-bit 的 scale factor。这些 scale factor 本身也占显存。双重量化就是对 scale factor 再做一次 8-bit 量化——相当于'量化的量化'。这省了大概 0.5GB 显存，在 14B 模型上刚好是能不能在 24GB 卡上跑出来的区别。
+
+精度没显著下降有两个原因。第一，NF4 在设计上就和 LLM 权重的实际分布匹配得很好——信息损失主要集中在长尾的大值上，而这些大值本来就不太影响推理结果。第二，LoRA adapter 在 16-bit 下训练，微调过程中 adapter 学习去补偿量化带来的精度损失。这就是 QLoRA 比单独做 4-bit 量化然后 full fine-tuning 效果好的原因——adapter 帮你"补回来"了。
+
+为什么量化后微调的模型比不量化直接 full fine-tuning 效果差一点？因为你量化的时候已经丢失了一部分信息的精细结构，adapter 只能近似补偿。但在大多数应用场景下，QLoRA 能用 1/4 的显存换来 95% 的效果，这个 trade-off 是非常划算的。"
+
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card" id="q7">
+
+<h2 class="question-title"><span class="q-badge">Q7</span> 模型部署与优化</h2>
+
+<div class="question-prompt"><strong>题目</strong>：你的问答系统 P95 延迟从 3.1s 压到 1.2s。具体瓶颈在哪里？批处理重排和连接池分别贡献了多少？</div>
+
+
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：P95 延迟拆解与优化</div>
+
+
+<div class="q-conclusion">
+
+💡 **15 秒结论**：瓶颈是 Cross-Encoder 逐条推理约 2s；批处理重排省 ~1.5s，连接池省 ~0.3s，模型分层调度再省一点。
+
+</div>
+
+
+
+<div class="q-followups">
+
+🔁 **追问方向**：streaming 和缓存怎么设计？ · 检索部分还能压多少？
+
+</div>
+
+
+<details class="answer-reveal">
+<summary>展开完整回答</summary>
+
+<div class="answer-body">
+
+"原始的 3.1s 延迟分布大概是这样的：向量检索 200-300ms，BM25 大概 100ms，这两个还 ok。最大头是 Cross-Encoder 重排，占了将近 2s。因为我当时是每次对单个 query-document pair 调用一次 Cross-Encoder 模型，一个查询要重排 20 个候选，就是 20 次独立的模型调用。
+
+批处理重排的优化是：把 20 个 query-document pair 打包成一个 batch，一次推理全部计算完。因为 Cross-Encoder 模型在 batch 推理时可以复用矩阵运算，20 个 pair 的 batch 推理时间大概 400-500ms，比 20 次单独调用省了约 1.5s。这是最大的单次优化。
+
+连接池优化贡献了大概 0.3-0.4s。之前每次调 Qdrant、调 Cross-Encoder 服务、调 LLM 生成都要重新建立 HTTP 连接，三次握手的时间加起大概 300-400ms。用了连接池之后这部分降到几十 ms。
+
+剩下的优化来自 LLM 推理端：我统一了 API/Ollama/本地微调模型的调度——简单问题走 Ollama 本地小模型，复杂问题才走微调后的 Qwen2.5-14B。本地模型推理延迟更低，这大概省了 0.1-0.2s。
+
+如果还要压到 500ms，瓶颈会完全转移到 LLM 生成上。检索部分（向量+BM25+重排）已经被我压到 500ms 以内了，但 LLM 生成一段 300 token 的回答本身就需要 500ms-1s。解决方案不是优化查询，而是换策略：用 streaming 输出让用户感知更快，或者对简单问题使用缓存——如果 120 问黄金集里有 30 个高频问题，直接缓存答案，命中时端到端延迟能压到 100ms 以内。"
+
+
+---
+
+</div>
+</details>
+
+</div>

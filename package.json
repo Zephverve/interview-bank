@@ -1,0 +1,16 @@
+{
+  "name": "interview-bank",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare": "node scripts/prepare-content.mjs",
+    "new-question": "node scripts/new-question.mjs",
+    "dev": "npm run prepare && vitepress dev docs",
+    "build": "npm run prepare && vitepress build docs",
+    "preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
