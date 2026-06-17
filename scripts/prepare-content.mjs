@@ -24,6 +24,11 @@ const PART_META = [
 
 const DEFAULT_CUSTOM_COLOR = '#14b8a6'
 
+function getBase() {
+  const b = process.env.VP_BASE || '/'
+  return b.endsWith('/') ? b : `${b}/`
+}
+
 // ─── Markdown 转换工具 ───────────────────────────────────────────
 
 function wrapAnswers(content) {
@@ -396,9 +401,10 @@ function buildSidebarItems(customCategories) {
 }
 
 function buildHomePage(customCategories) {
+  const base = getBase()
   const builtInCards = PART_META.map(
     (p) => `
-<a class="part-card" href="/parts/${p.slug}" style="--card-accent: ${p.color}">
+<a class="part-card" href="${base}parts/${p.slug}" style="--card-accent: ${p.color}">
   <span class="part-card-icon">${p.icon}</span>
   <h3>${p.title}</h3>
   <p>${p.desc}</p>
@@ -410,7 +416,7 @@ function buildHomePage(customCategories) {
     ? customCategories
         .map(
           (c) => `
-<a class="part-card custom-part-card" href="/custom/${c.slug}" style="--card-accent: ${c.color || DEFAULT_CUSTOM_COLOR}">
+<a class="part-card custom-part-card" href="${base}custom/${c.slug}" style="--card-accent: ${c.color || DEFAULT_CUSTOM_COLOR}">
   <span class="part-card-icon">${c.icon || '✏️'}</span>
   <h3>${c.title}</h3>
   <p>${c.desc || '自定义题目'} · ${c.questions.length} 题</p>
@@ -419,7 +425,7 @@ function buildHomePage(customCategories) {
         )
         .join('\n')
     : `
-<a class="part-card custom-part-card add-new-card" href="/add" style="--card-accent: ${DEFAULT_CUSTOM_COLOR}">
+<a class="part-card custom-part-card add-new-card" href="${base}add" style="--card-accent: ${DEFAULT_CUSTOM_COLOR}">
   <span class="part-card-icon">➕</span>
   <h3>添加我的题目</h3>
   <p>点击导航栏「添加题目」，在网页表单里直接填写</p>

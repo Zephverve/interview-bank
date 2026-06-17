@@ -1,39 +1,34 @@
 # 面试题库
 
-> **⚠️ 你现在看到的 README 不是题库！**
->
-> **👉 题库网站：[https://zephverve.github.io/interview-bank/](https://zephverve.github.io/interview-bank/)**
+**👉 在线地址：https://zephverve.github.io/interview-bank/**
 
 ---
 
-## 只看到 README？按这个设置（1 分钟）
+## 第一次使用：开启 GitHub Pages（必做）
 
-打开：**[Settings → Pages](https://github.com/Zephverve/interview-bank/settings/pages)**
+看到 *"There isn't a GitHub Pages site here"* 说明 **还没开启 Pages**。
 
-| 选项 | 必须选 |
-|------|--------|
-| **Source** | Deploy from a branch |
-| **Branch** | `main` |
-| **Folder** | **`/site`**（不是 /root！） |
+### 步骤
 
-保存后等 1–2 分钟，再访问：https://zephverve.github.io/interview-bank/
+1. 打开 https://github.com/Zephverve/interview-bank/settings/pages
+2. **Build and deployment → Source** 选 **GitHub Actions**（推荐）
+3. 保存后，打开 https://github.com/Zephverve/interview-bank/actions
+4. 点 **Deploy to GitHub Pages** → **Run workflow** 手动运行一次
+5. 等约 2 分钟，访问 https://zephverve.github.io/interview-bank/
 
-选成 `/ (root)` 就只会显示本 README，没有题目。
+### 备选方案（不用 GitHub Actions）
+
+Settings → Pages → Source 选 **Deploy from a branch** → Branch: `main` → Folder: **`/site`**
 
 ---
 
-## 网站里有什么
+## 网站功能
 
-| 入口 | 链接 |
+| 页面 | 说明 |
 |------|------|
-| 首页 | https://zephverve.github.io/interview-bank/ |
-| Part 0 开场 | https://zephverve.github.io/interview-bank/parts/part-0 |
-| 添加题目 | https://zephverve.github.io/interview-bank/add |
-| 我的题库 | https://zephverve.github.io/interview-bank/my |
-
-内置 **40+ 道题**在 Part 0–6，点首页卡片或左侧目录进入。
-
----
+| 首页 Part 卡片 | 内置 40+ 道题 |
+| `/add` | 网页添加题目 |
+| `/my` | 我的题库 |
 
 ## 本地运行
 
@@ -42,6 +37,8 @@ npm install
 npm run dev
 ```
 
+打开 http://localhost:5173
+
 ## 更新题目
 
-编辑 `data/面试35问-完整合集.md` → `npm run prepare` → `git push`（Actions 会自动更新 `site/`）
+编辑 `data/面试35问-完整合集.md` → `npm run prepare` → `git push`
