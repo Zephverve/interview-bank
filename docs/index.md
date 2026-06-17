@@ -41,49 +41,49 @@ features:
 <div class="part-grid">
 
 
-<a class="part-card" href="/interview-bank/parts/part-0" style="--card-accent: #6366f1">
+<a class="part-card" href="/parts/part-0" style="--card-accent: #6366f1">
   <span class="part-card-icon">🎯</span>
   <h3>Part 0 · 开场准备</h3>
   <p>自我介绍 · 项目介绍 · 典型问题</p>
   <span class="part-card-round">开场必背</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-1" style="--card-accent: #0ea5e9">
+<a class="part-card" href="/parts/part-1" style="--card-accent: #0ea5e9">
   <span class="part-card-icon">🔍</span>
   <h3>Part 1 · RAG 深挖</h3>
   <p>Embedding · 切片 · 混合检索 · 微调</p>
   <span class="part-card-round">一面核心</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-2" style="--card-accent: #8b5cf6">
+<a class="part-card" href="/parts/part-2" style="--card-accent: #8b5cf6">
   <span class="part-card-icon">🤖</span>
   <h3>Part 2 · Agent 架构</h3>
   <p>ReAct · 工具 · 记忆 · 安全</p>
   <span class="part-card-round">一面/二面</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-3" style="--card-accent: #f59e0b">
+<a class="part-card" href="/parts/part-3" style="--card-accent: #f59e0b">
   <span class="part-card-icon">🏗️</span>
   <h3>Part 3 · 系统设计</h3>
   <p>架构设计 · 多 Agent · 工程落地</p>
   <span class="part-card-round">二面</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-4" style="--card-accent: #10b981">
+<a class="part-card" href="/parts/part-4" style="--card-accent: #10b981">
   <span class="part-card-icon">🌐</span>
   <h3>Part 4 · 行业视野</h3>
   <p>竞品对比 · OpenClaw · Hermes</p>
   <span class="part-card-round">二面加分</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-5" style="--card-accent: #ec4899">
+<a class="part-card" href="/parts/part-5" style="--card-accent: #ec4899">
   <span class="part-card-icon">💬</span>
   <h3>Part 5 · 行为面</h3>
   <p>STAR · 职业规划 · 反问</p>
   <span class="part-card-round">三面/HR</span>
 </a>
 
-<a class="part-card" href="/interview-bank/parts/part-6" style="--card-accent: #ef4444">
+<a class="part-card" href="/parts/part-6" style="--card-accent: #ef4444">
   <span class="part-card-icon">📌</span>
   <h3>Part 6 · 补充题库</h3>
   <p>评测 · LangGraph · 口径备忘</p>
@@ -103,7 +103,14 @@ features:
 <div class="part-grid">
 
 
-<a class="part-card custom-part-card" href="/interview-bank/custom/3d-lidar" style="--card-accent: #14b8a6">
+<a class="part-card custom-part-card" href="/custom/today-interview" style="--card-accent: #f97316">
+  <span class="part-card-icon">🔥</span>
+  <h3>今日面试复盘</h3>
+  <p>2026-06-17 面试真题 · 11 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/3d-lidar" style="--card-accent: #14b8a6">
   <span class="part-card-icon">📡</span>
   <h3>3D 激光感知</h3>
   <p>LiDAR · 点云 · 目标检测 · 1 题</p>

@@ -49,7 +49,11 @@
   },
   {
     "text": "── 文件题库 ──",
-    "link": "/custom/3d-lidar"
+    "link": "/custom/today-interview"
+  },
+  {
+    "text": "🔥 今日面试复盘",
+    "link": "/custom/today-interview"
   },
   {
     "text": "📡 3D 激光感知",
