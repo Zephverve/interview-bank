@@ -106,7 +106,7 @@ features:
 <a class="part-card custom-part-card" href="/custom/today-interview" style="--card-accent: #f97316">
   <span class="part-card-icon">🔥</span>
   <h3>今日面试复盘</h3>
-  <p>2026-06-17 面试真题 · 11 题</p>
+  <p>2026-06-17 面试真题 · 19 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
@@ -114,6 +114,34 @@ features:
   <span class="part-card-icon">📡</span>
   <h3>3D 激光感知</h3>
   <p>LiDAR · 点云 · 目标检测 · 1 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/xiaolin-agent" style="--card-accent: #8b5cf6">
+  <span class="part-card-icon">🤖</span>
+  <h3>小林 · Agent 面试题</h3>
+  <p>Agent 概念 · 范式 · 记忆 · Multi-Agent · 15 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/xiaolin-rag" style="--card-accent: #0ea5e9">
+  <span class="part-card-icon">🔍</span>
+  <h3>小林 · RAG 面试题</h3>
+  <p>RAG 原理 · 切分 · 检索优化 · 落地 · 18 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/xiaolin-tools" style="--card-accent: #f59e0b">
+  <span class="part-card-icon">🔧</span>
+  <h3>小林 · 工具调用面试题</h3>
+  <p>Function Calling · MCP · Skill · A2A · 16 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/xiaolin-llm" style="--card-accent: #6366f1">
+  <span class="part-card-icon">🧠</span>
+  <h3>小林 · 大模型工程面试题</h3>
+  <p>Transformer · 微调 · 推理 · 部署 · 20 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 

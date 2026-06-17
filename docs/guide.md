@@ -44,8 +44,12 @@
 
 ### 当前自定义分类
 
-- `custom/today-interview/` — 今日面试复盘（11 题）
+- `custom/today-interview/` — 今日面试复盘（19 题）
 - `custom/3d-lidar/` — 3D 激光感知（1 题）
+- `custom/xiaolin-agent/` — 小林 · Agent 面试题（15 题）
+- `custom/xiaolin-rag/` — 小林 · RAG 面试题（18 题）
+- `custom/xiaolin-tools/` — 小林 · 工具调用面试题（16 题）
+- `custom/xiaolin-llm/` — 小林 · 大模型工程面试题（20 题）
 
 ### 方法一：命令行快速添加（推荐）
 

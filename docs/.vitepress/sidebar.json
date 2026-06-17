@@ -58,5 +58,21 @@
   {
     "text": "📡 3D 激光感知",
     "link": "/custom/3d-lidar"
+  },
+  {
+    "text": "🤖 小林 · Agent 面试题",
+    "link": "/custom/xiaolin-agent"
+  },
+  {
+    "text": "🔍 小林 · RAG 面试题",
+    "link": "/custom/xiaolin-rag"
+  },
+  {
+    "text": "🔧 小林 · 工具调用面试题",
+    "link": "/custom/xiaolin-tools"
+  },
+  {
+    "text": "🧠 小林 · 大模型工程面试题",
+    "link": "/custom/xiaolin-llm"
   }
 ]
