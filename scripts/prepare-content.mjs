@@ -434,11 +434,11 @@ hero:
   tagline: 内置 40 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
   actions:
     - theme: brand
+      text: 开始刷题 · Part 0
+      link: /parts/part-0
+    - theme: alt
       text: 我的题库
       link: /my
-    - theme: alt
-      text: 添加题目
-      link: /add
 features:
   - icon: ✏️
     title: 网页添加题目
@@ -463,6 +463,8 @@ features:
 <div class="home-parts">
 
 ## 内置题库
+
+<p class="section-note">👇 点击下方卡片进入各 Part，每 Part 含多道面试题（题目 + 结论句 + 折叠答案）</p>
 
 <div class="part-grid">
 
