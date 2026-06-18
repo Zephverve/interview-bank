@@ -50,6 +50,7 @@ export default defineConfig({
       },
     },
     outline: false,
+    aside: false,
     docFooter: { prev: '上一章', next: '下一章' },
     darkModeSwitchLabel: '主题',
     sidebarMenuLabel: '目录',

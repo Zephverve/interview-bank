@@ -197,44 +197,55 @@
   margin-bottom: 8px;
 }
 
-/* ===== 文档阅读区：左对齐 + 撑满可用宽度 ===== */
+/* ===== 文档阅读区：撑满侧边栏右侧全部宽度 ===== */
 .vp-doc {
   text-align: left;
 }
 
 @media (min-width: 960px) {
+  /* 去掉 VitePress 默认 688px 限宽 + 右侧 aside 占位 */
+  .VPDoc.has-aside .content-container,
+  .VPDoc .content-container {
+    max-width: none !important;
+    margin: 0 !important;
+    width: 100%;
+  }
+
+  .VPDoc .aside,
   .VPDoc.has-aside .aside-container {
-    display: none;
+    display: none !important;
   }
 
-  .VPDoc.has-sidebar .content-container {
-    max-width: none;
-    margin: 0;
-  }
-
+  .VPDoc.has-sidebar .container,
   .VPDoc .container {
-    max-width: min(1200px, calc(100vw - var(--vp-sidebar-width, 272px) - 32px));
-    margin: 0;
-    padding: 0;
+    display: block !important;
+    max-width: none !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
+  .VPDoc.has-sidebar .content,
   .VPDoc .content {
-    max-width: 100%;
-    padding: 32px 48px 64px 32px;
+    max-width: none !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 32px 40px 96px 32px !important;
+    flex: none !important;
   }
 
-  .VPDoc.has-sidebar .content {
-    flex-grow: 1;
+  /* 1440px 以上不再按 1440px 居中，避免右侧大空白 */
+  .VPContent.has-sidebar {
+    padding-right: 32px !important;
+    padding-left: var(--vp-sidebar-width) !important;
   }
 }
 
-@media (min-width: 1440px) {
-  .VPDoc .container {
-    max-width: min(1360px, calc(100vw - var(--vp-sidebar-width, 272px) - 48px));
-  }
-
+@media (min-width: 1280px) {
+  .VPDoc.has-sidebar .content,
   .VPDoc .content {
-    padding-right: 64px;
+    padding: 32px 48px 96px 40px !important;
   }
 }
 
