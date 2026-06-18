@@ -3,3 +3,5 @@ docs/.vitepress/dist/
 docs/.vitepress/cache/
 .vitepress/cache/
 *.local
+.DS_Store
+.workbuddy/
