@@ -6,6 +6,8 @@
   "scripts": {
     "prepare": "node scripts/prepare-content.mjs",
     "import-xiaolin": "node scripts/import-xiaolin.mjs",
+    "standardize-xiaolin": "node scripts/standardize-xiaolin.mjs",
+    "polish-tone": "node scripts/polish-tutorial-tone.mjs",
     "new-question": "node scripts/new-question.mjs",
     "dev": "npm run prepare && vitepress dev docs",
     "build": "npm run prepare && vitepress build docs",
