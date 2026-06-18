@@ -197,6 +197,52 @@
   margin-bottom: 8px;
 }
 
+/* ===== 文档阅读区：左对齐 + 撑满可用宽度 ===== */
+.vp-doc {
+  text-align: left;
+}
+
+@media (min-width: 960px) {
+  .VPDoc.has-aside .aside-container {
+    display: none;
+  }
+
+  .VPDoc.has-sidebar .content-container {
+    max-width: none;
+    margin: 0;
+  }
+
+  .VPDoc .container {
+    max-width: min(1200px, calc(100vw - var(--vp-sidebar-width, 272px) - 32px));
+    margin: 0;
+    padding: 0;
+  }
+
+  .VPDoc .content {
+    max-width: 100%;
+    padding: 32px 48px 64px 32px;
+  }
+
+  .VPDoc.has-sidebar .content {
+    flex-grow: 1;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPDoc .container {
+    max-width: min(1360px, calc(100vw - var(--vp-sidebar-width, 272px) - 48px));
+  }
+
+  .VPDoc .content {
+    padding-right: 64px;
+  }
+}
+
+.question-card.compact-card,
+.section-card {
+  width: 100%;
+}
+
 /* ===== 紧凑题目卡片 ===== */
 .question-card.compact-card {
   padding: 14px 18px;
@@ -392,15 +438,19 @@ details.answer-reveal summary:hover {
 }
 
 .answer-body {
-  padding: 4px 20px 20px;
+  padding: 12px 20px 20px;
   font-size: 14px;
   line-height: 1.85;
   color: var(--vp-c-text-1);
   border-top: 1px dashed var(--vp-c-divider);
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .answer-body p {
   margin: 12px 0;
+  text-align: left;
 }
 
 /* ===== 口径备忘 ===== */
@@ -475,12 +525,7 @@ details.answer-reveal summary:hover {
   }
 }
 
-/* ===== 文档内容区宽度 ===== */
-@media (min-width: 960px) {
-  .VPDoc .container {
-    max-width: 820px;
-  }
-}
+/* ===== 文档内容区宽度（已由上方 .VPDoc .container 接管） ===== */
 
 /* ===== 自定义题库 ===== */
 .custom-section h2 {
@@ -542,8 +587,8 @@ details.answer-reveal summary:hover {
 /* ===== 交互表单 / 我的题库 ===== */
 .qb-form-page,
 .qb-my-page {
-  max-width: 720px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
 }
 
 .qb-form-header,
