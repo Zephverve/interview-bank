@@ -23,35 +23,18 @@ partColor: #8b5cf6
 
 
 
-<div class="question-card" id="q3">
+<div class="question-card compact-card" id="q3">
 
-<h2 class="question-title"><span class="q-badge">Q3</span> Agent 架构</h2>
-
-<div class="question-prompt"><strong>题目</strong>：ReAct 和 LangGraph 的 StateGraph 编排有什么区别？什么场景用 ReAct 更好，什么场景用 LangGraph 更好？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：一面/二面 · 难度：⭐⭐⭐ · 考察点：ReAct vs LangGraph 控制权差异</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：ReAct 让 LLM 决策下一步；LangGraph 开发者预定义流程。RAG 用 LangGraph，开放任务用 ReAct，可混合。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：tool call 格式错误怎么处理？ · StateGraph 几个节点？ · 校验失败重试几次？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q3</span><span class="question-text">ReAct 和 LangGraph 的 StateGraph 编排有什么区别？什么场景用 ReAct 更好，什么场景用 LangGraph 更好？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面/二面 · 难度：⭐⭐⭐ · 考察点：ReAct vs LangGraph 控制权差异</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：ReAct 让 LLM 决策下一步；LangGraph 开发者预定义流程。RAG 用 LangGraph，开放任务用 ReAct，可混合。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：tool call 格式错误怎么处理？ · StateGraph 几个节点？ · 校验失败重试几次？</div>
+</div>
 
 "核心区别在于**控制权在谁手里**。ReAct 是 LLM 自主决策——每一轮 LLM 看到当前状态，自己决定下一步调用哪个工具。LangGraph 的 StateGraph 是你作为开发者预定义节点和边，LLM 只在特定节点里做推理。
 
@@ -66,7 +49,6 @@ LangGraph 适合流程确定的任务。比如我做科研问答的那个 RAG pi
 **追问**：如果在 LangGraph 的某个节点里 LLM 返回了错误格式的 tool call，你怎么处理？
 
 "我实际遇到过这个问题。LangGraph 里调用 LLM 用的是 with_structured_output 或者自己 parse JSON，一旦 LLM 返回格式不对就会抛异常。我的处理是三层：第一层加 retry——把错误信息和原始 prompt 一起重新发给 LLM，让它修正格式，通常 1-2 次就能对；第二层降级——如果 retry 失败，把 tool call 降级为普通的文本生成，跳过工具执行直接进入下一个节点；第三层人工介入——如果降级也失败，触发 ask_user 让用户决定下一步。这个设计思路其实是从 GenericAgent 的 no_tool 机制学来的——当 LLM 的行为不符合预期时，引擎需要有兜底逻辑。"
-
 </div>
 </details>
 
@@ -74,35 +56,18 @@ LangGraph 适合流程确定的任务。比如我做科研问答的那个 RAG pi
 
 ---
 
-<div class="question-card" id="q4">
+<div class="question-card compact-card" id="q4">
 
-<h2 class="question-title"><span class="q-badge">Q4</span> Function Calling</h2>
-
-<div class="question-prompt"><strong>题目</strong>：Native Function Calling 和把工具描述拼在 system prompt 里，对模型行为有什么本质影响？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：Native FC vs 文本协议</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：Native 是结构化约束，参数更准、支持 parallel calls；文本协议靠阅读理解，易编造参数。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：不支持 FC 的模型怎么降级？ · Mixin 故障转移怎么做的？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q4</span><span class="question-text">Native Function Calling 和把工具描述拼在 system prompt 里，对模型行为有什么本质影响？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：Native FC vs 文本协议</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：Native 是结构化约束，参数更准、支持 parallel calls；文本协议靠阅读理解，易编造参数。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：不支持 FC 的模型怎么降级？ · Mixin 故障转移怎么做的？</div>
+</div>
 
 "本质区别是**结构化 vs 阅读理解**。
 
@@ -115,7 +80,6 @@ Native Function Calling 把工具定义以 JSON Schema 格式放在 API 的 tool
 一个具体的差异是 parallel tool calls。Native 模式下 LLM 可以一次返回多个 tool call——比如同时读两个文件。文本协议下很难实现这一点，因为你需要定义复杂的文本格式来区分'多个调用'和'一个调用里的多行参数'。
 
 如果一个模型不支持 Native Function Calling，我的降级方案是：用严格定义的 Markdown 格式作为工具调用协议，比如用代码块标记工具名和 JSON 参数，然后加一个 parser 来做格式校验和错误恢复。"
-
 </div>
 </details>
 
@@ -123,35 +87,18 @@ Native Function Calling 把工具定义以 JSON Schema 格式放在 API 的 tool
 
 ---
 
-<div class="question-card" id="q31">
+<div class="question-card compact-card" id="q31">
 
-<h2 class="question-title"><span class="q-badge">Q31</span> GenericAgent 深度设计 — 你怎么设计 ReAct 循环</h2>
-
-<div class="question-prompt"><strong>题目</strong>：如果让你从零设计一个 Agent 的 ReAct 执行循环，你会怎么设计？考虑哪些异常情况？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：ReAct 循环从零设计</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：带熔断的 while 循环；五类异常：空响应、格式错误、工具超时、循环检测、Token 预算；每轮 checkpoint。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：max_turns 设多少？ · checkpoint 存什么？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q31</span><span class="question-text">如果让你从零设计一个 Agent 的 ReAct 执行循环，你会怎么设计？考虑哪些异常情况？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：ReAct 循环从零设计</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：带熔断的 while 循环；五类异常：空响应、格式错误、工具超时、循环检测、Token 预算；每轮 checkpoint。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：max_turns 设多少？ · checkpoint 存什么？</div>
+</div>
 
 "我会设计一个带安全熔断和状态管理的 ReAct 循环。
 
@@ -184,7 +131,6 @@ while turn < max_turns:
 5. **安全熔断**——max_turns 硬上限（比如 80）、每 N 轮警告、Token 累计消耗上限。三条线保护成本和稳定性。
 
 **状态管理**：每轮结束保存 checkpoint——当前 turn 数、messages 摘要、working memory。如果 Agent 在执行一个长任务的过程中崩溃，重启后能从 checkpoint 恢复而不是从头开始。这是实验室环境和生产环境的本质区别。"
-
 </div>
 </details>
 
@@ -192,35 +138,18 @@ while turn < max_turns:
 
 ---
 
-<div class="question-card" id="q32">
+<div class="question-card compact-card" id="q32">
 
-<h2 class="question-title"><span class="q-badge">Q32</span> GenericAgent 深度设计 — 你怎么设计工具体系</h2>
-
-<div class="question-prompt"><strong>题目</strong>：如果你要给自己的 Agent 设计工具体系，你会限定多少工具？工具的描述怎么写才能让 LLM 用对？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：工具体系与 Schema 设计</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：≤10 个最少充分工具；Schema 写何时用/不用、参数范围、嵌入示例用法。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：为什么加 search 工具？ · 工具太多怎么选？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q32</span><span class="question-text">如果你要给自己的 Agent 设计工具体系，你会限定多少工具？工具的描述怎么写才能让 LLM 用对？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：工具体系与 Schema 设计</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：≤10 个最少充分工具；Schema 写何时用/不用、参数范围、嵌入示例用法。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：为什么加 search 工具？ · 工具太多怎么选？</div>
+</div>
 
 "我会参考 GenericAgent 的'最少充分工具集'原则——不超过 10 个，但保证组合能覆盖所有场景。
 
@@ -240,7 +169,6 @@ while turn < max_turns:
 第二，参数里要写'取值范围和默认值'，而不是只写类型。比如 timeout 不写 'type: integer'，而是 'timeout: 超时秒数，范围 1-300，默认 60。简单操作用 10，复杂计算用 120'。
 
 第三，每个工具的 description 里要嵌入一个示例用法。比如 file_patch 的描述里的示例：'把文件中 "print(hello)" 替换为 "print(world)"。注意：old_content 必须足够长以确保在文件中唯一匹配。' 这个示例比任何抽象描述都有效——LLM 能学会这种模式。"
-
 </div>
 </details>
 
@@ -248,35 +176,18 @@ while turn < max_turns:
 
 ---
 
-<div class="question-card" id="q33">
+<div class="question-card compact-card" id="q33">
 
-<h2 class="question-title"><span class="q-badge">Q33</span> GenericAgent 深度设计 — 你怎么做记忆系统</h2>
-
-<div class="question-prompt"><strong>题目</strong>：从零设计一个 Agent 的记忆系统，你会怎么分层？为什么不用向量数据库？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：记忆系统分层设计</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：L0-L4 分层；Agent 记忆是精准定位不是大海捞针，Token 成本和可解释性优于向量库。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：百万级文档还用分层吗？ · L1 索引怎么维护？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q33</span><span class="question-text">从零设计一个 Agent 的记忆系统，你会怎么分层？为什么不用向量数据库？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：记忆系统分层设计</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：L0-L4 分层；Agent 记忆是精准定位不是大海捞针，Token 成本和可解释性优于向量库。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：百万级文档还用分层吗？ · L1 索引怎么维护？</div>
+</div>
 
 "我会设计四层，和 GenericAgent 的 L0-L4 思路一致但有一些扩展。
 
@@ -299,7 +210,6 @@ while turn < max_turns:
 第三，可解释性。如果 Agent 做错了，你要能追溯——'它读了哪个记忆文件？那个文件里写了什么？'分层文件记忆天然可追溯——去 `memory/L2/env.md` 看就知道了。向量检索是黑盒——你不知道为什么返回了这个片段。
 
 向量检索适合的是'大海捞针'型搜索——在百万级文档中找语义匹配。Agent 记忆是'精准定位'型——你知道要找什么，只是记不清在哪。后者不需要向量检索。"
-
 </div>
 </details>
 
@@ -307,35 +217,18 @@ while turn < max_turns:
 
 ---
 
-<div class="question-card" id="q34">
+<div class="question-card compact-card" id="q34">
 
-<h2 class="question-title"><span class="q-badge">Q34</span> GenericAgent 深度设计 — 多前端解耦</h2>
-
-<div class="question-prompt"><strong>题目</strong>：GenericAgent 用 display_queue 解耦了核心层和前端。如果要你支持 WebSocket 推送、SSE 流式、以及 Android/iOS 移动端，这个事件总线怎么设计？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：多端事件总线升级</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：Redis/Kafka 管道+协议适配器+前端 SDK；协议无关、离线重放、双向命令通道。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：SSE vs WebSocket 选型？ · ask_user 移动端怎么交互？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q34</span><span class="question-text">GenericAgent 用 display_queue 解耦了核心层和前端。如果要你支持 WebSocket 推送、SSE 流式、以及 Android/iOS 移动端，这个事件总线怎么设计？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：多端事件总线升级</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：Redis/Kafka 管道+协议适配器+前端 SDK；协议无关、离线重放、双向命令通道。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：SSE vs WebSocket 选型？ · ask_user 移动端怎么交互？</div>
+</div>
 
 "display_queue 的思想是通用的，但 Python Queue 只适用于单进程。要支持多端、多协议、跨设备，需要升级。
 
@@ -356,7 +249,6 @@ while turn < max_turns:
 3. **双向通道**：display_queue 是单向的（Agent → 前端）。但移动端还需要上行通道——用户发新消息、ask_user 确认、取消任务。这需要一个独立的'命令通道'——WebSocket 的上行帧、HTTP POST、MQTT 都行。
 
 4. **自适应流式**：WebSocket 下每 30 字符推一次很流畅，但移动网络不稳定时可以考虑降低推送频率或者合并推送。适配器层负责做这种自适应。"
-
 </div>
 </details>
 
@@ -364,35 +256,18 @@ while turn < max_turns:
 
 ---
 
-<div class="question-card" id="q35">
+<div class="question-card compact-card" id="q35">
 
-<h2 class="question-title"><span class="q-badge">Q35</span> GenericAgent 深度设计 — 安全与容错</h2>
-
-<div class="question-prompt"><strong>题目</strong>：Agent 在生产环境最怕什么？你从 GenericAgent 的分析中学到了哪些安全设计，有什么不足？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：生产安全三怕</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：怕做错/停不下来/花太多钱；改进 pre-flight、动态 max_turns、per-session Token budget、审计日志。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：审计日志存多久？ · 动态阈值怎么估复杂度？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q35</span><span class="question-text">Agent 在生产环境最怕什么？你从 GenericAgent 的分析中学到了哪些安全设计，有什么不足？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：生产安全三怕</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：怕做错/停不下来/花太多钱；改进 pre-flight、动态 max_turns、per-session Token budget、审计日志。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：审计日志存多久？ · 动态阈值怎么估复杂度？</div>
+</div>
 
 "Agent 在生产环境最怕三件事：**做错事**、**停不下来**、**花太多钱**。
 
@@ -405,7 +280,6 @@ GenericAgent 对这三个问题都有应对，但都有改进空间。
 **防花太多钱**：GenericAgent 没有 Token 预算控制。Agent 可能在长循环中消耗几千元的 API 费用。我会加一个 per-session Token budget——比如单次任务最多 50K token。超过预算时先警告，再超就强制 ask_user 确认是否继续。成本可控是 Agent 从 demo 走向生产的前提。
 
 另外，GenericAgent 有一个我没在代码里看到但我觉得至关重要的设计——**执行日志的不可篡改性**。Agent 的每一次 tool call、每一次 LLM 推理、每一次结果，都应该记录在 append-only 的日志里。不是为了 debug——是为了审计。以后有人问'Agent 为什么发了那封邮件'，你需要能回溯完整路径。"
-
 </div>
 </details>
 
@@ -413,35 +287,18 @@ GenericAgent 对这三个问题都有应对，但都有改进空间。
 
 ---
 
-<div class="question-card" id="q14">
+<div class="question-card compact-card" id="q14">
 
-<h2 class="question-title"><span class="q-badge">Q14</span> Agent 工具设计</h2>
-
-<div class="question-prompt"><strong>题目</strong>：如果你要给 Agent 设计第 10 个工具，你会增加什么？为什么？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：Agent 工具扩展设计</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：加 human_confirmation：风险分级、预演展示、超时默认拒绝，解决生产信任问题。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：和 ask_user 区别？ · critical 操作怎么定义？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q14</span><span class="question-text">如果你要给 Agent 设计第 10 个工具，你会增加什么？为什么？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：Agent 工具扩展设计</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：加 human_confirmation：风险分级、预演展示、超时默认拒绝，解决生产信任问题。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：和 ask_user 区别？ · critical 操作怎么定义？</div>
+</div>
 
 "我会加一个 **human_confirmation** 工具——在 Agent 执行高风险操作前，强制暂停并请求人类确认。
 
@@ -455,7 +312,6 @@ GenericAgent 对这三个问题都有应对，但都有改进空间。
 为什么加这个而不是其他更酷的工具？因为 Agent 从'Demo'走向'生产'，最大的障碍不是能力不够，而是**信任不够**。你不敢让 Agent 自己删文件、发邮件、下单——不是做不了，是怕做错。human_confirmation 解决的就是这个信任问题。
 
 实现上不复杂：在 GenericAgentHandler 里加一个 do_human_confirm 方法，配合新的 tool schema，核心逻辑就是一个状态机——等待确认 → 超时 → 拒绝，或者等待确认 → 收到确认 → 执行。"
-
 </div>
 </details>
 
@@ -463,35 +319,18 @@ GenericAgent 对这三个问题都有应对，但都有改进空间。
 
 ---
 
-<div class="question-card" id="q15">
+<div class="question-card compact-card" id="q15">
 
-<h2 class="question-title"><span class="q-badge">Q15</span> Agent 安全</h2>
-
-<div class="question-prompt"><strong>题目</strong>：你的 code_run 工具允许 Agent 执行任意 Python 代码。你怎么防止 Agent 执行危险操作？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：code_run 安全</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：现有子进程+超时+安全头；扩展 AST 静态分析、文件沙箱、执行回滚三层。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：chroot vs 容器？ · 怎么防 prompt injection 诱导删文件？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q15</span><span class="question-text">你的 code_run 工具允许 Agent 执行任意 Python 代码。你怎么防止 Agent 执行危险操作？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：code_run 安全</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：现有子进程+超时+安全头；扩展 AST 静态分析、文件沙箱、执行回滚三层。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：chroot vs 容器？ · 怎么防 prompt injection 诱导删文件？</div>
+</div>
 
 "这个问题 GenericAgent 的 code_run 已经做了一些防护，我从分析中学到并可以扩展。
 
@@ -509,7 +348,6 @@ GenericAgent 对这三个问题都有应对，但都有改进空间。
 
 
 ---
-
 </div>
 </details>
 

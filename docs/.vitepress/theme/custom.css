@@ -197,6 +197,56 @@
   margin-bottom: 8px;
 }
 
+/* ===== 紧凑题目卡片 ===== */
+.question-card.compact-card {
+  padding: 14px 18px;
+  margin: 10px 0;
+}
+
+.question-card.compact-card .question-title {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+  font-size: 15px !important;
+  line-height: 1.65;
+  font-weight: 500;
+}
+
+.question-card.compact-card .question-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.question-card.compact-card details.answer-reveal {
+  margin-top: 10px;
+}
+
+.answer-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--vp-c-divider);
+}
+
+.answer-extras .q-meta,
+.answer-extras .q-conclusion,
+.answer-extras .q-followups {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.answer-extras .q-conclusion {
+  margin: 0;
+}
+
+.answer-extras .q-followups {
+  margin: 0;
+}
+
 /* ===== 题目卡片 ===== */
 .question-card,
 .section-card {

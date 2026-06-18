@@ -19,34 +19,18 @@ partColor: #14b8a6
 
 </div>
 
-<div class="question-card custom-card" id="lidar-vs-camera">
+<div class="question-card custom-card compact-card" id="lidar-vs-camera">
 
-<h2 class="question-title"><span class="q-badge custom-badge">✦</span> 点云与激光雷达基础</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 标签：3D感知, 点云, LiDAR · 考察点：传感器原理</div>
-
-<div class="question-prompt"><strong>题目</strong>：激光雷达点云和图像相比，有哪些优缺点？你在项目中是怎么用的？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：LiDAR 优点是绝对深度、不受光照影响；缺点是稀疏、贵、语义弱；融合方案通常是 LiDAR 做几何、Camera 做语义。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：多传感器融合怎么做标定？ · 点云稀疏怎么补？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge custom-badge">✦</span><span class="question-text">激光雷达点云和图像相比，有哪些优缺点？你在项目中是怎么用的？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 标签：3D感知, 点云, LiDAR · 考察点：传感器原理</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：LiDAR 优点是绝对深度、不受光照影响；缺点是稀疏、贵、语义弱；融合方案通常是 LiDAR 做几何、Camera 做语义。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：多传感器融合怎么做标定？ · 点云稀疏怎么补？</div>
+</div>
 
 "LiDAR 的核心优势是**精确的三维几何信息**——每个点都有真实的 xyz 坐标和反射强度，不依赖光照，夜间和逆光也能稳定工作。缺点是点云**稀疏**（64 线雷达垂直分辨率有限）、**无语义**（不知道这个点是车还是墙）、**成本高**。
 
@@ -59,7 +43,6 @@ partColor: #14b8a6
 3. **融合层**——用标定矩阵把点云投影到图像平面，或用 BEV 空间统一表示
 
 如果是纯 LiDAR 方案，我会先做**地面滤除**（RANSAC 或高度阈值），再聚类得到目标候选，最后分类器做识别。"
-
 </div>
 </details>
 

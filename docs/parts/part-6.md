@@ -23,35 +23,18 @@ partColor: #ef4444
 
 
 
-<div class="question-card" id="q36">
+<div class="question-card compact-card" id="q36">
 
-<h2 class="question-title"><span class="q-badge">Q36</span> RAG 评测 · 指标选型</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：评测体系设计</div>
-
-<div class="question-prompt"><strong>题目</strong>：你为什么用 Recall@5 而不是 nDCG 或 MRR？黄金集怎么构建的？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：科研问答核心是「找对段落」；Recall@5 直接衡量 Top-5 是否含答案段；nDCG 更重排序质量，MRR 只看第一个命中——我分阶段用 Recall 驱动召回优化，排序用重排+人工抽检补。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：有没有算 nDCG？ · 120 问怎么标注？ · 端到端怎么评？
-
-</div>
-
-
+<h2 class="question-title"><span class="q-badge">Q36</span><span class="question-text">你为什么用 Recall@5 而不是 nDCG 或 MRR？黄金集怎么构建的？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 考察点：评测体系设计</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：科研问答核心是「找对段落」；Recall@5 直接衡量 Top-5 是否含答案段；nDCG 更重排序质量，MRR 只看第一个命中——我分阶段用 Recall 驱动召回优化，排序用重排+人工抽检补。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：有没有算 nDCG？ · 120 问怎么标注？ · 端到端怎么评？</div>
+</div>
 
 "我选 Recall@5 是因为我们这个场景的第一优先级是**召回**——课题组同学问一个问题，系统能不能在 Top-5 里把真正包含答案的论文段落找出来。如果召回阶段就漏了，后面重排和生成再好也没用。
 
@@ -64,7 +47,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 120 问黄金集的构建方式：从课题组真实提问里抽 80 问，我补充 40 个覆盖边界 case（跨论文、术语缩写、口语化提问）。每题标注 1-3 个'金标准段落'（论文 ID + 段落位置）。评测时只要 Top-5 命中任一金标准段落就算 Recall 成功。
 
 如果现在要升级评测体系，我会在 Recall@5 稳定后加 nDCG@5 看排序质量，再加端到端指标——引用校验通过率、人工 1-5 分质量评分、平均校验轮次（简历里写的 1.3 轮）。三层指标分别对应检索、排序、生成。"
-
 </div>
 </details>
 
@@ -72,35 +54,18 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 
 ---
 
-<div class="question-card" id="q37">
+<div class="question-card compact-card" id="q37">
 
-<h2 class="question-title"><span class="q-badge">Q37</span> LangGraph · 节点与条件边</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：LangGraph 落地细节</div>
-
-<div class="question-prompt"><strong>题目</strong>：你的 RAG 用 LangGraph 编排，具体有几个节点？条件边怎么设计的？校验失败重试几次？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：主链路 5 节点：查询改写→混合检索→重排→生成→引用校验；校验失败走条件边回到改写或生成，最多 2 轮重试，避免死循环。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：State 里存什么？ · 和裸 FastAPI 链式调用区别？ · 为什么不用 ReAct？
-
-</div>
-
-
+<h2 class="question-title"><span class="q-badge">Q37</span><span class="question-text">你的 RAG 用 LangGraph 编排，具体有几个节点？条件边怎么设计的？校验失败重试几次？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：LangGraph 落地细节</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：主链路 5 节点：查询改写→混合检索→重排→生成→引用校验；校验失败走条件边回到改写或生成，最多 2 轮重试，避免死循环。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：State 里存什么？ · 和裸 FastAPI 链式调用区别？ · 为什么不用 ReAct？</div>
+</div>
 
 "我的 LangGraph StateGraph 大概有 5 个核心节点，加 2 个条件分支。
 
@@ -125,7 +90,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 和裸 FastAPI 链式调用的区别：LangGraph 把**分支逻辑显式化**了——校验失败走哪条路、重试几次，在图上一眼能看出来。而且每个节点可以单独测、单独换实现。裸链式代码里这些 if-else 很快会变成 spaghetti。
 
 选 LangGraph 而不是 ReAct 的原因：这条 pipeline 步骤和顺序是确定的，不需要 LLM 决定'下一步该检索还是该生成'。用 ReAct 反而让 LLM 有跳过校验或乱调工具的风险。"
-
 </div>
 </details>
 
@@ -133,35 +97,18 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 
 ---
 
-<div class="question-card" id="q38">
+<div class="question-card compact-card" id="q38">
 
-<h2 class="question-title"><span class="q-badge">Q38</span> 诚实面 · 失败 case</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面/三面 · 难度：⭐⭐⭐ · 考察点：真实性与复盘能力</div>
-
-<div class="question-prompt"><strong>题目</strong>：你的 RAG 系统有哪些做失败了或效果不好的地方？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：三块没做好：PDF 双栏/公式解析、14% 引用校验仍失败、纯向量时代跨论文混淆；说明瓶颈往往在数据而非模型。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：为什么没换 MinerU？ · 86% 够上线吗？ · 如果重来第一步改什么？
-
-</div>
-
-
+<h2 class="question-title"><span class="q-badge">Q38</span><span class="question-text">你的 RAG 系统有哪些做失败了或效果不好的地方？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面/三面 · 难度：⭐⭐⭐ · 考察点：真实性与复盘能力</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：三块没做好：PDF 双栏/公式解析、14% 引用校验仍失败、纯向量时代跨论文混淆；说明瓶颈往往在数据而非模型。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：为什么没换 MinerU？ · 86% 够上线吗？ · 如果重来第一步改什么？</div>
+</div>
 
 "有三个印象深刻的失败或不够好。
 
@@ -174,7 +121,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 还有一个'没做'的选择：我没上端到端 RLHF 或 DPO 做引用对齐，因为数据标注成本太高，1.8k SFT 数据已经是课题组能承受的极限。如果走工业界路线，可能会用 RAG + 轻量 reranker 微调，而不是继续堆大模型 SFT。
 
 诚实说这些失败，比只讲 0.51→0.78 更让面试官相信你真的做过系统，而不是背数字。"
-
 </div>
 </details>
 
@@ -182,35 +128,18 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 
 ---
 
-<div class="question-card" id="q39">
+<div class="question-card compact-card" id="q39">
 
-<h2 class="question-title"><span class="q-badge">Q39</span> 算法基础 · DSTG-Net</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面（算法岗） · 难度：⭐⭐⭐⭐ · 考察点：简历算法项目深度</div>
-
-<div class="question-prompt"><strong>题目</strong>：DSTG-Net 里 GCN 和 Transformer 双流怎么融合？为什么用自适应加权而不是简单相加？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：GCN 抓局部关节拓扑，Transformer 抓全局时序；自适应加权因不同关节/时间步两流贡献不同；加去相关损失防冗余和训练不稳。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：MPJPE 多少？ · 和 ST-GCN 区别？ · 消融实验怎么做？
-
-</div>
-
-
+<h2 class="question-title"><span class="q-badge">Q39</span><span class="question-text">DSTG-Net 里 GCN 和 Transformer 双流怎么融合？为什么用自适应加权而不是简单相加？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面（算法岗） · 难度：⭐⭐⭐⭐ · 考察点：简历算法项目深度</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：GCN 抓局部关节拓扑，Transformer 抓全局时序；自适应加权因不同关节/时间步两流贡献不同；加去相关损失防冗余和训练不稳。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：MPJPE 多少？ · 和 ST-GCN 区别？ · 消融实验怎么做？</div>
+</div>
 
 "DSTG-Net 的核心是双流架构。
 
@@ -227,7 +156,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 实验在 Human3.6M、CMU-MoCap、3DPW 三个数据集上跑，和 ST-GCN、MSR-GCN 等对比。3DPW 短期 MPJPE 相对降 22.22%，长期最高降 15.10%。论文投 Pattern Recognition，目前在二审。
 
 这个项目和 Agent 岗的关联是：做系统前先想清楚'哪条路的信息更重要、怎么融合'——和 RAG 里 dense+BM25 混合、GCN+Transformer 融合是同一类工程思维。"
-
 </div>
 </details>
 
@@ -235,35 +163,18 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 
 ---
 
-<div class="question-card" id="q40">
+<div class="question-card compact-card" id="q40">
 
-<h2 class="question-title"><span class="q-badge">Q40</span> 简历深挖 · GenericAgent 你做了什么</h2>
-
-<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：项目真实性（高频追问）</div>
-
-<div class="question-prompt"><strong>题目</strong>：GenericAgent 是你从零搭建的还是基于开源项目？你具体写了哪些代码？</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：基于开源 ReAct Agent 框架深度二次开发：我负责 SiliconFlow/DeepSeek 接入、全链路跑通、生产级设计分析；叙事统一为「适配+分析+改进方案」而非含糊说「搭建」。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：改了哪几个文件？ · 和原版 diff？ · 如果没开源你能从零写 ReAct 吗？
-
-</div>
-
-
+<h2 class="question-title"><span class="q-badge">Q40</span><span class="question-text">GenericAgent 是你从零搭建的还是基于开源项目？你具体写了哪些代码？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：项目真实性（高频追问）</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：基于开源 ReAct Agent 框架深度二次开发：我负责 SiliconFlow/DeepSeek 接入、全链路跑通、生产级设计分析；叙事统一为「适配+分析+改进方案」而非含糊说「搭建」。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：改了哪几个文件？ · 和原版 diff？ · 如果没开源你能从零写 ReAct 吗？</div>
+</div>
 
 "这个问题我回答得比较诚实，分三层说。
 
@@ -280,7 +191,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 **为什么不只说'搭建'**？因为面试官一旦追问源码细节，'搭建'和'分析'的差距会立刻暴露。统一口径是：**在开源框架上做 API 适配、全链路验证和架构级分析与改进设计**——这既真实，又保留技术深度。
 
 如果让我从零写 ReAct 循环，我可以——Q31 就是我的设计答案，核心 while 循环大概 100 行，我在分析时已经逐行读过原版实现。"
-
 </div>
 </details>
 

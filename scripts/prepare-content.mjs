@@ -31,33 +31,78 @@ function getBase() {
 
 // ─── Markdown 转换工具 ───────────────────────────────────────────
 
-function wrapAnswers(content) {
+function wrapAnswers(content, extrasBlock = '') {
   return content.replace(
     /### 回答[^\n]*\n([\s\S]*?)(?=\n---\n|\n## |\n### 【|\n## 📌|$)/g,
     (_, body) =>
-      `<details class="answer-reveal">\n<summary>展开完整回答</summary>\n\n<div class="answer-body">\n\n${body.trim()}\n\n</div>\n</details>\n`
+      `<details class="answer-reveal">\n<summary>展开答案</summary>\n<div class="answer-body">\n${extrasBlock}${body.trim()}\n</div>\n</details>\n`
   )
 }
 
-function wrapConclusions(content) {
-  return content.replace(
-    /\*\*结论句[^*]*\*\*：([^\n]+)/g,
-    (_, text) => `\n<div class="q-conclusion">\n\n💡 **15 秒结论**：${text.trim()}\n\n</div>\n`
-  )
+function extractMetaBlock(content) {
+  let metaHtml = ''
+  const cleaned = content.replace(/^> \*\*轮次\*\*：(.+)$/gm, (_, text) => {
+    metaHtml = `<div class="q-meta"><strong>轮次</strong>：${text.replace(/\*\*([^*]+)\*\*/g, '$1')}</div>`
+    return ''
+  })
+  return { cleaned, metaHtml }
 }
 
-function wrapFollowups(content) {
-  return content.replace(
-    /\*\*追问方向\*\*：([^\n]+)/g,
-    (_, text) => `\n<div class="q-followups">\n\n🔁 **追问方向**：${text.trim()}\n\n</div>\n`
-  )
+function extractConclusionBlock(content) {
+  let html = ''
+  const cleaned = content.replace(/\*\*结论句[^*]*\*\*：([^\n]+)/g, (_, text) => {
+    html = `<div class="q-conclusion">💡 <strong>15 秒结论</strong>：${text.trim()}</div>`
+    return ''
+  })
+  return { cleaned, html }
 }
 
-function wrapMetaQuotes(content) {
-  return content.replace(
-    /^> \*\*轮次\*\*：(.+)$/gm,
-    (_, text) => `<div class="q-meta"><strong>轮次</strong>：${text.replace(/\*\*([^*]+)\*\*/g, '$1')}</div>`
+function extractFollowupsBlock(content) {
+  let html = ''
+  const cleaned = content.replace(/\*\*追问方向\*\*：([^\n]+)/g, (_, text) => {
+    html = `<div class="q-followups">🔁 <strong>追问方向</strong>：${text.trim()}</div>`
+    return ''
+  })
+  return { cleaned, html }
+}
+
+function buildAnswerExtras(...parts) {
+  const inner = parts.filter(Boolean).join('\n')
+  if (!inner) return ''
+  return `<div class="answer-extras">\n${inner}\n</div>\n\n`
+}
+
+function transformBody(body, frontmatterMetaHtml = '') {
+  let content = body.replace(/\n---\n/g, '\n')
+  let questionText = ''
+
+  content = content.replace(/\*\*(题目|面试官)\*\*：([^\n]+)/, (_, _label, q) => {
+    questionText = q.trim()
+    return ''
+  })
+
+  const meta = extractMetaBlock(content)
+  content = meta.cleaned
+  const conclusion = extractConclusionBlock(content)
+  content = conclusion.cleaned
+  const followups = extractFollowupsBlock(content)
+  content = followups.cleaned
+
+  const extrasBlock = buildAnswerExtras(
+    frontmatterMetaHtml || meta.metaHtml,
+    conclusion.html,
+    followups.html
   )
+
+  if (/### 回答/.test(content)) {
+    content = wrapAnswers(content, extrasBlock)
+  } else if (extrasBlock) {
+    content =
+      `<details class="answer-reveal">\n<summary>展开详情</summary>\n<div class="answer-body">\n${extrasBlock}\n</div>\n</details>\n` +
+      content
+  }
+
+  return { content: content.trim(), questionText }
 }
 
 function metaFromFrontmatter(meta) {
@@ -115,19 +160,6 @@ function parseYamlSimple(raw) {
   return meta
 }
 
-function transformBody(body) {
-  let content = body.replace(/\n---\n/g, '\n')
-  content = content.replace(
-    /\*\*(题目|面试官)\*\*：([^\n]+)/,
-    '<div class="question-prompt"><strong>$1</strong>：$2</div>'
-  )
-  content = wrapMetaQuotes(content)
-  content = wrapConclusions(content)
-  content = wrapFollowups(content)
-  content = wrapAnswers(content)
-  return content.trim()
-}
-
 function extractQuestionId(heading) {
   const m = heading.match(/Q(\d+)/i)
   return m ? `q${m[1]}` : null
@@ -138,35 +170,30 @@ function transformQuestionBlock(block, fallbackId) {
   const heading = lines[0].replace(/^## /, '')
   const qid = extractQuestionId(heading) || fallbackId
 
-  let body = transformBody(lines.slice(1).join('\n'))
-  const badge = qid.startsWith('q') && /^q\d+$/.test(qid)
-    ? `<span class="q-badge">${qid.toUpperCase()}</span>`
-    : `<span class="q-badge custom-badge">✦</span>`
-  const title = heading.replace(/^Q\d+ · /, '')
+  const { content, questionText } = transformBody(lines.slice(1).join('\n'))
+  const badge =
+    qid.startsWith('q') && /^q\d+$/.test(qid)
+      ? `<span class="q-badge">${qid.toUpperCase()}</span>`
+      : `<span class="q-badge custom-badge">✦</span>`
+  const display = questionText || heading.replace(/^Q\d+ · /, '')
 
-  return `<div class="question-card" id="${qid}">
+  return `<div class="question-card compact-card" id="${qid}">
 
-<h2 class="question-title">${badge} ${title}</h2>
+<h2 class="question-title">${badge}<span class="question-text">${display}</span></h2>
 
-${body}
+${content}
 
 </div>`
 }
 
 function transformSingleQuestion(meta, body, anchorId) {
-  const title = meta.title || '未命名题目'
-  let content = transformBody(body)
-  if (!content.includes('question-prompt') && meta.question) {
-    content = `<div class="question-prompt"><strong>题目</strong>：${meta.question}</div>\n\n${content}`
-  }
   const metaHtml = metaFromFrontmatter(meta)
-  if (metaHtml && !content.includes('q-meta')) {
-    content = metaHtml + '\n\n' + content
-  }
+  const { content, questionText } = transformBody(body, metaHtml)
+  const display = questionText || meta.question || meta.title || '未命名题目'
 
-  return `<div class="question-card custom-card" id="${anchorId}">
+  return `<div class="question-card custom-card compact-card" id="${anchorId}">
 
-<h2 class="question-title"><span class="q-badge custom-badge">✦</span> ${title}</h2>
+<h2 class="question-title"><span class="q-badge custom-badge">✦</span><span class="question-text">${display}</span></h2>
 
 ${content}
 
@@ -194,7 +221,7 @@ function transformPart0(content) {
     .map((section) => {
       if (!section.startsWith('## ')) return section
       const title = section.match(/^## (.+)/)?.[1] || ''
-      let inner = transformBody(section.replace(/^## .+\n?/, ''))
+      let inner = transformBody(section.replace(/^## .+\n?/, '')).content
 
       return `<div class="section-card">
 

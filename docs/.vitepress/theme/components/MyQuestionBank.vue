@@ -174,12 +174,12 @@ onUnmounted(() => {
       <div
         v-for="q in filtered"
         :key="q.id"
-        :class="['question-card', 'custom-card', { mastered: q.mastered }]"
+        :class="['question-card', 'custom-card', 'compact-card', { mastered: q.mastered }]"
       >
         <div class="qb-card-top">
           <h2 class="question-title">
             <span class="q-badge custom-badge">✦</span>
-            {{ q.title }}
+            <span class="question-text">{{ q.question || q.title }}</span>
             <span v-if="q.mastered" class="mastered-tag">已掌握</span>
           </h2>
           <div class="qb-card-actions">
@@ -191,24 +191,23 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <div v-if="catOf(q)" class="q-meta">
-          <strong>轮次</strong>：{{ q.round }} · 难度：{{ q.difficulty }}
-          <span v-if="q.point"> · 考察点：{{ q.point }}</span>
-          <span v-if="q.tags.length"> · 标签：{{ q.tags.join(', ') }}</span>
-          · {{ catOf(q)?.icon }} {{ catOf(q)?.name }}
-        </div>
-
-        <div class="question-prompt"><strong>题目</strong>：{{ q.question }}</div>
-
-        <div v-if="q.conclusion" class="q-conclusion">
-          💡 <strong>15 秒结论</strong>：{{ q.conclusion }}
-        </div>
-
-        <div v-if="q.followups" class="q-followups">🔁 <strong>追问方向</strong>：{{ q.followups }}</div>
-
         <details class="answer-reveal">
-          <summary>展开完整回答</summary>
-          <div class="answer-body">{{ q.answer }}</div>
+          <summary>展开答案</summary>
+          <div class="answer-body">
+            <div v-if="q.round || q.conclusion || q.followups || catOf(q)" class="answer-extras">
+              <div v-if="q.round" class="q-meta">
+                <strong>轮次</strong>：{{ q.round }} · 难度：{{ q.difficulty }}
+                <span v-if="q.point"> · 考察点：{{ q.point }}</span>
+                <span v-if="q.tags.length"> · 标签：{{ q.tags.join(', ') }}</span>
+                <span v-if="catOf(q)"> · {{ catOf(q)?.icon }} {{ catOf(q)?.name }}</span>
+              </div>
+              <div v-if="q.conclusion" class="q-conclusion">
+                💡 <strong>15 秒结论</strong>：{{ q.conclusion }}
+              </div>
+              <div v-if="q.followups" class="q-followups">🔁 <strong>追问方向</strong>：{{ q.followups }}</div>
+            </div>
+            {{ q.answer }}
+          </div>
         </details>
 
         <button class="qb-copy-btn" @click="copyMarkdown(q)">复制为 Markdown</button>

@@ -30,13 +30,11 @@ partColor: #6366f1
 > **使用提示**：控制在 1.5 分钟内；讲完停顿，等面试官选「哪个项目展开」。
 
 
-<div class="question-prompt"><strong>题目</strong>：请做个自我介绍，介绍一下你的项目经历。</div>
+
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
-
 "面试官好，我是软件工程相关专业硕士在读，研究方向是大模型应用与知识工程。
 
 我的技术主线是 Agent 和 RAG 方向。过去一年多我做了三个相关的项目。
@@ -48,7 +46,6 @@ partColor: #6366f1
 第三个是 GCN-Transformer 人体运动预测的算法研究，已经投稿 Pattern Recognition，现在在二审。
 
 我投这个岗位是因为我想把 Agent 从实验室做到生产环境——我在实验室搭过系统、做过优化，现在希望在真实场景里积累工程经验。"
-
 </div>
 </details>
 
@@ -62,7 +59,7 @@ partColor: #6366f1
 
 ### 【项目一】垂域科研问答系统
 
-<div class="question-prompt"><strong>面试官</strong>：详细介绍这个项目，从 0 到 1 你是怎么做的？</div>
+
 
 **回答**：
 

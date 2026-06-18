@@ -57,35 +57,18 @@ partColor: #f59e0b
 
 
 
-<div class="question-card" id="q6">
+<div class="question-card compact-card" id="q6">
 
-<h2 class="question-title"><span class="q-badge">Q6</span> 记忆系统</h2>
-
-<div class="question-prompt"><strong>题目</strong>：你简历提到对比了分层记忆和向量检索。假设现在有一个客服 Agent，需要记住每个客户的历史对话。你会用分层记忆还是向量检索？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：客服记忆分层 vs 向量</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：分层记忆为主（精确匹配+SOP），向量检索为辅（相似投诉兜底）；加时效性与只追加不删除。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：和 GenericAgent L0-L4 怎么映射？ · 记忆更新策略？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q6</span><span class="question-text">你简历提到对比了分层记忆和向量检索。假设现在有一个客服 Agent，需要记住每个客户的历史对话。你会用分层记忆还是向量检索？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：客服记忆分层 vs 向量</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：分层记忆为主（精确匹配+SOP），向量检索为辅（相似投诉兜底）；加时效性与只追加不删除。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：和 GenericAgent L0-L4 怎么映射？ · 记忆更新策略？</div>
+</div>
 
 "我会用**分层记忆为主、向量检索为辅**的混合方案。
 
@@ -103,7 +86,6 @@ partColor: #f59e0b
 相比 GenericAgent 的四层架构，客服 Agent 的记忆系统需要加一个**时效性维度**。比如同一个客户昨天的对话比三个月前的对话优先级更高，我需要在 L1 索引里加时间权重。
 
 更新策略上，像客户联系方式变更这种，我不会删除旧记录——用追加的方式，新记录标为 active，旧记录标为 historical。这和 GenericAgent 的'只追加不删除'原则一致，避免了记忆污染。"
-
 </div>
 </details>
 
@@ -111,35 +93,18 @@ partColor: #f59e0b
 
 ---
 
-<div class="question-card" id="q16">
+<div class="question-card compact-card" id="q16">
 
-<h2 class="question-title"><span class="q-badge">Q16</span> 多 Agent 协作</h2>
-
-<div class="question-prompt"><strong>题目</strong>：如果让你设计一个多 Agent 协作系统——比如一个 Agent 负责查资料，一个 Agent 负责写作，一个 Agent 负责审核——它们之间怎么通信？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：多 Agent 通信</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：消息队列管任务分发，共享状态管进度；Agent 不直连，审核 Agent 有 veto，状态持久化 Redis。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：和 CrewAI 区别？ · 死信怎么处理？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q16</span><span class="question-text">如果让你设计一个多 Agent 协作系统——比如一个 Agent 负责查资料，一个 Agent 负责写作，一个 Agent 负责审核——它们之间怎么通信？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：多 Agent 通信</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：消息队列管任务分发，共享状态管进度；Agent 不直连，审核 Agent 有 veto，状态持久化 Redis。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：和 CrewAI 区别？ · 死信怎么处理？</div>
+</div>
 
 "我会用消息队列 + 共享状态的双通道方案。
 
@@ -166,7 +131,6 @@ partColor: #f59e0b
 3. **状态持久化**——共享状态存 Redis，Agent 重启后能从上次中断的地方继续。在实际场景中 Agent 任务可能要跑几十分钟，持久化是必须的。
 
 这个设计的核心思路其实来自 LangGraph 的 StateGraph——状态是所有 Agent 共享的、Graph 定义了 Agent 的执行顺序，只是把单 Agent 的节点换成了多 Agent。"
-
 </div>
 </details>
 
@@ -174,35 +138,18 @@ partColor: #f59e0b
 
 ---
 
-<div class="question-card" id="q22">
+<div class="question-card compact-card" id="q22">
 
-<h2 class="question-title"><span class="q-badge">Q22</span> 场景设计</h2>
-
-<div class="question-prompt"><strong>题目</strong>：你的 Agent 在执行一个长任务中途，用户突然改了需求——比如原本是'帮我查 A、B、C 三只股票的行情'，Agent 查到一半用户说'等等，加一个 D'。你怎么设计系统支持这种动态变更？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：长任务中途改需求</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：中断注入+状态快照+局部重规划；关键操作标不可中断，类比 OS 进程调度。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：和 LangGraph 动态图关系？ · intervene 机制细节？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q22</span><span class="question-text">你的 Agent 在执行一个长任务中途，用户突然改了需求——比如原本是'帮我查 A、B、C 三只股票的行情'，Agent 查到一半用户说'等等，加一个 D'。你怎么设计系统支持这种动态变更？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：长任务中途改需求</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：中断注入+状态快照+局部重规划；关键操作标不可中断，类比 OS 进程调度。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：和 LangGraph 动态图关系？ · intervene 机制细节？</div>
+</div>
 
 "这是 Agent 工程里一个被严重低估的难题——**任务中断与状态迁移**。
 
@@ -217,7 +164,6 @@ partColor: #f59e0b
 实现上的关键约束：这个动态变更不能破坏执行原子性。比如 Agent 正在调用一个银行转账 API，这时候用户改需求——转账操作必须完成或回滚之后才能接受新指令。我需要在工具层加一个'不可中断'标记，关键操作完成后才检查变更请求。
 
 这个设计和操作系统的进程调度非常像——中断信号到达→保存现场→处理信号→恢复执行。Agent 的任务调度本质上是用户态线程的协作式调度。"
-
 </div>
 </details>
 
@@ -225,35 +171,18 @@ partColor: #f59e0b
 
 ---
 
-<div class="question-card" id="q17">
+<div class="question-card compact-card" id="q17">
 
-<h2 class="question-title"><span class="q-badge">Q17</span> 工程落地</h2>
-
-<div class="question-prompt"><strong>题目</strong>：你的 RAG 系统部署在实验室 NAS 上。如果要部署到阿里云/腾讯云，架构会有什么变化？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：实验室到云上架构变化</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：Qdrant 托管、推理上云/API、FastAPI 容器化/Serverless、加网关鉴权；月成本约 800-1200。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：冷启动怎么解决？ · VPC 网络延迟？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q17</span><span class="question-text">你的 RAG 系统部署在实验室 NAS 上。如果要部署到阿里云/腾讯云，架构会有什么变化？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：实验室到云上架构变化</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：Qdrant 托管、推理上云/API、FastAPI 容器化/Serverless、加网关鉴权；月成本约 800-1200。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：冷启动怎么解决？ · VPC 网络延迟？</div>
+</div>
 
 "变化主要在四个方面。
 
@@ -266,7 +195,6 @@ partColor: #f59e0b
 **第四，增加了 API 网关和鉴权层**。实验室环境不需要鉴权，Streamlit 直接连 FastAPI。生产环境需要 API 网关做请求路由、限流、鉴权。用户管理、API Key 管理、用量计费这些在实验室环境完全不需要，但上云必须有。
 
 成本估算：按每天 100 次问答，每次平均 3k token 输入 + 500 token 输出、微调模型跑在 T4 GPU 上的话，一个月大概 800-1200 元。如果用 SaaS 向量数据库而不是自建，再加 200-300 元。和用 GPT-4 API 的纯托管方案比，自部署微调模型的成本大概是 1/3。"
-
 </div>
 </details>
 
@@ -274,35 +202,18 @@ partColor: #f59e0b
 
 ---
 
-<div class="question-card" id="q23">
+<div class="question-card compact-card" id="q23">
 
-<h2 class="question-title"><span class="q-badge">Q23</span> 成本与商业模式</h2>
-
-<div class="question-prompt"><strong>题目</strong>：如果公司让你估算搭建一个内部 Agent 平台（100 人使用、每天 500 次调用）的月度成本，你会怎么算？</div>
-
-
-<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：Agent 平台成本估算</div>
-
-
-<div class="q-conclusion">
-
-💡 **15 秒结论**：100人/500次/天：纯 SaaS 约 ¥2000/月，自建推理约 ¥8000/月；MVP 阶段建议纯 SaaS。
-
-</div>
-
-
-
-<div class="q-followups">
-
-🔁 **追问方向**：Token 分层调度省多少？ · 人力维护怎么估？
-
-</div>
-
+<h2 class="question-title"><span class="q-badge">Q23</span><span class="question-text">如果公司让你估算搭建一个内部 Agent 平台（100 人使用、每天 500 次调用）的月度成本，你会怎么算？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开完整回答</summary>
-
+<summary>展开答案</summary>
 <div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：Agent 平台成本估算</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：100人/500次/天：纯 SaaS 约 ¥2000/月，自建推理约 ¥8000/月；MVP 阶段建议纯 SaaS。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：Token 分层调度省多少？ · 人力维护怎么估？</div>
+</div>
 
 "我会按五分项算。
 
@@ -322,7 +233,6 @@ partColor: #f59e0b
 
 
 ---
-
 </div>
 </details>
 
