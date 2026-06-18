@@ -151,7 +151,7 @@
 
 /* ===== Part 页头 ===== */
 .part-hero {
-  margin: -8px -24px 32px;
+  margin: -8px 0 32px;
   padding: 32px 28px;
   border-radius: 16px;
   background: linear-gradient(
@@ -246,6 +246,33 @@
   .VPDoc.has-sidebar .content,
   .VPDoc .content {
     padding: 32px 48px 96px 40px !important;
+  }
+}
+
+/* 宽屏：侧边栏固定 272px 贴左，正文 padding 对齐，避免遮挡 */
+@media (min-width: 1440px) {
+  .VPSidebar {
+    padding-left: 32px !important;
+    width: var(--vp-sidebar-width) !important;
+  }
+
+  .VPContent.has-sidebar {
+    padding-left: var(--vp-sidebar-width) !important;
+    padding-right: 32px !important;
+  }
+
+  .VPNavBar.has-sidebar .title {
+    padding-left: 32px !important;
+    width: var(--vp-sidebar-width) !important;
+  }
+
+  .VPNavBar.has-sidebar .content {
+    padding-left: var(--vp-sidebar-width) !important;
+    padding-right: 32px !important;
+  }
+
+  .VPLocalNav.has-sidebar {
+    padding-left: var(--vp-sidebar-width) !important;
   }
 }
 
@@ -521,8 +548,8 @@ details.answer-reveal summary:hover {
 /* ===== 响应式 ===== */
 @media (max-width: 640px) {
   .part-hero {
-    margin-left: -16px;
-    margin-right: -16px;
+    margin-left: 0;
+    margin-right: 0;
     padding: 24px 20px;
   }
 
