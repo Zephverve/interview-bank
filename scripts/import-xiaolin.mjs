@@ -51,7 +51,7 @@ const TOPICS = {
   },
 }
 
-// 与已有题库高度重合、跳过导入的题（按题干预匹配）
+// 与已有题库高度重合、跳过导入的题（按题干预匹配）；加 --full 可全部重新抓取
 const SKIP_PATTERNS = [
   /多\s*Agent/i,
   /RAG.*切分|文档切分|Chunking/i,
@@ -197,6 +197,7 @@ function loadExistingQuestions() {
 }
 
 function shouldSkip(question) {
+  if (process.argv.includes('--full')) return false
   return SKIP_PATTERNS.some((p) => p.test(question))
 }
 
@@ -316,6 +317,7 @@ async function importTopic(slug, config, existing) {
     const detail = extractSection(main, '详细解析', '面试总结')
     const summary = extractInterviewSummary(main)
     const dialogue = extractDialogue(main)
+    const bodyLen = (brief?.length || 0) + (detail?.length || 0) + (summary?.length || 0)
 
     if (!brief && !detail && !summary) {
       console.log(`  ⚠ 内容为空，跳过: ${url}`)
@@ -335,7 +337,7 @@ async function importTopic(slug, config, existing) {
 
     const outFile = path.join(outDir, `${fileSlug}.md`)
     fs.writeFileSync(outFile, md, 'utf-8')
-    console.log(`  ✓ ${fileSlug}.md — ${title}`)
+    console.log(`  ✓ ${fileSlug}.md — ${title} (${bodyLen} 字)`)
     imported++
 
     await new Promise((r) => setTimeout(r, 300))
