@@ -74,5 +74,29 @@
   {
     "text": "🧠 小林 · 大模型工程面试题",
     "link": "/custom/xiaolin-llm"
+  },
+  {
+    "text": "💻 卡码 · AI 编程",
+    "link": "/custom/kama-ai-coding"
+  },
+  {
+    "text": "🔍 卡码 · RAG",
+    "link": "/custom/kama-rag"
+  },
+  {
+    "text": "🎯 卡码 · 模型微调",
+    "link": "/custom/kama-finetune"
+  },
+  {
+    "text": "🤖 卡码 · Agent",
+    "link": "/custom/kama-agent"
+  },
+  {
+    "text": "🧠 卡码 · Transformer",
+    "link": "/custom/kama-transformer"
+  },
+  {
+    "text": "📋 卡码 · 真实面经",
+    "link": "/custom/kama-real"
   }
 ]

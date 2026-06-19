@@ -120,14 +120,14 @@ features:
 <a class="part-card custom-part-card" href="/custom/xiaolin-agent" style="--card-accent: #8b5cf6">
   <span class="part-card-icon">🤖</span>
   <h3>小林 · Agent 面试题</h3>
-  <p>Agent 概念 · 范式 · 记忆 · Multi-Agent · 15 题</p>
+  <p>Agent 概念 · 范式 · 记忆 · Multi-Agent · 16 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
 <a class="part-card custom-part-card" href="/custom/xiaolin-rag" style="--card-accent: #0ea5e9">
   <span class="part-card-icon">🔍</span>
   <h3>小林 · RAG 面试题</h3>
-  <p>RAG 原理 · 切分 · 检索优化 · 落地 · 18 题</p>
+  <p>RAG 原理 · 切分 · 检索优化 · 落地 · 20 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
@@ -141,7 +141,49 @@ features:
 <a class="part-card custom-part-card" href="/custom/xiaolin-llm" style="--card-accent: #6366f1">
   <span class="part-card-icon">🧠</span>
   <h3>小林 · 大模型工程面试题</h3>
-  <p>Transformer · 微调 · 推理 · 部署 · 20 题</p>
+  <p>Transformer · 微调 · 推理 · 部署 · 22 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-ai-coding" style="--card-accent: #06b6d4">
+  <span class="part-card-icon">💻</span>
+  <h3>卡码 · AI 编程</h3>
+  <p>Vibe Coding · Claude Code · 上下文工程 · 26 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-rag" style="--card-accent: #0ea5e9">
+  <span class="part-card-icon">🔍</span>
+  <h3>卡码 · RAG</h3>
+  <p>RAG 汇总 · 落地难点 · GraphRAG · 20 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-finetune" style="--card-accent: #f97316">
+  <span class="part-card-icon">🎯</span>
+  <h3>卡码 · 模型微调</h3>
+  <p>SFT · RLHF · DPO · 微调取舍 · 1 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-agent" style="--card-accent: #8b5cf6">
+  <span class="part-card-icon">🤖</span>
+  <h3>卡码 · Agent</h3>
+  <p>Agent · Harness · 多Agent · Skill · 41 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-transformer" style="--card-accent: #6366f1">
+  <span class="part-card-icon">🧠</span>
+  <h3>卡码 · Transformer</h3>
+  <p>Self-Attention · 架构 · 复杂度 · 8 题</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
+<a class="part-card custom-part-card" href="/custom/kama-real" style="--card-accent: #ec4899">
+  <span class="part-card-icon">📋</span>
+  <h3>卡码 · 真实面经</h3>
+  <p>字节等大厂真实面试题 · 1 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
