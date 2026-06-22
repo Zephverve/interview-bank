@@ -25,6 +25,7 @@ export interface Question {
 export interface QuestionStore {
   categories: Category[]
   questions: Question[]
+  storeUpdatedAt?: string
 }
 
 const STORAGE_KEY = 'interview-bank-v1'
@@ -60,8 +61,12 @@ function load(): QuestionStore {
 }
 
 function save(data: QuestionStore) {
+  data.storeUpdatedAt = new Date().toISOString()
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   window.dispatchEvent(new CustomEvent('question-store-updated'))
+  if (typeof window !== 'undefined') {
+    import('./useCloudSync').then(({ scheduleSyncPush }) => scheduleSyncPush())
+  }
 }
 
 export function getStore(): QuestionStore {

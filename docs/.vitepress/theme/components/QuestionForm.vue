@@ -128,7 +128,7 @@ function resetForm() {
   <div class="qb-form-page">
     <div class="qb-form-header">
       <h2>{{ isEdit ? '编辑题目' : '添加新题目' }}</h2>
-      <p>填写后自动保存到浏览器本地，刷新不丢失</p>
+      <p>填写后自动保存；开启云同步后可跨设备查看</p>
     </div>
 
     <form class="qb-form" @submit.prevent="submit">

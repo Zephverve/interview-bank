@@ -14,6 +14,8 @@ import {
   type Question,
   type Category,
 } from '../composables/useQuestionStore'
+import { isCloudSyncActive, pullFromCloud } from '../composables/useCloudSync'
+import AuthPanel from './AuthPanel.vue'
 
 const categories = ref<Category[]>([])
 const questions = ref<Question[]>([])
@@ -106,7 +108,15 @@ function onStoreUpdate() {
   refresh()
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const { initAuth } = await import('../composables/useAuth')
+  await initAuth()
+  if (isCloudSyncActive()) {
+    await pullFromCloud()
+  } else {
+    const { isSyncEnabled, pullStoreFromGist } = await import('../composables/useGistSync')
+    if (isSyncEnabled()) await pullStoreFromGist()
+  }
   refresh()
   window.addEventListener('question-store-updated', onStoreUpdate)
 })
@@ -123,7 +133,9 @@ onUnmounted(() => {
         <h2>我的题库</h2>
         <p class="qb-stats">
           共 <strong>{{ stats.total }}</strong> 题 · 已掌握
-          <strong>{{ stats.mastered }}</strong> 题 · 数据保存在本机浏览器
+          <strong>{{ stats.mastered }}</strong> 题
+          <span v-if="!isCloudSyncActive()"> · 登录后可跨设备同步</span>
+          <span v-else> · 已登录，自动云同步</span>
         </p>
       </div>
       <div class="qb-my-actions">
@@ -132,6 +144,8 @@ onUnmounted(() => {
         <button class="qb-btn ghost" @click="showImport = !showImport">导入</button>
       </div>
     </div>
+
+    <AuthPanel @toast="showToast" />
 
     <div v-if="showImport" class="qb-import-box">
       <textarea v-model="importText" class="qb-textarea" rows="4" placeholder="粘贴 JSON 备份内容" />
