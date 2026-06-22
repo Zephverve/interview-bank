@@ -8,50 +8,20 @@ partColor: #6366f1
 
 # Part 0 · 开场准备
 
-<p class="part-desc">自我介绍 · 项目介绍 · 典型问题</p>
+<p class="part-desc">项目介绍 · 典型问题</p>
 <span class="part-round">开场必背</span>
 
 </div>
 
 <div class="part-intro">
 
-> 面试真实顺序：自我介绍 → 项目介绍 → 技术深挖。以下三节按面试官开场流程排列。
+> 面试常见流程：项目介绍 → 技术深挖。以下按面试官追问路径排列。
 
 </div>
 
 ---
 
 
-
-<div class="section-card">
-
-<h2 class="section-title">面试开场 · 自我介绍</h2>
-
-> **使用提示**：控制在 1.5 分钟内；讲完停顿，等面试官选「哪个项目展开」。
-
-
-
-
-<details class="answer-reveal">
-<summary>展开答案</summary>
-<div class="answer-body">
-"面试官好，我是软件工程相关专业硕士在读，研究方向是大模型应用与知识工程。
-
-我的技术主线是 Agent 和 RAG 方向。过去一年多我做了三个相关的项目。
-
-第一个是**科研问答系统**——面向课题组文献研读场景，做了 QLoRA 微调 Qwen2.5-14B，加上 LangGraph 编排的 RAG 检索流程，最后用 FastAPI 部署成了能用的服务。这个项目是从数据构建到上线全链路都自己做的，Recall@5 从 0.51 提到了 0.78，端到端 P95 延迟压到了 1.2 秒。在投的 Pattern Recognition 论文是另一个算法方向的工作。
-
-第二个是**自主 Agent 框架**——我搭建并深入分析了一套基于 ReAct 模式的自主 AI Agent 系统。它通过 9 个原子工具覆盖文件操作、代码执行、浏览器控制、记忆管理，Agent 可以自主决策完成开放性任务。我重点研究了它的 LLM 接入层设计——5 类 Session 的灵活切换机制、Native Function Calling 与文本协议的对比、Mixin 故障转移——还有 L0-L4 四层分层记忆系统。我也把框架跑通了，做了 SiliconFlow API 加 DeepSeek 系列模型的接入适配。
-
-第三个是 GCN-Transformer 人体运动预测的算法研究，已经投稿 Pattern Recognition，现在在二审。
-
-我投这个岗位是因为我想把 Agent 从实验室做到生产环境——我在实验室搭过系统、做过优化，现在希望在真实场景里积累工程经验。"
-</div>
-</details>
-
-</div>
-
----
 
 <div class="section-card">
 

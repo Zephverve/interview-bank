@@ -8,7 +8,7 @@ partColor: #ef4444
 
 # Part 6 · 补充题库
 
-<p class="part-desc">评测 · LangGraph · 口径备忘</p>
+<p class="part-desc">评测 · LangGraph · 简历深挖</p>
 <span class="part-round">高频追问</span>
 
 </div>
@@ -128,41 +128,6 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 
 ---
 
-<div class="question-card compact-card" id="q39">
-
-<h2 class="question-title"><span class="q-badge">Q39</span><span class="question-text">DSTG-Net 里 GCN 和 Transformer 双流怎么融合？为什么用自适应加权而不是简单相加？</span></h2>
-
-<details class="answer-reveal">
-<summary>展开答案</summary>
-<div class="answer-body">
-<div class="answer-extras">
-<div class="q-meta"><strong>轮次</strong>：一面（算法岗） · 难度：⭐⭐⭐⭐ · 考察点：简历算法项目深度</div>
-<div class="q-conclusion">💡 <strong>15 秒结论</strong>：GCN 抓局部关节拓扑，Transformer 抓全局时序；自适应加权因不同关节/时间步两流贡献不同；加去相关损失防冗余和训练不稳。</div>
-<div class="q-followups">🔁 <strong>追问方向</strong>：MPJPE 多少？ · 和 ST-GCN 区别？ · 消融实验怎么做？</div>
-</div>
-
-"DSTG-Net 的核心是双流架构。
-
-**GCN 分支**在人体骨架图上做时空图卷积——关节是节点，骨骼是边，捕捉局部拓扑约束，比如手肘弯曲时手腕和肩膀的联动关系。
-
-**Transformer 分支**把所有关节序列拉成 token 序列，用 self-attention 捕捉长程时序依赖——比如走路周期里左右腿的交替模式。
-
-两路特征维度对齐后，进入**自适应融合模块**：对每个时间步、每个关节学一个权重 α，输出是 α·F_gcn + (1-α)·F_transformer。不是全局一个 α，而是**时空自适应**的。
-
-为什么不用简单相加？因为局部拓扑和全局时序的贡献在不同场景下不一样——短期预测（下一帧）GCN 更重要，长期预测（未来 1 秒）Transformer 的长程建模优势更明显。固定权重没法适应这种变化。消融实验里自适应加权在长期预测上比固定加权 MPJPE 低约 8%。
-
-导师最初担心自适应模块增加参数导致训练不稳定。我的回应是加**去相关损失**——约束两流特征的互相关矩阵接近零，减少冗余表示。这既回应了稳定性担忧，又提升了效果。
-
-实验在 Human3.6M、CMU-MoCap、3DPW 三个数据集上跑，和 ST-GCN、MSR-GCN 等对比。3DPW 短期 MPJPE 相对降 22.22%，长期最高降 15.10%。论文投 Pattern Recognition，目前在二审。
-
-这个项目和 Agent 岗的关联是：做系统前先想清楚'哪条路的信息更重要、怎么融合'——和 RAG 里 dense+BM25 混合、GCN+Transformer 融合是同一类工程思维。"
-</div>
-</details>
-
-</div>
-
----
-
 <div class="question-card compact-card" id="q40">
 
 <h2 class="question-title"><span class="q-badge">Q40</span><span class="question-text">GenericAgent 是你从零搭建的还是基于开源项目？你具体写了哪些代码？</span></h2>
@@ -191,31 +156,10 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 **为什么不只说'搭建'**？因为面试官一旦追问源码细节，'搭建'和'分析'的差距会立刻暴露。统一口径是：**在开源框架上做 API 适配、全链路验证和架构级分析与改进设计**——这既真实，又保留技术深度。
 
 如果让我从零写 ReAct 循环，我可以——Q31 就是我的设计答案，核心 while 循环大概 100 行，我在分析时已经逐行读过原版实现。"
+
+
+> 📌 共 39 问（原 35 问 + 新增 4 问）。面试中可根据实际情况调整细节和数字。
 </div>
 </details>
-
-</div>
-
----
-
-<div class="memo-card">
-
-## 📌 GenericAgent 口径备忘（非面试题，背诵前必读）
-
-面试中统一用以下表述，避免「搭建」和「分析」口径打架：
-
-| 场景 | 推荐说法 |
-|------|----------|
-| 自我介绍（30 秒） | 「基于 ReAct 开源框架做深度二次开发，完成 SiliconFlow 接入和全链路跑通，并系统分析了 LLM 接入层与分层记忆设计」 |
-| 追问「你写的代码」 | 「API 适配与错误处理、配置与部署跑通；架构分析与改进方案设计」 |
-| 追问「原创性」 | 「ReAct 循环和工具层是框架原有；我的价值在适配、验证、分析和可落地的改进设计」 |
-| 不要说 | 「我从零搭建了一套 Agent 框架」（除非面试官明确问设计能力且你切到 Q31） |
-
----
-
-
----
-
-> 📌 共 40 问（原 35 问 + 新增 5 问）+ 开场话术 + GenericAgent 口径备忘。原有问答正文未改动，仅调整顺序并补充结论句与追问方向。面试中可根据实际情况调整细节和数字。
 
 </div>

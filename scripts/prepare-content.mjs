@@ -13,13 +13,13 @@ const CUSTOM = path.resolve(ROOT, 'custom')
 const DOCS = path.resolve(ROOT, 'docs')
 
 const PART_META = [
-  { slug: 'part-0', title: 'Part 0 · 开场准备', desc: '自我介绍 · 项目介绍 · 典型问题', round: '开场必背', color: '#6366f1', icon: '🎯' },
+  { slug: 'part-0', title: 'Part 0 · 开场准备', desc: '项目介绍 · 典型问题', round: '开场必背', color: '#6366f1', icon: '🎯' },
   { slug: 'part-1', title: 'Part 1 · RAG 深挖', desc: 'Embedding · 切片 · 混合检索 · 微调', round: '一面核心', color: '#0ea5e9', icon: '🔍' },
   { slug: 'part-2', title: 'Part 2 · Agent 架构', desc: 'ReAct · 工具 · 记忆 · 安全', round: '一面/二面', color: '#8b5cf6', icon: '🤖' },
   { slug: 'part-3', title: 'Part 3 · 系统设计', desc: '架构设计 · 多 Agent · 工程落地', round: '二面', color: '#f59e0b', icon: '🏗️' },
   { slug: 'part-4', title: 'Part 4 · 行业视野', desc: '竞品对比 · OpenClaw · Hermes', round: '二面加分', color: '#10b981', icon: '🌐' },
   { slug: 'part-5', title: 'Part 5 · 行为面', desc: 'STAR · 职业规划 · 反问', round: '三面/HR', color: '#ec4899', icon: '💬' },
-  { slug: 'part-6', title: 'Part 6 · 补充题库', desc: '评测 · LangGraph · 口径备忘', round: '高频追问', color: '#ef4444', icon: '📌' },
+  { slug: 'part-6', title: 'Part 6 · 补充题库', desc: '评测 · LangGraph · 简历深挖', round: '高频追问', color: '#ef4444', icon: '📌' },
 ]
 
 const DEFAULT_CUSTOM_COLOR = '#14b8a6'
@@ -464,7 +464,7 @@ layout: home
 hero:
   name: 面试题库
   text: 大模型应用工程师 · Agent 方向
-  tagline: 内置 40 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
+  tagline: 内置 39 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
   actions:
     - theme: brand
       text: 开始刷题 · Part 0
@@ -478,7 +478,7 @@ features:
     details: 表单填写即可保存，支持编辑、删除、标记已掌握，数据存在浏览器本地。
   - icon: 📂
     title: 分 Part 目录
-    details: Part 0–6 按面试轮次组织，从开场自我介绍到行为面一网打尽。
+    details: Part 0–6 按面试轮次组织，从项目介绍到行为面一网打尽。
   - icon: 💡
     title: 15 秒结论句
     details: 每题先背结论句，再按需展开完整回答，模拟真实面试节奏。
@@ -542,14 +542,13 @@ function buildGuidePage(customCategories) {
 |------|----------|
 | **一面** | Part 0 全 + Part 1 全 + Q3/Q4/Q7 + Q40 |
 | **二面** | Part 2 + Part 3 + Part 4 选 2–3 题 |
-| **HR/三面** | Part 5 全 + Part 0 自我介绍动机段 |
+| **HR/三面** | Part 5 全 + Part 0 项目介绍段 |
 
 ## 使用技巧
 
 1. **第一遍**：通读结论句，建立框架
 2. **第二遍**：折叠答案，自己先说一遍，再展开对照
 3. **第三遍**：按轮次模拟，一面只练 Part 0+1，二面加 Part 2+3
-4. **考前**：重点看 Part 6 口径备忘，避免表述打架
 
 ---
 

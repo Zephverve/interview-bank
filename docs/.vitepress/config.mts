@@ -8,7 +8,7 @@ const sidebar = JSON.parse(fs.readFileSync(path.join(__dirname, 'sidebar.json'),
 
 export default defineConfig({
   title: '面试题库',
-  description: '大模型应用工程师 Agent 方向 · 40 问完整答案',
+  description: '大模型应用工程师 Agent 方向 · 39 问完整答案',
   lang: 'zh-CN',
   base: process.env.VP_BASE || '/',
   head: [

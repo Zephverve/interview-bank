@@ -3,7 +3,7 @@ layout: home
 hero:
   name: 面试题库
   text: 大模型应用工程师 · Agent 方向
-  tagline: 内置 40 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
+  tagline: 内置 39 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
   actions:
     - theme: brand
       text: 开始刷题 · Part 0
@@ -17,7 +17,7 @@ features:
     details: 表单填写即可保存，支持编辑、删除、标记已掌握，数据存在浏览器本地。
   - icon: 📂
     title: 分 Part 目录
-    details: Part 0–6 按面试轮次组织，从开场自我介绍到行为面一网打尽。
+    details: Part 0–6 按面试轮次组织，从项目介绍到行为面一网打尽。
   - icon: 💡
     title: 15 秒结论句
     details: 每题先背结论句，再按需展开完整回答，模拟真实面试节奏。
@@ -44,7 +44,7 @@ features:
 <a class="part-card" href="/parts/part-0" style="--card-accent: #6366f1">
   <span class="part-card-icon">🎯</span>
   <h3>Part 0 · 开场准备</h3>
-  <p>自我介绍 · 项目介绍 · 典型问题</p>
+  <p>项目介绍 · 典型问题</p>
   <span class="part-card-round">开场必背</span>
 </a>
 
@@ -86,7 +86,7 @@ features:
 <a class="part-card" href="/parts/part-6" style="--card-accent: #ef4444">
   <span class="part-card-icon">📌</span>
   <h3>Part 6 · 补充题库</h3>
-  <p>评测 · LangGraph · 口径备忘</p>
+  <p>评测 · LangGraph · 简历深挖</p>
   <span class="part-card-round">高频追问</span>
 </a>
 
