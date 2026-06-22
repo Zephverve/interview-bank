@@ -38,17 +38,20 @@
 
 推送 `main` 后重新部署，线上即可出现登录入口。
 
+> **切勿**把 URL / anon key 写进仓库里的 `.env.production` 或任何会 commit 的文件。生产环境只通过 GitHub Secrets 注入；本地用 `docs/.env.local`（已 gitignore）。
+
 ## 6. 本地开发
 
 ```bash
 cp docs/.env.example docs/.env.local
-# 填入 URL 和 anon key
+# 填入 URL 和 anon key（仅本机，勿提交）
 npm run dev
 ```
 
-`.env.local` 已在 `.gitignore` 中，不会提交。
+`docs/.env.local` 与 `docs/.env.production` 均在 `.gitignore` 中，不会进入 GitHub。
 
 ## 安全说明
 
-- `anon` key 可以放在前端，靠 **Row Level Security** 保证用户只能读写自己的 `user_banks` 行
-- 不要把 `service_role` key 写进前端或 GitHub
+- `anon` key 会打进前端 JS 包（公开可见），靠 **Row Level Security** 保证用户只能读写自己的数据
+- 不要把 `service_role` key 写进前端、GitHub 仓库或聊天记录
+- **不要 commit** `docs/.env.local` / `docs/.env.production`；线上用 GitHub Actions Secrets

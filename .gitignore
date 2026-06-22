@@ -3,5 +3,11 @@ docs/.vitepress/dist/
 docs/.vitepress/cache/
 .vitepress/cache/
 *.local
+.env
+.env.*
+!.env.example
+docs/.env
+docs/.env.*
+!docs/.env.example
 .DS_Store
 .workbuddy/
