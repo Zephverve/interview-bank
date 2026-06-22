@@ -216,6 +216,22 @@
     display: none !important;
   }
 
+  /* 学习笔记长文：恢复右侧章节目录 */
+  .VPDoc.notes-doc .aside,
+  .VPDoc.notes-doc.has-aside .aside-container {
+    display: block !important;
+  }
+
+  .VPDoc.notes-doc.has-aside .content-container {
+    display: flex !important;
+    gap: 24px;
+  }
+
+  .VPDoc.notes-doc.has-aside .content {
+    flex: 1 1 auto !important;
+    max-width: 920px !important;
+  }
+
   .VPDoc.has-sidebar .container,
   .VPDoc .container {
     display: block !important;

@@ -94,6 +94,26 @@ features:
 
 </div>
 
+<div class="home-parts notes-section">
+
+## 学习笔记
+
+<p class="section-note">完整 Markdown 原文收录，支持章节目录导航</p>
+
+<div class="part-grid">
+
+
+<a class="part-card notes-part-card" href="/notes/hermes-agent" style="--card-accent: #7c3aed">
+  <span class="part-card-icon">📖</span>
+  <h3>Hermes Agent 学习笔记</h3>
+  <p>通俗详解 · 架构 · 记忆 · 技能 · 面试题 · 完整原文</p>
+  <span class="part-card-round">学习笔记</span>
+</a>
+
+</div>
+
+</div>
+
 <div class="home-parts custom-section">
 
 ## 文件题库

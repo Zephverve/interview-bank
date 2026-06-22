@@ -11,6 +11,22 @@ const SOURCE_CANDIDATES = [
 const SOURCE = SOURCE_CANDIDATES.find((p) => fs.existsSync(p)) || SOURCE_CANDIDATES[0]
 const CUSTOM = path.resolve(ROOT, 'custom')
 const DOCS = path.resolve(ROOT, 'docs')
+const NOTES = path.resolve(ROOT, 'notes')
+
+/** 学习笔记：原文完整拷贝到 docs/notes/，不做题目卡片转换 */
+const NOTE_ENTRIES = [
+  {
+    slug: 'hermes-agent',
+    title: 'Hermes Agent 学习笔记',
+    desc: '通俗详解 · 架构 · 记忆 · 技能 · 面试题',
+    icon: '📖',
+    color: '#7c3aed',
+    sourceCandidates: [
+      path.join(NOTES, 'hermes-agent.md'),
+      path.join(ROOT, 'Hermes_Agent_学习笔记_副本.md'),
+    ],
+  },
+]
 
 const PART_META = [
   { slug: 'part-0', title: 'Part 0 · 开场准备', desc: '项目介绍 · 典型问题', round: '开场必背', color: '#6366f1', icon: '🎯' },
@@ -400,7 +416,7 @@ function buildCustomSidebarItems(categories) {
   }))
 }
 
-function buildSidebarItems(customCategories) {
+function buildSidebarItems(customCategories, notePages = []) {
   const items = [
     { text: '🏠 首页', link: '/' },
     { text: '✏️ 我的题库', link: '/my' },
@@ -412,6 +428,16 @@ function buildSidebarItems(customCategories) {
       link: `/parts/${p.slug}`,
     })),
   ]
+
+  if (notePages.length) {
+    items.push({ text: '── 学习笔记 ──', link: `/notes/${notePages[0].slug}` })
+    for (const note of notePages) {
+      items.push({
+        text: `${note.icon || '📖'} ${note.title}`,
+        link: `/notes/${note.slug}`,
+      })
+    }
+  }
 
   items.push({ text: '── 文件题库 ──', link: customCategories.length ? `/custom/${customCategories[0].slug}` : '/guide#文件题库' })
 
@@ -427,7 +453,7 @@ function buildSidebarItems(customCategories) {
   return items
 }
 
-function buildHomePage(customCategories) {
+function buildHomePage(customCategories, notePages = []) {
   const base = getBase()
   const builtInCards = PART_META.map(
     (p) => `
@@ -438,6 +464,20 @@ function buildHomePage(customCategories) {
   <span class="part-card-round">${p.round}</span>
 </a>`
   ).join('\n')
+
+  const noteCards = notePages.length
+    ? notePages
+        .map(
+          (n) => `
+<a class="part-card notes-part-card" href="${base}notes/${n.slug}" style="--card-accent: ${n.color || '#7c3aed'}">
+  <span class="part-card-icon">${n.icon || '📖'}</span>
+  <h3>${n.title}</h3>
+  <p>${n.desc || '学习笔记'} · 完整原文</p>
+  <span class="part-card-round">学习笔记</span>
+</a>`
+        )
+        .join('\n')
+    : ''
 
   const customCards = customCategories.length
     ? customCategories
@@ -502,6 +542,20 @@ features:
 <div class="part-grid">
 
 ${builtInCards}
+
+</div>
+
+</div>
+
+<div class="home-parts notes-section">
+
+## 学习笔记
+
+<p class="section-note">完整 Markdown 原文收录，支持章节目录导航</p>
+
+<div class="part-grid">
+
+${noteCards || '<p class="section-note">暂无笔记，将 Markdown 放入 <code>notes/</code> 后运行 <code>npm run prepare</code></p>'}
 
 </div>
 
@@ -718,25 +772,57 @@ title: 我的题库
   }
 }
 
+function processNotes() {
+  const outDir = path.join(DOCS, 'notes')
+  fs.mkdirSync(outDir, { recursive: true })
+  const published = []
+
+  for (const note of NOTE_ENTRIES) {
+    const src = note.sourceCandidates.find((p) => fs.existsSync(p))
+    if (!src) {
+      console.warn(`⚠ 笔记源不存在，跳过: ${note.slug}`)
+      continue
+    }
+    const body = fs.readFileSync(src, 'utf-8').trim()
+    const page = `---
+title: ${note.title}
+pageClass: notes-doc
+outline: [2, 3]
+aside: true
+---
+
+${body}
+`
+    fs.writeFileSync(path.join(outDir, `${note.slug}.md`), page, 'utf-8')
+    console.log(`✓ notes/${note.slug}.md（${body.length} 字，源: ${path.relative(ROOT, src)}）`)
+    published.push({ ...note, charCount: body.length })
+  }
+
+  return published
+}
+
 function main() {
   fs.mkdirSync(CUSTOM, { recursive: true })
+  fs.mkdirSync(NOTES, { recursive: true })
 
   const customCategories = scanCustomCategories()
+  const notePages = processNotes()
 
   processBuiltinParts()
   processCustomCategories(customCategories)
 
-  fs.writeFileSync(path.join(DOCS, 'index.md'), buildHomePage(customCategories), 'utf-8')
+  fs.writeFileSync(path.join(DOCS, 'index.md'), buildHomePage(customCategories, notePages), 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'guide.md'), buildGuidePage(customCategories), 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'add.md'), '---\ntitle: 添加题目\nsidebar: false\n---\n\n<QuestionForm />\n', 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'my.md'), '---\ntitle: 我的题库\nsidebar: false\n---\n\n<MyQuestionBank />\n', 'utf-8')
   fs.writeFileSync(
     path.join(DOCS, '.vitepress', 'sidebar.json'),
-    JSON.stringify(buildSidebarItems(customCategories), null, 2),
+    JSON.stringify(buildSidebarItems(customCategories, notePages), null, 2),
     'utf-8'
   )
 
-  console.log(`\n✅ Content prepared. 自定义分类: ${customCategories.length} 个，共 ${customCategories.reduce((n, c) => n + c.questions.length, 0)} 题`)
+  const noteInfo = notePages.length ? `，笔记 ${notePages.length} 篇` : ''
+  console.log(`\n✅ Content prepared. 自定义分类: ${customCategories.length} 个，共 ${customCategories.reduce((n, c) => n + c.questions.length, 0)} 题${noteInfo}`)
 }
 
 main()
