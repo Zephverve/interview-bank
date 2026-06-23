@@ -203,13 +203,13 @@ Hermes 的技能遵循一个叫 agentskills.io 的开放标准。这意味着什
 
 **五大社区明星 Skill（安装即用）：**
 
-| Skill | 星标 | 解决什么问题 |
-|:---|:---|:---|
-| **gstack** | 85K ⭐ | Agent 如何高质量做事的高效工作流栈 |
-| **gbrain** | 11K ⭐ | Agent 如何长期记住并召回上下文 |
-| **hermes-webui** | 4.6K ⭐ | 轻量化 Web 可视化控制台 |
-| **self-evolution** | 2.4K ⭐ | 自进化核心模块 |
-| **awesome-hermes** | 1.9K ⭐ | Hermes 全生态项目合集导航 |
+| Skill | 解决什么问题 |
+|:---|:---|
+| **gstack** | Agent 高效工作流栈 |
+| **gbrain** | Agent 外部大脑，长期记忆和上下文召回 |
+| **hermes-webui** | Web 可视化控制台 |
+| **self-evolution** | 自进化核心模块 |
+| **awesome-hermes** | Hermes 全生态项目导航 |
 
 安装方式：
 ```bash

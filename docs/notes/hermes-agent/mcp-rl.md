@@ -117,65 +117,7 @@ Agent 执行任务，记录完整轨迹
 
 ### 17.4 轨迹怎么压缩的
 
-训练数据太长模型学不动，得压缩：
-
-```python
-CompressionConfig:
-    target_max_tokens = 15250        # 目标压缩到 15K Token
-    summary_target_tokens = 750      # 摘要部分目标 750 Token
-    protect_first_system = True      # 第一条 system 消息保护
-    protect_first_human = True       # 第一条 human 消息保护
-    protect_first_gpt = True         # 第一条 AI 回复保护
-    protect_first_tool = True        # 第一条工具消息保护
-    protect_last_n_turns = 4         # 最后 4 轮保护
-    summarization_model = "gemini-3-flash"  # 用小模型做摘要（省钱）
-```
-
-策略就是：**头尾保护，中间摘要**。
-
-**💡 生动例子——数据飞轮怎么转起来的**（完整故事）
-
-假设你让 Hermes 部署了 100 次项目。这些部署过程被记录成 100 份轨迹文件，每份都是完整的"对话+工具调用"记录。
-
-```
-第1步：收集数据
-  100 份部署轨迹文件，像这样：
-  
-  trajectory_001.json:
-  {"messages": [
-    {"role": "user", "content": "帮我部署这个项目"},
-    {"role": "assistant", "content": null, "tool_calls": [
-      {"name": "terminal", "arguments": {"command": "ls"}}
-    ]},
-    {"role": "tool", "content": "package.json  src/  README.md"},
-    {"role": "assistant", "content": null, "tool_calls": [
-      {"name": "terminal", "arguments": {"command": "vercel --prod"}}
-    ]},
-    {"role": "tool", "content": "Deployed to https://proj.vercel.app"},
-    {"role": "assistant", "content": "部署成功！地址是 https://..."}
-  ]}
-
-第2步：压缩清洗
-  - 丢掉无聊的 ls/cd/pwd 操作（没有推理过程，直接用工具 → 过滤）
-  - 丢掉模型幻觉调用的无效工具名
-  - 保留合理的部署流程（这100份轨迹有90份步骤一致 → 高质量数据）
-  - 压缩到 15K Token（太长模型学不动）
-
-第3步：RL 训练
-  用 Atropos 框架把 90 份高质量轨迹喂给模型
-  → 模型学会"部署项目"的标准流程
-  → 下次执行部署时成功率从 70% 提升到 95%
-
-第4步：正反馈
-  Agent 变强了 → 部署成功率更高了 → 产生更高质量的轨迹 → 再训练 → 更强
-```
-
-**为什么这能形成"护城河"？** 
-
-普通 Agent 框架：Agent 水平 = 模型的原始水平（固定不变）
-Hermes Agent：Agent 水平 = 模型原始水平 + 自身使用数据训练（持续增长）
-
-就像健身——普通人是"买一副哑铃，肌肉固定"，Hermes 是"每天举哑铃，肌肉越来越大"。而且这个增长是**你独有的**——你的 Agent 学的是你的工作习惯、你的项目特点、你的工具偏好。别人的 Hermes 不能直接用你的经验。
+训练数据太长模型学不动，需要压缩。策略上也是保护头尾消息，用辅助模型对中间部分做摘要。
 
 ### 17.5 Atropos RL 训练环境
 

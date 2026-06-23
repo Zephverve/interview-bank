@@ -72,7 +72,7 @@ hermes logs gateway    # Gateway 日志（飞书收不到消息先查这个）
 | **MEMORY.md** | Agent 的工作笔记本，存事实 |
 | **USER.md** | Agent 对你的人物画像 |
 | **FTS5** | SQLite 自带的全文搜索引擎 |
-| **Honcho** | 用户画像系统，用辩证法不断更新对你的理解 |
+| **Honcho** | Plastic Labs 的外部用户建模引擎，Hermes 可选装 |
 | **MCP** | AI 世界的 USB-C 接口 |
 | **Atropos** | Nous Research 的 RL 训练环境框架 |
 | **agentskills.io** | 技能开放标准，跨框架可移植 |

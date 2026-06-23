@@ -38,13 +38,11 @@ aside: true
 
 **打个比方**：GA 像是一辆手动挡小跑车——零件少、好拆、好研究，适合学原理；Hermes 像是一辆自动挡 SUV——功能多、开箱即用、还能自己学习你的驾驶习惯。
 
-### 1.4 数据一览
+### 1.4 基本信息
 
-- GitHub Stars：~17K
-- 贡献者：207 人
 - License：MIT（随便用）
-- 主要语言：Python 92%
-- 最新版本：v0.8.0
+- 主要语言：Python
+- GitHub：NousResearch/hermes-agent
 
 ---
 
@@ -56,9 +54,9 @@ aside: true
 
 **灵魂人物**：Teknium，Hermes 系列模型的创造者。
 
-**融资**：拿了 5000 万美元 A 轮，投资方是 Paradigm 和 North Island Ventures——都是加密货币领域的大佬，所以融资方式也带着 Web3 味道（代币计价而非传统股权）。
+**融资**：拿了 5000 万美元 A 轮，由 Paradigm 和 North Island Ventures 领投。
 
-**使命**：通过开源语言模型推进人权和自由。这个使命决定了 Hermes 的"无审查/最少过滤"风格。
+**使命**：通过开源语言模型推进人权和自由。
 
 ### 2.2 他们不只是做 Agent
 
