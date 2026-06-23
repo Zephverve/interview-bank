@@ -49,11 +49,89 @@
   },
   {
     "text": "── 学习笔记 ──",
-    "link": "/notes/hermes-agent"
+    "link": "/notes/hermes-agent/"
   },
   {
     "text": "📖 Hermes Agent 学习笔记",
-    "link": "/notes/hermes-agent"
+    "collapsed": false,
+    "items": [
+      {
+        "text": "📑 总览",
+        "link": "/notes/hermes-agent/"
+      },
+      {
+        "text": "前导课",
+        "link": "/notes/hermes-agent/prelude"
+      },
+      {
+        "text": "第一~三章 · 入门",
+        "link": "/notes/hermes-agent/basics"
+      },
+      {
+        "text": "第四章 · 整体架构",
+        "link": "/notes/hermes-agent/architecture"
+      },
+      {
+        "text": "第五章 · 记忆系统",
+        "link": "/notes/hermes-agent/memory"
+      },
+      {
+        "text": "第六章 · 技能系统",
+        "link": "/notes/hermes-agent/skills"
+      },
+      {
+        "text": "第七章 · 自进化闭环",
+        "link": "/notes/hermes-agent/evolution"
+      },
+      {
+        "text": "第八章 · 上下文压缩",
+        "link": "/notes/hermes-agent/context"
+      },
+      {
+        "text": "第九章 · 工具系统",
+        "link": "/notes/hermes-agent/tools"
+      },
+      {
+        "text": "第十章 · 模型无关",
+        "link": "/notes/hermes-agent/models"
+      },
+      {
+        "text": "第十一~十二章 · 运行与接入",
+        "link": "/notes/hermes-agent/runtime"
+      },
+      {
+        "text": "第十三章 · 主循环",
+        "link": "/notes/hermes-agent/loop"
+      },
+      {
+        "text": "第十四~十五章 · 委派与定时",
+        "link": "/notes/hermes-agent/delegate-cron"
+      },
+      {
+        "text": "第十六~十七章 · MCP 与 RL",
+        "link": "/notes/hermes-agent/mcp-rl"
+      },
+      {
+        "text": "第十八~十九章 · 安全与部署",
+        "link": "/notes/hermes-agent/security-deploy"
+      },
+      {
+        "text": "第二十~二十一章 · 对比与讲解",
+        "link": "/notes/hermes-agent/compare-summary"
+      },
+      {
+        "text": "第二十二~二十四章 · 面试题",
+        "link": "/notes/hermes-agent/interview-core"
+      },
+      {
+        "text": "第二十五~二十六章 · 设计与话术",
+        "link": "/notes/hermes-agent/interview-practice"
+      },
+      {
+        "text": "第二十七章 · 进阶与附录",
+        "link": "/notes/hermes-agent/advanced"
+      }
+    ]
   },
   {
     "text": "── 文件题库 ──",

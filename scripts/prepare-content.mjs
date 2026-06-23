@@ -13,6 +13,36 @@ const CUSTOM = path.resolve(ROOT, 'custom')
 const DOCS = path.resolve(ROOT, 'docs')
 const NOTES = path.resolve(ROOT, 'notes')
 
+/** Hermes 笔记分章：小章合并，大章独立 */
+const HERMES_CHAPTER_GROUPS = [
+  { slug: 'prelude', sidebar: '前导课', patterns: [/^🎓 前导课/] },
+  { slug: 'basics', sidebar: '第一~三章 · 入门', patterns: [/^第一章/, /^第二章/, /^第三章/] },
+  { slug: 'architecture', sidebar: '第四章 · 整体架构', patterns: [/^第四章/] },
+  { slug: 'memory', sidebar: '第五章 · 记忆系统', patterns: [/^第五章/] },
+  { slug: 'skills', sidebar: '第六章 · 技能系统', patterns: [/^第六章/] },
+  { slug: 'evolution', sidebar: '第七章 · 自进化闭环', patterns: [/^第七章/] },
+  { slug: 'context', sidebar: '第八章 · 上下文压缩', patterns: [/^第八章/] },
+  { slug: 'tools', sidebar: '第九章 · 工具系统', patterns: [/^第九章/] },
+  { slug: 'models', sidebar: '第十章 · 模型无关', patterns: [/^第十章/] },
+  { slug: 'runtime', sidebar: '第十一~十二章 · 运行与接入', patterns: [/^第十一章/, /^第十二章/] },
+  { slug: 'loop', sidebar: '第十三章 · 主循环', patterns: [/^第十三章/] },
+  { slug: 'delegate-cron', sidebar: '第十四~十五章 · 委派与定时', patterns: [/^第十四章/, /^第十五章/] },
+  { slug: 'mcp-rl', sidebar: '第十六~十七章 · MCP 与 RL', patterns: [/^第十六章/, /^第十七章/] },
+  { slug: 'security-deploy', sidebar: '第十八~十九章 · 安全与部署', patterns: [/^第十八章/, /^第十九章/] },
+  { slug: 'compare-summary', sidebar: '第二十~二十一章 · 对比与讲解', patterns: [/^第二十章/, /^第二十一章/] },
+  {
+    slug: 'interview-core',
+    sidebar: '第二十二~二十四章 · 面试题',
+    patterns: [/^第二十二章/, /^第二十三章/, /^第二十四章/],
+  },
+  {
+    slug: 'interview-practice',
+    sidebar: '第二十五~二十六章 · 设计与话术',
+    patterns: [/^第二十五章/, /^第二十六章/],
+  },
+  { slug: 'advanced', sidebar: '第二十七章 · 进阶与附录', patterns: [/^第二十七章/, /^附录/] },
+]
+
 /** 学习笔记：原文完整拷贝到 docs/notes/，不做题目卡片转换 */
 const NOTE_ENTRIES = [
   {
@@ -21,8 +51,10 @@ const NOTE_ENTRIES = [
     desc: '通俗详解 · 架构 · 记忆 · 技能 · 面试题',
     icon: '📖',
     color: '#7c3aed',
+    splitChapters: HERMES_CHAPTER_GROUPS,
     sourceCandidates: [
       path.join(NOTES, 'hermes-agent.md'),
+      path.join(ROOT, 'Hermes_Agent_学习笔记.md'),
       path.join(ROOT, 'Hermes_Agent_学习笔记_副本.md'),
     ],
   },
@@ -430,12 +462,30 @@ function buildSidebarItems(customCategories, notePages = []) {
   ]
 
   if (notePages.length) {
-    items.push({ text: '── 学习笔记 ──', link: `/notes/${notePages[0].slug}` })
+    const firstNote = notePages[0]
+    items.push({
+      text: '── 学习笔记 ──',
+      link: firstNote.chapters?.length ? `/notes/${firstNote.slug}/` : `/notes/${firstNote.slug}`,
+    })
     for (const note of notePages) {
-      items.push({
-        text: `${note.icon || '📖'} ${note.title}`,
-        link: `/notes/${note.slug}`,
-      })
+      if (note.chapters?.length) {
+        items.push({
+          text: `${note.icon || '📖'} ${note.title}`,
+          collapsed: false,
+          items: [
+            { text: '📑 总览', link: `/notes/${note.slug}/` },
+            ...note.chapters.map((ch) => ({
+              text: ch.sidebar,
+              link: `/notes/${note.slug}/${ch.slug}`,
+            })),
+          ],
+        })
+      } else {
+        items.push({
+          text: `${note.icon || '📖'} ${note.title}`,
+          link: `/notes/${note.slug}`,
+        })
+      }
     }
   }
 
@@ -469,10 +519,10 @@ function buildHomePage(customCategories, notePages = []) {
     ? notePages
         .map(
           (n) => `
-<a class="part-card notes-part-card" href="${base}notes/${n.slug}" style="--card-accent: ${n.color || '#7c3aed'}">
+<a class="part-card notes-part-card" href="${base}notes/${n.slug}${n.chapters?.length ? '/' : ''}" style="--card-accent: ${n.color || '#7c3aed'}">
   <span class="part-card-icon">${n.icon || '📖'}</span>
   <h3>${n.title}</h3>
-  <p>${n.desc || '学习笔记'} · 完整原文</p>
+  <p>${n.desc || '学习笔记'}${n.chapters?.length ? ` · ${n.chapters.length} 章` : ' · 完整原文'}</p>
   <span class="part-card-round">学习笔记</span>
 </a>`
         )
@@ -551,7 +601,7 @@ ${builtInCards}
 
 ## 学习笔记
 
-<p class="section-note">完整 Markdown 原文收录，支持章节目录导航</p>
+<p class="section-note">完整 Markdown 原文收录，分章展示，支持章节目录导航</p>
 
 <div class="part-grid">
 
@@ -772,6 +822,120 @@ title: 我的题库
   }
 }
 
+function parseMarkdownSections(content) {
+  const lines = content.split('\n')
+  let inCode = false
+  const preamble = []
+  const sections = []
+  let current = null
+
+  for (const line of lines) {
+    if (line.trim().startsWith('```')) {
+      inCode = !inCode
+      if (current) current.lines.push(line)
+      else preamble.push(line)
+      continue
+    }
+    if (!inCode && line.startsWith('## ')) {
+      if (current) sections.push(current)
+      current = { title: line.slice(3).trim(), lines: [line] }
+      continue
+    }
+    if (current) current.lines.push(line)
+    else preamble.push(line)
+  }
+  if (current) sections.push(current)
+
+  return { preamble: preamble.join('\n').trim(), sections }
+}
+
+function matchHermesGroup(title, patterns) {
+  return patterns.some((re) => re.test(title))
+}
+
+function groupHermesSections(sections, groups) {
+  const contentSections = sections.filter((s) => s.title !== '目录')
+  const chapters = groups.map((group) => ({
+    ...group,
+    sections: contentSections.filter((s) => matchHermesGroup(s.title, group.patterns)),
+  }))
+
+  const assigned = new Set(chapters.flatMap((ch) => ch.sections))
+  const unassigned = contentSections.filter((s) => !assigned.has(s))
+  if (unassigned.length) {
+    console.warn(`⚠ Hermes 笔记有 ${unassigned.length} 个章节未匹配分组: ${unassigned.map((s) => s.title).join(' | ')}`)
+  }
+
+  return chapters.filter((ch) => ch.sections.length)
+}
+
+function writeNotePage(outPath, title, body) {
+  const page = `---
+title: ${title}
+pageClass: notes-doc
+outline: [2, 3]
+aside: true
+---
+
+${body.trim()}
+`
+  fs.writeFileSync(outPath, page, 'utf-8')
+}
+
+function buildHermesIndexBody(preamble, chapters) {
+  const nav = chapters
+    .map(
+      (ch) =>
+        `- [${ch.sidebar}](./${ch.slug}.md)${ch.sections.length > 1 ? `（${ch.sections.map((s) => s.title.replace(/^第.+章\s*/, '').slice(0, 12)).join(' · ')}）` : ''}`
+    )
+    .join('\n')
+
+  const intro = preamble.replace(/\n---\s*$/, '').trim()
+
+  return `${intro}
+
+## 章节目录
+
+${nav}
+
+<p class="section-note">左侧边栏可快速跳转；小章节已合并，长章节独立成页。</p>
+`
+}
+
+function publishSplitNote(note, src, body) {
+  const outDir = path.join(DOCS, 'notes', note.slug)
+  const legacyFile = path.join(DOCS, 'notes', `${note.slug}.md`)
+  if (fs.existsSync(legacyFile)) fs.unlinkSync(legacyFile)
+  fs.rmSync(outDir, { recursive: true, force: true })
+  fs.mkdirSync(outDir, { recursive: true })
+
+  const { preamble, sections } = parseMarkdownSections(body)
+  const chapters = groupHermesSections(sections, note.splitChapters)
+
+  writeNotePage(path.join(outDir, 'index.md'), note.title, buildHermesIndexBody(preamble, chapters))
+
+  let totalLines = preamble.split('\n').length
+  for (const ch of chapters) {
+    const chBody = ch.sections.map((s) => s.lines.join('\n').trim()).join('\n\n')
+    totalLines += chBody.split('\n').length
+    writeNotePage(path.join(outDir, `${ch.slug}.md`), `${note.title} · ${ch.sidebar}`, chBody)
+  }
+
+  console.log(
+    `✓ notes/${note.slug}/（${chapters.length} 章，${body.length} 字，源: ${path.relative(ROOT, src)}）`
+  )
+
+  return {
+    ...note,
+    charCount: body.length,
+    chapters: chapters.map(({ slug, sidebar, sections: secs }) => ({
+      slug,
+      sidebar,
+      sectionCount: secs.length,
+    })),
+  }
+}
+
 function processNotes() {
   const outDir = path.join(DOCS, 'notes')
   fs.mkdirSync(outDir, { recursive: true })
@@ -784,6 +948,12 @@ function processNotes() {
       continue
     }
     const body = fs.readFileSync(src, 'utf-8').trim()
+
+    if (note.splitChapters?.length) {
+      published.push(publishSplitNote(note, src, body))
+      continue
+    }
+
     const page = `---
 title: ${note.title}
 pageClass: notes-doc
