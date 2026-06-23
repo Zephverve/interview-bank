@@ -42,6 +42,7 @@ aside: true
 - [第二十四章 面试高频题——对比与选型篇](#第二十四章-面试高频题对比与选型篇)
 - [第二十五章 场景设计题——"如果让你设计..."](#第二十五章-场景设计题如果让你设计)
 - [第二十六章 面试实战话术——怎么在面试中展示](#第二十六章-面试实战话术怎么在面试中展示)
+- [第二十七章 实战进阶——Profiles、可视化与多 Agent 协同](#第二十七章-实战进阶profiles可视化与多-agent-协同)
 
 ---
 
@@ -345,6 +346,78 @@ Hermes 的设计可以拆成**四层能力**。注意，这四层不是"功能 A
 > "Hermes Agent 的架构就是四层楼：第一层让它能记住事，第二层让它能记住怎么干活，第三层让它能自己学自己修，第四层保证超长对话也不丢东西。每一层都是在补上一层的漏洞。"
 
 接下来的第五到第八章，就是把这四层一层一层掰开讲。
+
+### 4.4 满配视角——从四层到十二层（进阶视野）
+
+前面讲的四层是 **"核心骨架"**——少了哪一层 Agent 都不完整。但如果你想让 Hermes 真正变成一个"24 小时在线、自己能成长、多个分身同时干活"的个人助手，还需要往上加。Hermes 从"裸装"到"满配"实际上有 **12 层**：
+
+| 层级 | 模块 | 解决了什么 | 重要程度 |
+|:---:|:---|:---|:---:|
+| L1 | 安装 + 模型 Provider | 让 Hermes 跑起来 | ⭐必配 |
+| L2 | 输入系统（SOUL/USER/MEMORY/AGENTS.md） | 让 Agent 理解你和项目 | ⭐必配 |
+| L3 | Memory 长期记忆 | 跨会话记住偏好、目标、踩坑 | ⭐必配 |
+| L4 | Skills 技能系统 | 把反复做的事沉淀成菜谱 | ⭐必配 |
+| L5 | Tools / Toolsets | 控制能用什么工具 | ⭐必配 |
+| L6 | MCP 外部工具连接 | 接 GitHub、数据库、浏览器 | 🔥进阶 |
+| L7 | Gateway 消息入口 | 飞书/Telegram/Discord 都能叫 | 按需 |
+| L8 | Cron 自动化 | 定时做日报、巡检、周报 | 🔥推荐 |
+| L9 | Profiles 多实例隔离 | 不同场景创建独立分身 | 🔥推荐 |
+| L10 | 可视化与可观测 | 看到做了什么、花了多少 Token | 进阶 |
+| L11 | Token 精简与上下文管理 | 省钱、提速、减少污染 | 进阶 |
+| L12 | 多 Agent 团队 | 多个分身长期协作 | 高阶 |
+
+**建议建设路径（不要一天全装完）：**
+
+```
+先跑通 → 再记住你 → 再沉淀技能 → 再接工具 →
+再定时运行 → 再多入口触达 → 最后多 Agent 协同
+```
+
+> 第五到第八章讲 L3-L4，第九到第十九章覆盖 L5-L11。看完四层骨架，后面的都是在这上面加肌肉。
+
+### 4.5 换个视角——五层洋葱模型（源码架构）
+
+如果从**源码结构**的角度看（不是从功能的角度），Hermes 实际上是**五层洋葱**：
+
+```
+         ┌──────────────────────┐
+         │  CLI/配置 (~50K行)    │ ← 最外层：命令行、安装向导
+         │  ┌────────────────┐  │
+         │  │ Gateway(~51K行) │  │ ← 平台适配、消息路由
+         │  │ ┌────────────┐  │  │
+         │  │ │ Agent(~12K)│  │  │ ← 核心循环（只有12K行！）
+         │  │ │ ┌────────┐ │  │  │
+         │  │ │ │Tools   │ │  │  │ ← 60+工具注册调度(~44K行)
+         │  │ │ │┌──────┐│ │  │  │
+         │  │ │ ││ 基座  ││ │  │  │ ← 模型适配、重试(~20K行)
+         │  │ │ │└──────┘│ │  │  │
+         │  │ │ └────────┘ │  │  │
+         │  │ └────────────┘  │  │
+         │  └────────────────┘  │
+         └──────────────────────┘
+```
+
+**一个反直觉的发现**：Gateway（51K行）比 Agent 核心（12K行）大四倍。Agent 的真正智能逻辑是紧凑的，工程复杂度集中在"怎么接入真实世界"——处理每个平台的消息格式、速率限制、富媒体差异。
+
+**代码量总览**：Hermes 实际约 **238K 行** Python（不是我之前说的 35K），其中工具层 44K + 网关 51K + CLI 50K 占了大部分。
+
+---
+
+### 4.6 六条设计哲学（面试拿高分的法宝）
+
+读完 23 万行代码能提炼出的六条哲学，面试说出来直接加分：
+
+> ① **分层清晰，单点控制**：Gateway 只管消息路由，AIAgent 只管对话，工具注册表只管调度。每层一个"编排者"，控制流可追踪。
+>
+> ② **自注册 > 手动注册**：加新工具只需写 `.py` 文件 + 调用 `registry.register()`，不需要改任何配置文件。
+>
+> ③ **进化 > 静态**：技能不是写死不动的文档——每次使用中被验证、被修正。记忆在每次对话中被检索、被更新。
+>
+> ④ **安全是架构，不是补丁**：注入检测、SSRF 防护、子代理限制——每层都内嵌安全，不是事后加。
+>
+> ⑤ **优雅降级 > 强依赖**：外部记忆挂了？内置 MEMORY.md 还在。主模型超限？自动切备用。每个组件都可以独立失败。
+>
+> ⑥ **适配器模式的极致运用**：20+ 平台、4 种 LLM API、8 种记忆后端——全用适配器。对于"何处都跑、何模型都用"的系统，适配器是唯一可扩展的选择。
 
 ---
 
@@ -697,7 +770,133 @@ SQLite FTS5 全文检索（就是数据库自带的全文搜索引擎）
 | **L4** | Honcho 用户画像 | 正-反-合 LLM 融合 | 持续进化 |
 | **L5** | 全文搜索 | SQLite FTS5 | 永久 |
 
-### 5.10 记忆解决了什么，还缺什么
+### 5.10 实践落地——SOUL.md、USER.md、MEMORY.md 到底怎么写
+
+前面讲了原理，下面给你**可以直接用的模板**。这三个文件是 Hermes 的"输入系统"，决定了它怎么工作、怎么理解你。
+
+**📝 SOUL.md 模板——告诉 Agent "你是谁、怎么跟我协作"**
+
+```markdown
+# SOUL.md
+
+## 立场
+- 你可以主动提出想法，可以反对我的观点，但要给出理由
+- 不是我的工具，是我的协作者
+- 你的目标是帮我做出更好的决定，不是讨好我
+
+## 自主性边界
+以下事你可以自己做，不用问我：
+  - 读写本地文件
+  - 搜索公开信息
+  - 生成报告、代码、文档
+  - 安装开发工具（但要先告知）
+
+以下事必须先问我：
+  - 公开发布任何内容
+  - 购买付费服务
+  - 给真实的人发消息
+  - 删除重要文件
+  - 暴露私人信息
+
+## 反对与纠偏
+你可以反对我，但需要提供：
+  - 数据或事实依据
+  - 一个更好的替代方案
+  - 清晰的推理过程
+
+## 自我改进
+当发现反复执行的操作流程时：
+  - 主动沉淀为 Skill
+  - 标注适用范围和前提条件
+```
+
+**💡 关键**：不要写"你是一个聪明、强大的 AI 助手"——这是废话。要写"你应该怎么和我协作"。
+
+**📝 USER.md 模板——五个维度画像**
+
+```markdown
+# USER.md
+
+## Profile（我是谁）
+- 职业：后端开发 / 转 AI 方向
+- 技术背景：Python 3年，正在学前端和 Agent 相关
+- 当前关注的 3 个方向：AI Agent 架构、MCP 协议、RL 训练
+
+## Communication（沟通偏好）
+- 默认语言：中文
+- 回答风格：简洁直接，不要寒暄废话
+- 技术决策时需要详细分析和 trade-off 对比
+- 讨厌：重复我已知的信息、回答太长却没有重点
+
+## Output（输出偏好）
+- 技术方案：要包含方案对比、选型理由、潜在风险
+- 代码：优先给能直接跑的完整例子
+- 写作：结构清晰，要点先行
+
+## Collaboration（协作风格）
+- 我经常切换想法，不要慌，跟着走就行
+- 如果对话跑偏了，可以提醒我聚焦
+- 更看重真实判断，不需要情绪安慰
+```
+
+**📝 MEMORY.md 模板——八个维度的工作笔记**
+
+```markdown
+# MEMORY.md
+
+## Active Context（当前大方向）
+- 学习 Hermes Agent 源码，准备 Agent 方向面试
+- 不是：前端框架对比、数据库优化、DevOps
+
+## Current Priorities（当前最重要的 3 件事）
+1. 完整理解 Hermes 自进化闭环 → 能画出来 + 能讲出来
+2. 准备 20 道 Agent 面试高频题
+3. 搭建 Hermes 实践环境
+
+## Active Projects
+### 项目 A：Hermes Agent 学习
+- 目标：深入理解源码和架构
+- 进展：已完成 21 章学习笔记
+- 下一步：实际部署 + 运行测试
+
+## Decision Principles（决策原则）
+- 遇到复杂问题 → 先拆成 3-5 个子问题
+- 选型 → 先列对比表，再说推荐方案
+- Agent 类任务 → 优先级：安全 > 正确 > 速度
+
+## Known Pitfalls（踩过的坑）
+- pnpm 在 monorepo 下需要加 -w 参数
+- Vercel 部署 SSL 证书偶尔需要手动续期
+
+## Environment（环境）
+- macOS 15, Apple Silicon
+- Node.js v22, Python 3.12
+- VSCode, pnpm, Vercel CLI
+
+## Memory Maintenance（维护规则）
+- 只存长期稳定信息
+- 过期的项目信息要清理
+- 每周检查一次，删掉不再相关的条目
+```
+
+**💡 实用技巧——让 Hermes 帮你初始化记忆**
+
+你可以直接告诉 Hermes 这段话，让它通过访谈帮你生成上述文件：
+
+> "请帮我初始化 Memory。先通过访谈了解我（问关于用户画像、沟通偏好、当前项目、工作流、决策原则、工具环境的问题），然后自动生成 USER.md 和 MEMORY.md。不要写入 API Key、密码或隐私信息。"
+
+**信息分层原则**：
+
+| 信息类型 | 放哪里 | 生命周期 |
+|:---|:---|:---|
+| 稳定偏好、长期目标 | USER.md / MEMORY.md | 长期，定期更新 |
+| 反复执行的流程 | Skill | 长期，按需调用 |
+| 一次性任务过程 | 当前会话 | 会话结束即丢弃 |
+| 大量资料、日志 | 文件系统 / 知识库 | 按需检索 |
+
+**Memory 不是越完整越好——是越高频、稳定、能改变回答质量的越好。**
+
+### 5.12 记忆解决了什么，还缺什么
 
 **解决了**：Agent 能记住用户偏好、环境事实，能搜索历史对话细节。你不用每次重复指示。
 
@@ -705,7 +904,62 @@ SQLite FTS5 全文检索（就是数据库自带的全文搜索引擎）
 
 → **这就是技能系统要解决的问题**
 
-### 5.11 如果你跟别人解释
+### 5.13 项目级配置——AGENTS.md / CLAUDE.md（让 Agent 理解当前项目）
+
+前面讲的 MEMORY.md 和 USER.md 是**全局的**——不管你在哪个项目里跟 Agent 说话，它都加载。但如果你有多个项目，每个项目的规则不同怎么办？
+
+Hermes 支持项目级上下文文件，**只在进入该目录时才加载**：
+
+```
+~/project-a/
+├── AGENTS.md       ← 项目 A 的规则，进这个目录就加载
+├── CLAUDE.md       ← 兼容 Claude Code 的格式
+└── .cursorrules    ← 兼容 Cursor 的格式
+
+~/project-b/
+└── AGENTS.md       ← 项目 B 的规则，互不干扰
+```
+
+**AGENTS.md 模板：**
+
+```markdown
+# AGENTS.md
+
+## 项目目标
+这是我的 Hermes Agent 实验目录，用于测试 Memory、Skill、MCP、Cron 和 Profiles 能力。
+
+## 工作规则
+- 所有报告输出为 Markdown
+- 所有测试数据使用虚构数据
+- 不读取公司文件
+- 不上传密钥、真实聊天记录和隐私数据
+- 安装工具前必须先生成风险说明
+- 删除文件、安装依赖、发送外部消息都需要人工确认
+```
+
+**💡 与 MEMORY.md 的关键区别**：
+
+| | MEMORY.md | AGENTS.md |
+|:---|:---|:---|
+| **加载范围** | 全局（每次对话都加载） | 仅当前目录 |
+| **生命周期** | 跟你走 | 跟项目走 |
+| **适合存什么** | 你的偏好、习惯、长期目标 | 项目规则、代码规范、目录结构 |
+
+多项目切换时，把项目规则放到 AGENTS.md 更高效——不会让全局记忆被"项目 A 用 pnpm、项目 B 用 yarn"这种冲突信息塞爆。
+
+**好输入的四个要素**（面试时可以说）：
+
+```
+背景 → 目标 → 约束 → 输出格式
+
+❌ "帮我看看日志有什么问题"
+✅ "app.log 最后 200 行中找出所有 ERROR（背景），
+    按错误类型归类并给出修复建议（目标），
+    只分析应用层错误，跳过基础设施警告（约束），
+    输出为表格，包含错误类型、出现次数、示例、建议（格式）"
+```
+
+### 5.14 如果你跟别人解释
 
 > "Hermes 的记忆就两个文件：MEMORY.md 记工作笔记（2200字上限），USER.md 记用户画像（1375字上限）。容量故意很小，逼它只记最重要的。读写分离——读的时候从冻结快照读（保护 API 缓存），写的时候直接写磁盘。聊天记录太多存不下？用 SQLite 全文搜索来翻历史。还有个可选的 Honcho 用户画像系统，用辩证法不断更新对你的理解。"
 
@@ -904,6 +1158,82 @@ Hermes 的技能遵循一个叫 agentskills.io 的开放标准。这意味着什
 ### 6.8 如果你跟别人解释
 
 > "技能就是 SKILL.md 文件，存的是'怎么做'而不是'是什么'。省 Token 的办法是渐进式加载——system prompt 里只放目录（每个技能一句话），Agent 需要哪个就调用 skill_view 加载完整的，然后按步骤执行。技能遵循开放标准 agentskills.io，在 Hermes 里写的技能拿到 Claude Code 也能用。"
+
+### 6.9 社区五大王牌 Skill + 生命周期管理（实战补充）
+
+**五大社区明星 Skill（安装即用）：**
+
+| Skill | 星标 | 解决什么问题 |
+|:---|:---|:---|
+| **gstack** | 85K ⭐ | Agent 如何高质量做事的高效工作流栈 |
+| **gbrain** | 11K ⭐ | Agent 如何长期记住并召回上下文 |
+| **hermes-webui** | 4.6K ⭐ | 轻量化 Web 可视化控制台 |
+| **self-evolution** | 2.4K ⭐ | 自进化核心模块 |
+| **awesome-hermes** | 1.9K ⭐ | Hermes 全生态项目合集导航 |
+
+安装方式：
+```bash
+hermes skills search <keyword>     # 先搜索
+hermes skills inspect <skill-id>   # 查看内容（关键！安装前必须看）
+hermes skills install <skill-id>   # 确认安全后再装
+hermes skills install gstack gbrain awesome-hermes  # 批量装
+```
+
+**安装前五问（每个 Skill 都要过一遍）：**
+
+1. 它是否服务我的长期目标？
+2. 它是否能减少重复劳动？
+3. 它是否和已有 Skill 重复？
+4. 它是否需要危险权限？
+5. 它适合常驻，还是只适合临时启用？
+
+**每周清理三问：**
+
+1. 过去 7 天实际用了哪些 Skill？没用的考虑禁用
+2. 有没有两个 Skill 做的事重叠？合并
+3. 有没有 Skill 输出质量下降？更新或重写
+
+**💡 核心原则：常驻 Skill 不超过 5 个。20 行可用的 Skill 比 200 行没人用的有价值得多。**
+
+### 6.10 给你一个画瓢的葫芦——从零写一个 Skill 的完整步骤
+
+前面讲了"Skill 是什么"，下面给你一个能直接照抄的完整流程：
+
+```bash
+# Step 1：创建目录
+mkdir -p ~/.hermes/skills
+
+# Step 2：写 Skill 文件
+```
+
+```yaml
+# ~/.hermes/skills/article-summarizer/SKILL.md
+---
+name: article-summarizer
+description: 把长文章压缩成结构化摘要卡片
+---
+
+# Article Summarizer
+
+## 什么时候用
+当用户提供一篇长文章，需要生成结构化摘要时使用。
+
+## 输出格式
+### 一句话总结（50字以内）
+### 核心观点（3-5个要点，每个一句话）
+### 和我的关系（结合 USER.md 判断这篇文章对我的价值）
+### 下一步（值得深读？沉淀为 Memory？触发某个 Skill？）
+```
+
+```bash
+# Step 3：安装
+hermes skills install ~/.hermes/skills/article-summarizer/SKILL.md
+
+# Step 4：验证
+hermes skills list  # 确认装上了
+```
+
+**核心原则：先跑起来，再逐步加维度。20 行的可用 Skill 比 200 行但没人用的有价值得多。**
 
 ---
 
@@ -1498,6 +1828,32 @@ def resolve_toolset(name, visited=None):
     return tools
 ```
 
+**📝 AST 预扫描——一个精妙的性能优化**
+
+工具发现时，注册表不会盲目 `import` 所有 `.py` 文件——因为有些辅助模块 import 时可能触发网络请求或依赖检查。它先用 Python 的 `ast.parse()` 静态分析代码：
+
+```python
+# 简化版的 AST 预扫描逻辑
+import ast
+
+def is_tool_module(filepath):
+    """判断一个 .py 文件是不是工具模块——不执行它，只分析语法树"""
+    with open(filepath) as f:
+        tree = ast.parse(f.read())
+
+    for node in ast.walk(tree):
+        # 找顶层函数调用：registry.register(...)
+        if isinstance(node, ast.Call):
+            if (isinstance(node.func, ast.Attribute) and
+                isinstance(node.func.value, ast.Name) and
+                node.func.value.id == "registry" and
+                node.func.attr == "register"):
+                return True  # 找到了！这是个工具模块
+    return False
+```
+
+**效果**：只有确认了是工具模块的文件才会被 import，避免了副作用。60+ 个工具文件，启动依然飞快。
+
 ### 9.4 并行执行——保守但务实
 
 Hermes 支持同时执行多个工具调用，但策略很**保守**：
@@ -1521,6 +1877,38 @@ Agent 一次请求中调用了 3 个工具
 ### 9.5 如果你跟别人解释
 
 > "Hermes 有 40+ 内置工具，分 Web、终端、文件、浏览器等类别。工具不用手动注册——每个工具文件导入时自动调用 registry.register() 注册自己。工具可以打包成工具集，工具集之间还能互相引用。并行执行很保守——只有白名单里的工具且路径不重叠时才并行，否则一律串行。"
+
+### 9.6 安全审批四级体系（面试必问）
+
+工具不是全开全关的——Hermes 给每个工具分配了审批等级：
+
+| 等级 | 典型工具 | 审批方式 |
+|:---|:---|:---|
+| 🟢 **安全** | read_file, web_search, list_directory | 无需审批 |
+| 🟡 **低风险** | write_file, edit_file, memory_write | 首次审批，可记住 |
+| 🟠 **中风险** | execute_python, delegate_task | 每次审批 |
+| 🔴 **高风险** | execute_shell, kill_process | 强制审批，无法跳过 |
+
+**自定义审批策略：**
+
+```yaml
+# ~/.hermes/config.yaml
+tools:
+  approval:
+    per_tool:
+      write_file:
+        strategy: "remember"    # 首次确认，后续记住
+      execute_shell:
+        strategy: "prompt"      # 每次都确认
+    command_blacklist:
+      - "rm -rf /"
+```
+
+```bash
+hermes approval reset  # 撤销所有已记住的审批（换项目时常用）
+```
+
+**💡 实用原则**：新手可以先 `hermes tools disable execute_shell` 关掉最危险的，等熟悉了再逐步开放。
 
 ---
 
@@ -1656,6 +2044,78 @@ def select_model(self, messages, available_tools):
 **如果你跟别人解释**：
 
 > "Hermes 支持 18+ 家模型厂商，用 `hermes model` 一键切换。不同厂商 API 格式不同，Hermes 用统一适配层转成内部标准格式。还有智能路由——简单问题用便宜模型，复杂问题用贵模型，省 30-50%。用 Claude 时还优化了提示缓存，省 75% 输入 Token。"
+
+### 10.7 实战——Token 省钱的五大技巧（面试加分项）
+
+Token = 钱 + 速度。长上下文不仅贵，而且模型在长文本中容易"迷失在中间"（Lost in the Middle）。Hermes 提供了一套完整的 Token 精简手段：
+
+**技巧 1：Profile 隔离——不同场景用不同配置**
+
+```bash
+# 日常聊天只用基础工具
+hermes profile create daily --clone
+# 开发时才启用全部工具
+hermes profile create dev --clone
+hermes profile use daily    # 日常默认省 Token
+hermes -p dev chat          # 需要时临时切开发配置
+```
+
+**技巧 2：精简工具集——关掉不用的**
+
+```bash
+hermes tools list                     # 看看开了哪些工具
+hermes tools disable execute_shell     # 关掉高危又耗 Token 的
+hermes tools disable kill_process
+```
+
+**技巧 3：控制文件读取范围**
+
+```
+❌ "帮我看看日志里有什么错误"       # Agent 可能读整个几十 MB 的日志
+✅ "查看 app.log 最后 200 行，找出所有 ERROR 并归类"
+```
+
+**技巧 4：Prompt 里加输出约束**
+
+```
+总字数控制在 1200 字以内
+只输出报告正文，不要重复我的指令
+每条新闻最多 3 句话摘要
+如果信息不足，先列出缺口，不要展开猜测
+```
+
+**技巧 5：定期清理旧会话**
+
+```bash
+hermes sessions list                  # 看有多少旧会话
+hermes sessions prune --older-than 30 # 删掉 30 天前的
+hermes sessions export backup.jsonl   # 先备份再删
+```
+
+**压缩配置详解：**
+
+```yaml
+# ~/.hermes/config.yaml
+compression:
+  enabled: true              # 开启自动压缩
+  threshold: 0.50            # 上下文用到 50% 时触发
+  target_ratio: 0.20         # 压缩后保留 20% 给尾部近期内容
+  protect_last_n: 20         # 至少保护最近 20 条消息
+```
+
+**Token 问题速查表（面试好用）：**
+
+| 问题 | 怎么优化 |
+|:---|:---|
+| 对话太长 | `/compress` 或自动压缩 |
+| 不知道 Token 花在哪 | `hermes insights --days 7` |
+| 工具 schema 太多 | 精简工具，Profile 隔离 |
+| Agent 跑飞不停 | 调低 `agent.max_turns`（默认 90） |
+| 文件太大 | 明确读取范围 + 限制行数 |
+| Skill 太多 | 常驻不超过 5 个 |
+| Cron 输出太长 | 固定报告模板 + 字数限制 |
+
+**💡 核心思想**：Token 优化的本质不是"抠门"，而是**让 Agent 的注意力聚焦在真正重要的事情上**。上下文越小，模型回答越精准。
 
 ---
 
@@ -1813,6 +2273,8 @@ class TelegramAdapter(BasePlatformAdapter):
 | **照片连发合并** | 你连发 3 张照片不会触发 3 次处理，会合并成一条多图消息 |
 | **智能消息分块** | 回复太长时按平台限制分割，但保持代码块完整（不会把一段代码从中间截断） |
 | **富媒体路由** | 自动处理 TTS 音频、Markdown 图片、本地文件路径 |
+| **UTF-16 安全截断** | 各平台有字数限制，但 emoji 和中文在 UTF-16 编码下占不同长度。Gateway 用二分搜索算法精确截断，保证不会把一个字符切两半 |
+| **SSRF 防护** | Agent 下载用户发的图片 URL 时，防止被恶意重定向到内网地址（如 `http://169.254.169.254/` 云元数据） |
 
 ### 12.4 飞书怎么接入（举个例子）
 
@@ -2208,7 +2670,43 @@ class CronScheduler:
 
 这就是 [SILENT] 的妙处——**只在你需要关心的时候出现**。不刷存在感。
 
-### 15.4 如果你跟别人解释
+### 15.4 两个能直接用的 Cron 实战例子
+
+**例子 1：AI 新闻日报**（每天早 9 点搜集 AI 新闻，推送到飞书）
+
+```bash
+hermes cron create "0 9 * * *" \
+  "搜索最近 24 小时内最重要的 AI 新闻。优先读取官方博客、
+  arXiv、OpenAI、Anthropic、Google DeepMind、Meta AI、
+  Hugging Face、TechCrunch、The Verge。
+  不要打开需要登录、反爬、广告墙或加载很慢的网站；
+  如果某个网页超过 20 秒无法读取，跳过它，不要重试。
+  每条新闻输出：标题、来源、3句话摘要、对行业的影响。
+  最后给出今日最值得关注的 3 个趋势。
+  总字数控制在 1200 字以内。
+  额外将完整报告保存为 Markdown 到 ~/hermes-lab/reports/
+  文件名 ai-daily-report-YYYY-MM-DD.md" \
+  --name "ai-daily-report" \
+  --deliver "lark" \
+  --workdir "~/hermes-lab/reports"
+```
+
+**例子 2：每周系统清理审查**（每周一早 10 点检查哪些 Skill/MCP 该清理了）
+
+```bash
+hermes cron create "0 10 * * 1" \
+  "检查我的 MCP Server 列表和 Skill 列表，分析：
+  1. 哪些 MCP Server 过去 30 天没有被调用过
+  2. 哪些 Skill 和当前工作流不相关
+  3. 哪些 MCP Server 的 allowed_tools 设置过于宽松
+  给出清理建议，但不要自动删除任何东西。" \
+  --name "weekly-cleanup-review" \
+  --deliver "lark"
+```
+
+**💡 Cron 安全原则**：Cron 只负责"发现和建议"，不负责"擅自改变系统"。安装工具、修改配置、删除文件、发送对外消息——这些操作**必须人工确认**。
+
+### 15.5 如果你跟别人解释
 
 > "Hermes 的定时任务存在 ~/.hermes/cron/ 目录里，JSON 格式。每 60 秒检查一次有没有到时间的任务。最贴心的设计是 [SILENT] 机制——Agent 判断'没事可报'时回复 [SILENT]，不发通知。只有出问题才烦你。每个定时任务创建独立的 Agent 实例，不干扰正在进行的对话。"
 
@@ -2244,6 +2742,29 @@ Hermes 不只能连别人的 MCP 服务器，还能让自己变成 MCP 服务器
 ### 16.4 如果你跟别人解释
 
 > "MCP 是 AI 世界的 USB-C 接口，标准化的外部工具连接方式。Hermes 既能当 MCP 客户端（连别人的 MCP 服务器，接 GitHub、数据库等），也能当 MCP 服务器（让 Claude Code、Cursor 来连自己）。客户端近 2000 行代码，解决了异步 MCP 和同步工具调用的冲突，支持 stdio 和 HTTP 两种传输方式。"
+
+### 16.5 MCP 实战速查——安装前六问 + 高频 Server
+
+**装任何 MCP Server 前先问自己：**
+
+1. 它是否真的补足内置工具做不到的事？
+2. 它是否需要高权限（删除、发送、支付）？
+3. 它是否会暴露隐私数据？
+4. 它是否能限定目录或只读模式？
+5. 它是否会显著增加 Token 开销？
+6. 它是否只在某个场景需要？（是则只装到对应 Profile）
+
+**高频 MCP Server 速查表：**
+
+| 分类 | Server | 用途 |
+|:---|:---|:---|
+| 代码协作 | `server-github` | 搜仓库、看 PR、管 Issue |
+| 文件系统 | `server-filesystem` | 访问指定目录（零配置） |
+| 数据库 | `server-postgres` | 查数据库 |
+| 知识管理 | `server-notion` | 读写 Notion |
+| 浏览器 | `server-puppeteer` | 网页自动化和截图 |
+
+**安全建议**：用白名单模式 + 读写分离。比如 GitHub 拆成两个 Server——日常用只读版，需要写 PR 时才开读写版。
 
 ---
 
@@ -3558,6 +4079,63 @@ Hermes 方案：
 > ② "一个好的 Agent 框架，不是功能多，而是**学习能力强**——记忆会越用越准、技能会越用越多、问题会越修越少。"
 
 > ③ "我在两个框架（GA 和 Hermes）之间看到了同一个答案的不同解法——极简 vs 完整、原理 vs 工程、手动 vs 自动。这让我对 Agent 的理解不再是'能干什么'，而是'为什么这么干'。"
+
+---
+
+## 第二十七章 实战进阶——Profiles、可视化与多 Agent 协同
+
+> 前面的章节覆盖了 L1-L8。这一章快速串讲 L9-L12——这几个模块不会单独写一整章，但面试和实战中很可能会问到。
+
+### 27.1 Profiles——一个 Hermes，多个分身
+
+**Profile = 一套独立的 Agent 运行环境**。每个 Profile 有自己的配置、记忆、技能、会话、定时任务。
+
+```bash
+# 创建日常用 Profile（克隆默认配置）
+hermes profile create daily --clone
+
+# 创建开发用 Profile
+hermes profile create dev --clone
+
+# 切换到日常模式
+hermes profile use daily
+
+# 临时用开发模式
+hermes -p dev chat
+```
+
+**实用性举例**：
+- `daily` Profile：只开基础工具，token 消耗少
+- `dev` Profile：全开 terminal、git、github、文件系统
+- `writing` Profile：专门做写作任务，另配一套 SOUL.md 和 Skill
+
+**⚠️ 注意**：Profile 隔离的是 Hermes 状态（配置、记忆、技能），**不是**操作系统权限。不要把它当成安全沙箱。
+
+**💡 原则**：任务边界越清晰，越适合拆成独立 Profile。但不要为了"看起来很 Agent 团队"而拆太多，3-5 个够用。
+
+### 27.2 可视化和可观测——三个必会命令
+
+```bash
+hermes status          # 快速概览：模型、Gateway、Cron 状态
+hermes doctor          # 深度诊断：发现问题并建议修复
+hermes doctor --fix    # 自动修复已知问题
+hermes logs            # 最近 50 行日志
+hermes logs --follow   # 实时跟踪
+hermes logs errors     # 只看错误
+hermes logs gateway    # Gateway 日志（飞书收不到消息先查这个）
+```
+
+**每次升级后必须跑 `hermes doctor`**，确保配置兼容。
+
+### 27.3 多 Agent 协同——未来方向
+
+把 Hermes 从"一个助手"升级到"一个团队"的思路：
+
+```
+多个独立 Profile + 明确分工 + 共享目录 + 定时任务 + 人工确认
+```
+
+例如：`radar-agent` 每天搜集新闻 → 输出到共享目录 → `writing-agent` 每周读这些输出生成周报 → 通过飞书推送给你。关键动作（安装工具、修改配置、发对外消息）仍需人工确认。
 
 ---
 
