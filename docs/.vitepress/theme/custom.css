@@ -533,22 +533,213 @@ details.answer-reveal summary:hover {
 }
 
 /* ===== 表格美化 ===== */
-.vp-doc table {
+.vp-doc table,
+.answer-body table {
+  width: 100%;
+  max-width: 100%;
   border-radius: 12px;
   overflow: hidden;
   border-collapse: separate;
   border-spacing: 0;
   border: 1px solid var(--vp-c-divider);
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 16px 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.vp-doc th {
-  background: var(--vp-c-brand-soft);
-  font-weight: 600;
+.vp-doc thead,
+.answer-body thead {
+  background: linear-gradient(135deg, var(--vp-c-brand-soft), rgba(99, 102, 241, 0.06));
 }
 
 .vp-doc th,
-.vp-doc td {
-  padding: 12px 16px;
+.answer-body th {
+  background: transparent;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  white-space: nowrap;
+}
+
+.vp-doc tbody tr:nth-child(even),
+.answer-body tbody tr:nth-child(even) {
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc tbody tr:hover,
+.answer-body tbody tr:hover {
+  background: var(--vp-c-brand-soft);
+}
+
+.vp-doc th,
+.vp-doc td,
+.answer-body th,
+.answer-body td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  vertical-align: top;
+}
+
+.vp-doc tbody tr:last-child td,
+.answer-body tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.vp-doc .answer-body,
+.ai100-doc .answer-body {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dark .vp-doc table,
+.dark .answer-body table {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== 合并题库：主题导航 + 分节 ===== */
+.merged-toc {
+  padding: 20px 24px;
+  margin: 24px 0;
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.merged-toc-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.merged-toc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none !important;
+  color: var(--vp-c-text-1) !important;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  transition: all 0.2s ease;
+}
+
+.merged-toc-link:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1) !important;
+  box-shadow: 0 2px 8px var(--vp-c-brand-soft);
+}
+
+.merged-toc-count {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+.ai100-toc {
+  border-color: rgba(99, 102, 241, 0.35);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), transparent);
+}
+
+.merged-section {
+  margin-top: 48px;
+}
+
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  margin: 0 0 28px !important;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--vp-c-divider);
+}
+
+.section-count {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
+}
+
+/* ===== AI100 面试问答样式 ===== */
+.ai100-card {
+  border-left: 3px solid #6366f1;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), transparent);
+}
+
+.q-badge.ai100-badge {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  min-width: 40px;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.interview-card .q-conclusion {
+  border-left: 4px solid #6366f1;
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.interview-card .q-followups {
+  border-left: 4px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.interview-card .answer-reveal > summary {
+  font-weight: 600;
+  color: var(--vp-c-brand-1);
+}
+
+.ai100-section .section-divider {
+  border-bottom-color: rgba(99, 102, 241, 0.35);
+}
+
+.ai100-doc .answer-body table th:first-child,
+.ai100-doc .answer-body table td:first-child {
+  font-weight: 500;
+}
+
+@media (max-width: 640px) {
+  .merged-toc-grid {
+    flex-direction: column;
+  }
+
+  .merged-toc-link {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .section-divider {
+    flex-wrap: wrap;
+    font-size: 18px !important;
+  }
+
+  .section-count {
+    margin-left: 0;
+  }
+
+  .vp-doc th,
+  .vp-doc td,
+  .answer-body th,
+  .answer-body td {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
 }
 
 /* ===== 侧边栏 ===== */

@@ -137,150 +137,24 @@ features:
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/xiaolin-agent" style="--card-accent: #8b5cf6">
+<a class="part-card custom-part-card" href="/custom/ai100" style="--card-accent: #6366f1">
   <span class="part-card-icon">🤖</span>
-  <h3>小林 · Agent 面试题</h3>
-  <p>Agent 概念 · 范式 · 记忆 · Multi-Agent · 16 题</p>
+  <h3>Agent Interview 100</h3>
+  <p>AI Agent 面试 100 题 · 11 主题 · 100 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/xiaolin-rag" style="--card-accent: #0ea5e9">
-  <span class="part-card-icon">🔍</span>
-  <h3>小林 · RAG 面试题</h3>
-  <p>RAG 原理 · 切分 · 检索优化 · 落地 · 20 题</p>
+<a class="part-card custom-part-card" href="/custom/kama" style="--card-accent: #06b6d4">
+  <span class="part-card-icon">📚</span>
+  <h3>卡码笔记</h3>
+  <p>卡码大模型面经合集 · 97 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/xiaolin-tools" style="--card-accent: #f59e0b">
-  <span class="part-card-icon">🔧</span>
-  <h3>小林 · 工具调用面试题</h3>
-  <p>Function Calling · MCP · Skill · A2A · 16 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/xiaolin-llm" style="--card-accent: #6366f1">
-  <span class="part-card-icon">🧠</span>
-  <h3>小林 · 大模型工程面试题</h3>
-  <p>Transformer · 微调 · 推理 · 部署 · 22 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-ai-coding" style="--card-accent: #06b6d4">
-  <span class="part-card-icon">💻</span>
-  <h3>卡码 · AI 编程</h3>
-  <p>Vibe Coding · Claude Code · 上下文工程 · 26 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-rag" style="--card-accent: #0ea5e9">
-  <span class="part-card-icon">🔍</span>
-  <h3>卡码 · RAG</h3>
-  <p>RAG 汇总 · 落地难点 · GraphRAG · 20 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-finetune" style="--card-accent: #f97316">
-  <span class="part-card-icon">🎯</span>
-  <h3>卡码 · 模型微调</h3>
-  <p>SFT · RLHF · DPO · 微调取舍 · 1 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-agent" style="--card-accent: #8b5cf6">
-  <span class="part-card-icon">🤖</span>
-  <h3>卡码 · Agent</h3>
-  <p>Agent · Harness · 多Agent · Skill · 41 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-transformer" style="--card-accent: #6366f1">
-  <span class="part-card-icon">🧠</span>
-  <h3>卡码 · Transformer</h3>
-  <p>Self-Attention · 架构 · 复杂度 · 8 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/kama-real" style="--card-accent: #ec4899">
-  <span class="part-card-icon">📋</span>
-  <h3>卡码 · 真实面经</h3>
-  <p>字节等大厂真实面试题 · 1 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-agent-arch" style="--card-accent: #6366f1">
-  <span class="part-card-icon">🏛️</span>
-  <h3>AI100 · Agent 架构</h3>
-  <p>ReAct · Agent Loop · 生产架构 · 10 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-rag" style="--card-accent: #0ea5e9">
-  <span class="part-card-icon">🔍</span>
-  <h3>AI100 · RAG</h3>
-  <p>分块 · 检索 · Agentic RAG · 评估 · 9 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-tool-use" style="--card-accent: #14b8a6">
-  <span class="part-card-icon">🔧</span>
-  <h3>AI100 · 工具使用</h3>
-  <p>Function Calling · MCP · Tool Gateway · 10 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-multi-agent" style="--card-accent: #8b5cf6">
-  <span class="part-card-icon">👥</span>
-  <h3>AI100 · 多 Agent</h3>
-  <p>协作 · 通信 · 编排 · 10 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-memory" style="--card-accent: #a855f7">
-  <span class="part-card-icon">🧠</span>
-  <h3>AI100 · 记忆与状态</h3>
-  <p>短期/长期记忆 · 上下文管理 · 7 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-planning" style="--card-accent: #f59e0b">
-  <span class="part-card-icon">🧩</span>
-  <h3>AI100 · 规划与推理</h3>
-  <p>CoT · ToT · Plan-and-Solve · RL · 9 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-prompt" style="--card-accent: #ec4899">
-  <span class="part-card-icon">✍️</span>
-  <h3>AI100 · 提示工程</h3>
-  <p>System Prompt · 结构化输出 · 防注入 · 10 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-evaluation" style="--card-accent: #10b981">
-  <span class="part-card-icon">📊</span>
-  <h3>AI100 · 评估</h3>
-  <p>Agent 评测 · Benchmark · 指标 · 9 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-safety" style="--card-accent: #ef4444">
-  <span class="part-card-icon">🛡️</span>
-  <h3>AI100 · 安全对齐</h3>
-  <p>Guardrails · 沙箱 · 红队 · 8 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-production" style="--card-accent: #f97316">
-  <span class="part-card-icon">🚀</span>
-  <h3>AI100 · 生产部署</h3>
-  <p>LLMOps · 成本 · 监控 · 扩缩容 · 12 题</p>
-  <span class="part-card-round">我的题库</span>
-</a>
-
-<a class="part-card custom-part-card" href="/custom/ai100-frameworks" style="--card-accent: #64748b">
-  <span class="part-card-icon">🧰</span>
-  <h3>AI100 · 框架选型</h3>
-  <p>LangGraph · 自研 vs 框架 · 6 题</p>
+<a class="part-card custom-part-card" href="/custom/xiaolin" style="--card-accent: #10b981">
+  <span class="part-card-icon">📝</span>
+  <h3>小林面试笔记</h3>
+  <p>小林 Agent / RAG / LLM 面经 · 74 题</p>
   <span class="part-card-round">我的题库</span>
 </a>
 

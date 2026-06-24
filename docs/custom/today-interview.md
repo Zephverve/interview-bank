@@ -15,7 +15,7 @@ partColor: #f97316
 
 <div class="custom-hint">
 
-📝 **本分类源文件**：`custom/today-interview/` · 新增题目后运行 `npm run prepare` 即可刷新。
+📝 **源文件：`custom/today-interview/`** · 新增题目后运行 `npm run prepare` 即可刷新。
 
 </div>
 

@@ -53,27 +53,9 @@
 
 - `custom/today-interview/` — 今日面试复盘（19 题）
 - `custom/3d-lidar/` — 3D 激光感知（1 题）
-- `custom/xiaolin-agent/` — 小林 · Agent 面试题（16 题）
-- `custom/xiaolin-rag/` — 小林 · RAG 面试题（20 题）
-- `custom/xiaolin-tools/` — 小林 · 工具调用面试题（16 题）
-- `custom/xiaolin-llm/` — 小林 · 大模型工程面试题（22 题）
-- `custom/kama-ai-coding/` — 卡码 · AI 编程（26 题）
-- `custom/kama-rag/` — 卡码 · RAG（20 题）
-- `custom/kama-finetune/` — 卡码 · 模型微调（1 题）
-- `custom/kama-agent/` — 卡码 · Agent（41 题）
-- `custom/kama-transformer/` — 卡码 · Transformer（8 题）
-- `custom/kama-real/` — 卡码 · 真实面经（1 题）
-- `custom/ai100-agent-arch/` — AI100 · Agent 架构（10 题）
-- `custom/ai100-rag/` — AI100 · RAG（9 题）
-- `custom/ai100-tool-use/` — AI100 · 工具使用（10 题）
-- `custom/ai100-multi-agent/` — AI100 · 多 Agent（10 题）
-- `custom/ai100-memory/` — AI100 · 记忆与状态（7 题）
-- `custom/ai100-planning/` — AI100 · 规划与推理（9 题）
-- `custom/ai100-prompt/` — AI100 · 提示工程（10 题）
-- `custom/ai100-evaluation/` — AI100 · 评估（9 题）
-- `custom/ai100-safety/` — AI100 · 安全对齐（8 题）
-- `custom/ai100-production/` — AI100 · 生产部署（12 题）
-- `custom/ai100-frameworks/` — AI100 · 框架选型（6 题）
+- `custom/ai100-agent-arch/` 等 11 个子目录 — **Agent Interview 100**（100 题）
+- `custom/kama-ai-coding/` 等 6 个子目录 — **卡码笔记**（97 题）
+- `custom/xiaolin-agent/` 等 4 个子目录 — **小林面试笔记**（74 题）
 
 ### 方法一：命令行快速添加（推荐）
 
