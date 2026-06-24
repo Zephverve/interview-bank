@@ -63,6 +63,17 @@
 - `custom/kama-agent/` — 卡码 · Agent（41 题）
 - `custom/kama-transformer/` — 卡码 · Transformer（8 题）
 - `custom/kama-real/` — 卡码 · 真实面经（1 题）
+- `custom/ai100-agent-arch/` — AI100 · Agent 架构（10 题）
+- `custom/ai100-rag/` — AI100 · RAG（9 题）
+- `custom/ai100-tool-use/` — AI100 · 工具使用（10 题）
+- `custom/ai100-multi-agent/` — AI100 · 多 Agent（10 题）
+- `custom/ai100-memory/` — AI100 · 记忆与状态（7 题）
+- `custom/ai100-planning/` — AI100 · 规划与推理（9 题）
+- `custom/ai100-prompt/` — AI100 · 提示工程（10 题）
+- `custom/ai100-evaluation/` — AI100 · 评估（9 题）
+- `custom/ai100-safety/` — AI100 · 安全对齐（8 题）
+- `custom/ai100-production/` — AI100 · 生产部署（12 题）
+- `custom/ai100-frameworks/` — AI100 · 框架选型（6 题）
 
 ### 方法一：命令行快速添加（推荐）
 

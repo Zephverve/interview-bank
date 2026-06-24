@@ -184,5 +184,49 @@
   {
     "text": "📋 卡码 · 真实面经",
     "link": "/custom/kama-real"
+  },
+  {
+    "text": "🏛️ AI100 · Agent 架构",
+    "link": "/custom/ai100-agent-arch"
+  },
+  {
+    "text": "🔍 AI100 · RAG",
+    "link": "/custom/ai100-rag"
+  },
+  {
+    "text": "🔧 AI100 · 工具使用",
+    "link": "/custom/ai100-tool-use"
+  },
+  {
+    "text": "👥 AI100 · 多 Agent",
+    "link": "/custom/ai100-multi-agent"
+  },
+  {
+    "text": "🧠 AI100 · 记忆与状态",
+    "link": "/custom/ai100-memory"
+  },
+  {
+    "text": "🧩 AI100 · 规划与推理",
+    "link": "/custom/ai100-planning"
+  },
+  {
+    "text": "✍️ AI100 · 提示工程",
+    "link": "/custom/ai100-prompt"
+  },
+  {
+    "text": "📊 AI100 · 评估",
+    "link": "/custom/ai100-evaluation"
+  },
+  {
+    "text": "🛡️ AI100 · 安全对齐",
+    "link": "/custom/ai100-safety"
+  },
+  {
+    "text": "🚀 AI100 · 生产部署",
+    "link": "/custom/ai100-production"
+  },
+  {
+    "text": "🧰 AI100 · 框架选型",
+    "link": "/custom/ai100-frameworks"
   }
 ]

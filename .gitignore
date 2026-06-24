@@ -11,3 +11,4 @@ docs/.env.*
 !docs/.env.example
 .DS_Store
 .workbuddy/
+.cache/
