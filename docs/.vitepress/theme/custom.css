@@ -709,6 +709,53 @@ details.answer-reveal summary:hover {
   border-bottom-color: rgba(99, 102, 241, 0.35);
 }
 
+/* ===== 章节分页导航 ===== */
+.chapter-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin: 20px 0 28px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.chapter-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none !important;
+  color: var(--vp-c-text-2) !important;
+  background: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-divider);
+  transition: all 0.2s ease;
+}
+
+.chapter-nav-link:hover {
+  color: var(--vp-c-brand-1) !important;
+  border-color: var(--vp-c-brand-1);
+}
+
+.chapter-nav-next {
+  margin-left: auto;
+}
+
+.chapter-hero {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 640px) {
+  .chapter-nav-next {
+    margin-left: 0;
+  }
+}
+
 .ai100-doc .answer-body table th:first-child,
 .ai100-doc .answer-body table td:first-child {
   font-weight: 500;

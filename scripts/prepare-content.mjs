@@ -113,11 +113,13 @@ function getBase() {
 // ─── Markdown 转换工具 ───────────────────────────────────────────
 
 function wrapAnswers(content, extrasBlock = '') {
-  return content.replace(
-    /### 回答[^\n]*\n([\s\S]*?)(?=\n---\n|\n## |\n### 【|\n## 📌|$)/g,
-    (_, body) =>
-      `<details class="answer-reveal">\n<summary>展开答案</summary>\n<div class="answer-body">\n${extrasBlock}${body.trim()}\n</div>\n</details>\n`
-  )
+  const marker = /### 回答[^\n]*\n/
+  const idx = content.search(marker)
+  if (idx === -1) return content
+  const head = content.slice(0, idx)
+  const body = content.slice(idx).replace(marker, '')
+  const summary = extrasBlock.includes('q-conclusion') ? '展开面试回答' : '展开答案'
+  return `${head}<details class="answer-reveal">\n<summary>${summary}</summary>\n<div class="answer-body">\n${extrasBlock}${body.trim()}\n</div>\n</details>\n`
 }
 
 function extractMetaBlock(content) {
@@ -434,6 +436,135 @@ function stripGroupPrefix(title) {
   return title.replace(/^(AI100 · |卡码 · |小林 · )/, '')
 }
 
+function getChapterSlug(groupSlug, subSlug) {
+  const prefix = `${groupSlug}-`
+  return subSlug.startsWith(prefix) ? subSlug.slice(prefix.length) : subSlug
+}
+
+function buildChapterQuestionsHtml(category, subgroup) {
+  const opts = { interviewFormat: category.interviewFormat }
+  const sectionQuestions = category.questions.filter((q) => q.subSlug === subgroup.slug)
+  return sectionQuestions
+    .map((q) =>
+      transformCustomFileContent(q.meta, q.body, q.anchor, {
+        ...opts,
+        qNum: q.qNum,
+      })
+    )
+    .join('\n\n---\n\n')
+}
+
+function buildMergedToc(category, linkPrefix = '') {
+  if (!category.subgroups?.length) return ''
+  const links = category.subgroups
+    .map((sg) => {
+      const chSlug = getChapterSlug(category.slug, sg.slug)
+      const href = linkPrefix ? `${linkPrefix}${chSlug}` : `./${chSlug}`
+      return `<a class="merged-toc-link" href="${href}">${sg.icon || '📌'} ${sg.title}<span class="merged-toc-count">${sg.questions.length}</span></a>`
+    })
+    .join('\n')
+
+  return `<div class="merged-toc${category.interviewFormat ? ' ai100-toc' : ''}">
+
+**章节目录** · 共 ${category.questions.length} 题 · ${category.subgroups.length} 章
+
+<div class="merged-toc-grid">
+
+${links}
+
+</div>
+
+</div>`
+}
+
+function buildChapterNav(category, subgroup) {
+  const idx = category.subgroups.findIndex((sg) => sg.slug === subgroup.slug)
+  const prev = category.subgroups[idx - 1]
+  const next = category.subgroups[idx + 1]
+  const base = `/custom/${category.slug}/`
+  const parts = []
+
+  parts.push(`<a class="chapter-nav-link" href="${base}">📑 总览</a>`)
+  if (prev) {
+    parts.push(
+      `<a class="chapter-nav-link" href="${base}${getChapterSlug(category.slug, prev.slug)}">← ${prev.icon || ''} ${prev.title}</a>`
+    )
+  }
+  if (next) {
+    parts.push(
+      `<a class="chapter-nav-link chapter-nav-next" href="${base}${getChapterSlug(category.slug, next.slug)}">${next.icon || ''} ${next.title} →</a>`
+    )
+  }
+
+  return `<div class="chapter-nav">\n\n${parts.join('\n\n')}\n\n</div>`
+}
+
+function buildMergedIndexPage(category) {
+  const color = category.color || DEFAULT_CUSTOM_COLOR
+  const pageClassLine = category.pageClass ? `pageClass: ${category.pageClass}\n` : ''
+  const tagLabel = category.interviewFormat ? '面试问答' : '我的题库'
+  const sourceHint = category.sourceSlugs?.length
+    ? `源文件：\`${category.sourceSlugs.map((s) => `custom/${s}/`).join('` · `')}\``
+    : `源文件：\`custom/${category.slug}/\``
+
+  return `---
+custom: true
+${pageClassLine}partTitle: ${category.title}
+partColor: ${color}
+---
+
+<div class="part-hero custom-hero" style="--part-color: ${color}">
+
+# ${category.icon || '✏️'} ${category.title}
+
+<p class="part-desc">${category.desc || ''} · 共 ${category.questions.length} 题 · ${category.subgroups.length} 章</p>
+<span class="part-round custom-tag">${tagLabel}</span>
+
+</div>
+
+<div class="custom-hint">
+
+📝 **${sourceHint}** · 按章节分页阅读，点击下方主题进入各章。
+
+</div>
+
+${buildMergedToc(category, './')}
+`
+}
+
+function buildChapterPage(category, subgroup) {
+  const color = category.color || DEFAULT_CUSTOM_COLOR
+  const pageClassLine = category.pageClass ? `pageClass: ${category.pageClass}\n` : ''
+  const chapterSlug = getChapterSlug(category.slug, subgroup.slug)
+  const chapterIdx = category.subgroups.findIndex((sg) => sg.slug === subgroup.slug) + 1
+  const sectionQuestions = category.questions.filter((q) => q.subSlug === subgroup.slug)
+  const tagLabel = category.interviewFormat ? '面试问答' : '我的题库'
+
+  return `---
+custom: true
+${pageClassLine}partTitle: ${category.title} · ${subgroup.title}
+partColor: ${color}
+---
+
+<div class="part-hero custom-hero chapter-hero" style="--part-color: ${color}">
+
+# ${subgroup.icon || '📌'} ${subgroup.title}
+
+<p class="part-desc">${category.title} · 第 ${chapterIdx}/${category.subgroups.length} 章 · ${sectionQuestions.length} 题</p>
+<span class="part-round custom-tag">${tagLabel}</span>
+
+</div>
+
+${buildChapterNav(category, subgroup)}
+
+${buildChapterQuestionsHtml(category, subgroup)}
+
+---
+
+${buildChapterNav(category, subgroup)}
+`
+}
+
 function mergeCustomCategories(categories) {
   const consumed = new Set()
   const merged = []
@@ -480,72 +611,16 @@ function mergeCustomCategories(categories) {
   return [...merged, ...standalone].sort((a, b) => Number(a.order || 99) - Number(b.order || 99))
 }
 
-function buildMergedToc(category) {
-  if (!category.subgroups?.length) return ''
-  const links = category.subgroups
-    .map(
-      (sg) =>
-        `<a class="merged-toc-link" href="#section-${sg.slug}">${sg.icon || '📌'} ${sg.title}<span class="merged-toc-count">${sg.questions.length}</span></a>`
-    )
-    .join('\n')
-
-  return `<div class="merged-toc${category.interviewFormat ? ' ai100-toc' : ''}">
-
-**主题导航** · 共 ${category.questions.length} 题
-
-<div class="merged-toc-grid">
-
-${links}
-
-</div>
-
-</div>`
-}
-
-function buildMergedQuestionsHtml(category) {
-  const opts = { interviewFormat: category.interviewFormat }
-
-  return category.subgroups
-    .map((sg) => {
-      const sectionQuestions = category.questions.filter((q) => q.subSlug === sg.slug)
-      const cards = sectionQuestions
-        .map((q) =>
-          transformCustomFileContent(q.meta, q.body, q.anchor, {
-            ...opts,
-            qNum: q.qNum,
-          })
-        )
-        .join('\n\n---\n\n')
-
-      return `<div class="merged-section${category.interviewFormat ? ' ai100-section' : ''}" id="section-${sg.slug}">
-
-<h2 class="section-divider">${sg.icon || '📌'} ${sg.title}<span class="section-count">${sectionQuestions.length} 题</span></h2>
-
-${cards}
-
-</div>`
-    })
-    .join('\n\n')
-}
-
 function buildCustomPage(category) {
   const color = category.color || DEFAULT_CUSTOM_COLOR
-  const sourceHint = category.sourceSlugs?.length
-    ? `源文件：\`${category.sourceSlugs.map((s) => `custom/${s}/`).join('` · `')}\``
-    : `源文件：\`custom/${category.slug}/\``
-
-  const questionsHtml = category.subgroups?.length
-    ? buildMergedToc(category) + '\n\n---\n\n' + buildMergedQuestionsHtml(category)
-    : category.questions
-        .map((q) => transformCustomFileContent(q.meta, q.body, q.anchor))
-        .join('\n\n---\n\n')
-
-  const pageClassLine = category.pageClass ? `pageClass: ${category.pageClass}\n` : ''
-  const tagLabel = category.interviewFormat ? '面试问答' : '我的题库'
+  const sourceHint = `源文件：\`custom/${category.slug}/\``
+  const questionsHtml = category.questions
+    .map((q) => transformCustomFileContent(q.meta, q.body, q.anchor))
+    .join('\n\n---\n\n')
 
   return `---
 custom: true
-${pageClassLine}partTitle: ${category.title}
+partTitle: ${category.title}
 partColor: ${color}
 ---
 
@@ -554,7 +629,7 @@ partColor: ${color}
 # ${category.icon || '✏️'} ${category.title}
 
 <p class="part-desc">${category.desc || ''} · 共 ${category.questions.length} 题</p>
-<span class="part-round custom-tag">${tagLabel}</span>
+<span class="part-round custom-tag">我的题库</span>
 
 </div>
 
@@ -642,10 +717,10 @@ function buildSidebarItems(customCategories, notePages = []) {
           text: `${cat.icon || '✏️'} ${cat.title}`,
           collapsed: false,
           items: [
-            { text: '📄 全部题目', link: `/custom/${cat.slug}` },
+            { text: '📑 总览', link: `/custom/${cat.slug}/` },
             ...cat.subgroups.map((sg) => ({
               text: `${sg.icon || '·'} ${sg.title} (${sg.questions.length})`,
-              link: `/custom/${cat.slug}#section-${sg.slug}`,
+              link: `/custom/${cat.slug}/${getChapterSlug(cat.slug, sg.slug)}`,
             })),
           ],
         })
@@ -691,10 +766,10 @@ function buildHomePage(customCategories, notePages = []) {
     ? customCategories
         .map(
           (c) => `
-<a class="part-card custom-part-card" href="${base}custom/${c.slug}" style="--card-accent: ${c.color || DEFAULT_CUSTOM_COLOR}">
+<a class="part-card custom-part-card" href="${base}custom/${c.slug}${c.subgroups?.length ? '/' : ''}" style="--card-accent: ${c.color || DEFAULT_CUSTOM_COLOR}">
   <span class="part-card-icon">${c.icon || '✏️'}</span>
   <h3>${c.title}</h3>
-  <p>${c.desc || '自定义题目'} · ${c.questions.length} 题</p>
+  <p>${c.desc || '自定义题目'} · ${c.questions.length} 题${c.subgroups?.length ? ` · ${c.subgroups.length} 章` : ''}</p>
   <span class="part-card-round">我的题库</span>
 </a>`
         )
@@ -982,15 +1057,40 @@ title: 我的题库
   }
 
   for (const cat of categories) {
-    fs.writeFileSync(path.join(outDir, `${cat.slug}.md`), buildCustomPage(cat), 'utf-8')
-    console.log(`✓ custom/${cat.slug}.md (${cat.questions.length} 题)`)
+    if (cat.subgroups?.length) {
+      const catDir = path.join(outDir, cat.slug)
+      fs.rmSync(catDir, { recursive: true, force: true })
+      fs.mkdirSync(catDir, { recursive: true })
+      fs.writeFileSync(path.join(catDir, 'index.md'), buildMergedIndexPage(cat), 'utf-8')
+      for (const sg of cat.subgroups) {
+        const chSlug = getChapterSlug(cat.slug, sg.slug)
+        fs.writeFileSync(path.join(catDir, `${chSlug}.md`), buildChapterPage(cat, sg), 'utf-8')
+      }
+      console.log(`✓ custom/${cat.slug}/ (${cat.subgroups.length} 章, ${cat.questions.length} 题)`)
+    } else {
+      fs.writeFileSync(path.join(outDir, `${cat.slug}.md`), buildCustomPage(cat), 'utf-8')
+      console.log(`✓ custom/${cat.slug}.md (${cat.questions.length} 题)`)
+    }
   }
 
   const activeSlugs = new Set(categories.map((c) => c.slug))
-  for (const file of fs.readdirSync(outDir)) {
-    if (file.endsWith('.md') && file !== 'index.md' && !activeSlugs.has(file.replace(/\.md$/, ''))) {
-      fs.unlinkSync(path.join(outDir, file))
-      console.log(`✗ 移除旧页面 custom/${file}`)
+  for (const entry of fs.readdirSync(outDir)) {
+    const full = path.join(outDir, entry)
+    if (entry === 'index.md') continue
+    if (fs.statSync(full).isDirectory()) {
+      if (!activeSlugs.has(entry)) {
+        fs.rmSync(full, { recursive: true, force: true })
+        console.log(`✗ 移除旧目录 custom/${entry}/`)
+      }
+    } else if (entry.endsWith('.md')) {
+      const slug = entry.replace(/\.md$/, '')
+      const hasDir =
+        fs.existsSync(path.join(outDir, slug)) &&
+        fs.statSync(path.join(outDir, slug)).isDirectory()
+      if (!activeSlugs.has(slug) || hasDir) {
+        fs.unlinkSync(full)
+        console.log(`✗ 移除旧页面 custom/${entry}`)
+      }
     }
   }
 }

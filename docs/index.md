@@ -137,24 +137,24 @@ features:
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/ai100" style="--card-accent: #6366f1">
+<a class="part-card custom-part-card" href="/custom/ai100/" style="--card-accent: #6366f1">
   <span class="part-card-icon">🤖</span>
   <h3>Agent Interview 100</h3>
-  <p>AI Agent 面试 100 题 · 11 主题 · 100 题</p>
+  <p>AI Agent 面试 100 题 · 11 主题 · 100 题 · 11 章</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/kama" style="--card-accent: #06b6d4">
+<a class="part-card custom-part-card" href="/custom/kama/" style="--card-accent: #06b6d4">
   <span class="part-card-icon">📚</span>
   <h3>卡码笔记</h3>
-  <p>卡码大模型面经合集 · 97 题</p>
+  <p>卡码大模型面经合集 · 97 题 · 6 章</p>
   <span class="part-card-round">我的题库</span>
 </a>
 
-<a class="part-card custom-part-card" href="/custom/xiaolin" style="--card-accent: #10b981">
+<a class="part-card custom-part-card" href="/custom/xiaolin/" style="--card-accent: #10b981">
   <span class="part-card-icon">📝</span>
   <h3>小林面试笔记</h3>
-  <p>小林 Agent / RAG / LLM 面经 · 74 题</p>
+  <p>小林 Agent / RAG / LLM 面经 · 74 题 · 4 章</p>
   <span class="part-card-round">我的题库</span>
 </a>
 

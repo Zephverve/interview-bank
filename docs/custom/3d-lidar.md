@@ -24,7 +24,7 @@ partColor: #14b8a6
 <h2 class="question-title"><span class="q-badge custom-badge">✦</span><span class="question-text">激光雷达点云和图像相比，有哪些优缺点？你在项目中是怎么用的？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐ · 标签：3D感知, 点云, LiDAR · 考察点：传感器原理</div>

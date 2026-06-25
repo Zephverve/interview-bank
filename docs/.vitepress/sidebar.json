@@ -150,52 +150,52 @@
     "collapsed": false,
     "items": [
       {
-        "text": "📄 全部题目",
-        "link": "/custom/ai100"
+        "text": "📑 总览",
+        "link": "/custom/ai100/"
       },
       {
         "text": "🏛️ Agent 架构 (10)",
-        "link": "/custom/ai100#section-ai100-agent-arch"
+        "link": "/custom/ai100/agent-arch"
       },
       {
         "text": "🔍 RAG (9)",
-        "link": "/custom/ai100#section-ai100-rag"
+        "link": "/custom/ai100/rag"
       },
       {
         "text": "🔧 工具使用 (10)",
-        "link": "/custom/ai100#section-ai100-tool-use"
+        "link": "/custom/ai100/tool-use"
       },
       {
         "text": "👥 多 Agent (10)",
-        "link": "/custom/ai100#section-ai100-multi-agent"
+        "link": "/custom/ai100/multi-agent"
       },
       {
         "text": "🧠 记忆与状态 (7)",
-        "link": "/custom/ai100#section-ai100-memory"
+        "link": "/custom/ai100/memory"
       },
       {
         "text": "🧩 规划与推理 (9)",
-        "link": "/custom/ai100#section-ai100-planning"
+        "link": "/custom/ai100/planning"
       },
       {
         "text": "✍️ 提示工程 (10)",
-        "link": "/custom/ai100#section-ai100-prompt"
+        "link": "/custom/ai100/prompt"
       },
       {
         "text": "📊 评估 (9)",
-        "link": "/custom/ai100#section-ai100-evaluation"
+        "link": "/custom/ai100/evaluation"
       },
       {
         "text": "🛡️ 安全对齐 (8)",
-        "link": "/custom/ai100#section-ai100-safety"
+        "link": "/custom/ai100/safety"
       },
       {
         "text": "🚀 生产部署 (12)",
-        "link": "/custom/ai100#section-ai100-production"
+        "link": "/custom/ai100/production"
       },
       {
         "text": "🧰 框架选型 (6)",
-        "link": "/custom/ai100#section-ai100-frameworks"
+        "link": "/custom/ai100/frameworks"
       }
     ]
   },
@@ -204,32 +204,32 @@
     "collapsed": false,
     "items": [
       {
-        "text": "📄 全部题目",
-        "link": "/custom/kama"
+        "text": "📑 总览",
+        "link": "/custom/kama/"
       },
       {
         "text": "💻 AI 编程 (26)",
-        "link": "/custom/kama#section-kama-ai-coding"
+        "link": "/custom/kama/ai-coding"
       },
       {
         "text": "🔍 RAG (20)",
-        "link": "/custom/kama#section-kama-rag"
+        "link": "/custom/kama/rag"
       },
       {
         "text": "🎯 模型微调 (1)",
-        "link": "/custom/kama#section-kama-finetune"
+        "link": "/custom/kama/finetune"
       },
       {
         "text": "🤖 Agent (41)",
-        "link": "/custom/kama#section-kama-agent"
+        "link": "/custom/kama/agent"
       },
       {
         "text": "🧠 Transformer (8)",
-        "link": "/custom/kama#section-kama-transformer"
+        "link": "/custom/kama/transformer"
       },
       {
         "text": "📋 真实面经 (1)",
-        "link": "/custom/kama#section-kama-real"
+        "link": "/custom/kama/real"
       }
     ]
   },
@@ -238,24 +238,24 @@
     "collapsed": false,
     "items": [
       {
-        "text": "📄 全部题目",
-        "link": "/custom/xiaolin"
+        "text": "📑 总览",
+        "link": "/custom/xiaolin/"
       },
       {
         "text": "🤖 Agent 面试题 (16)",
-        "link": "/custom/xiaolin#section-xiaolin-agent"
+        "link": "/custom/xiaolin/agent"
       },
       {
         "text": "🔍 RAG 面试题 (20)",
-        "link": "/custom/xiaolin#section-xiaolin-rag"
+        "link": "/custom/xiaolin/rag"
       },
       {
         "text": "🔧 工具调用面试题 (16)",
-        "link": "/custom/xiaolin#section-xiaolin-tools"
+        "link": "/custom/xiaolin/tools"
       },
       {
         "text": "🧠 大模型工程面试题 (22)",
-        "link": "/custom/xiaolin#section-xiaolin-llm"
+        "link": "/custom/xiaolin/llm"
       }
     ]
   }
