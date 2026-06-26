@@ -136,13 +136,13 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 <div class="q-followups">🔁 <strong>追问方向</strong>：代码量多大？ · 和 Hermes 区别？ · 为什么两个项目都做 Agent？</div>
 </div>
 
-"**EvoAgent 是我个人项目**，从架构到代码自己设计和实现，不是分析别人的 GenericAgent。
+"**EvoAgent 是我个人项目**，在 GenericAgent 式轻量架构上独立迭代：分层记忆、四阶段 SOP、Conductor、MixinSession、对抗验证 SubAgent。代码目录 `GenericAgent-main`，核心 `agent_loop.py` + `ga.py` + `frontends/conductor.py`。
 
 核心模块我写的包括：L0-L4 记忆读写与任务后技能沉淀、探索-规划-执行-验证 SOP、SubAgent 委托与对抗验证、Conductor（WebSocket + inbox + SubagentPool）、MixinSession 多 Provider 故障切换、上下文压缩。
 
 **和 RAG 的精力分配**：研一研二主线是科研 RAG（Agentic 流水线、120 问黄金集、MinerU）；EvoAgent 是 2026 年集中迭代，把面试里常被问的 Agent 能力（记忆、多 Agent、进化）落成可 demo 的框架。
 
-面试 Agent 岗时：**RAG 讲深度（Q1、Q37、Q41–Q45）**，EvoAgent 讲广度和工程完整性（Q31–Q35、本题）。论文方向简历上有，Agent 面试不主动展开，被问到再说算法功底。
+面试 Agent 岗时：**RAG 讲深度（Q1、Q37、Q41–Q46、Part0 附录）**，EvoAgent 讲广度（Q31–Q35、Q47、Part0 附录、本题）。
 
 和 Hermes 区别：同是分层记忆+技能结晶，EvoAgent 更轻，强调 **对抗验证 SubAgent** 和 **Conductor 编排**，没有社区 Skill 市场。"
 </div>
@@ -186,9 +186,40 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 **为什么这样拆**：检索错误生成救不了，所以门控在生成前；生成幻觉靠 Guard+微调负样本；对比类一次检索会混论文，所以 Multi-hop；口语问和论文文体不同，所以改写+HyDE。
 
 完整表格版在 **Part 0 项目一附录**，背那一节即可应对「逐步深挖」；本题是同一内容的口播入口。"
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card compact-card" id="q47">
+
+<h2 class="question-title"><span class="q-badge">Q47</span><span class="question-text">EvoAgent 从用户发消息到任务完成、记忆沉淀，**每一步**怎么做？和 LangGraph RAG 有什么区别？</span></h2>
+
+<details class="answer-reveal">
+<summary>展开面试回答</summary>
+<div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面/二面 · 难度：⭐⭐⭐⭐ · 考察点：Agent 项目真实性 · ReAct + Conductor + 记忆（与 Part 0 附录同一套答案）</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：MixinSession → task_queue → agent_runner_loop ReAct；L0–L4 文件记忆 + key_info；Conductor inbox 派 SubAgent；任务后 start_long_term_update；开放任务 EvoAgent，固定问答走 RAG 图。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：SubAgent 和主 Agent 区别？ · 为什么 Conductor 不执行？ · 代码在哪个目录？</div>
+</div>
+
+"按 **Part 0【项目二附录】EvoAgent 从 0 到 1 逐步详解** 讲，代码在 `GenericAgent-main`（EvoAgent 实现基座）。
+
+**启动**：`mykey.py` → `MixinSession` → 9 工具 Schema → system 注入 L1/L2。
+
+**单任务**：`put_task` → `GenericAgentHandler` → 每轮 LLM+tools → `do_*` → anchor prompt 注入 WORKING MEMORY → 四阶段 SOP（探索读记忆、plan.md 规划、code_run 执行、验证 SubAgent）。
+
+**Conductor**：inbox 唤醒 → 主 Agent 调度 → SubagentPool 新建独立 `GenericAgent` → WebSocket 监控 → `key_info` 注入。
+
+**进化**：`start_long_term_update` 按 L0 增量 patch L2/L3。
+
+**vs RAG**：RAG 是固定 LangGraph；EvoAgent 是开放 ReAct。完整表格见 Part 0 附录。"
 
 
-> 📌 共 **45 问**（原 35 问 + Q36–Q40 + RAG 专项 Q41–Q46 + Part 0 RAG 逐步附录）。面试中可根据实际情况调整细节和数字。
+> 📌 共 **46 问**（原 35 问 + Q36–Q40 + RAG Q41–Q46 + EvoAgent Q47 + Part 0 双项目逐步附录）。面试中可根据实际情况调整细节和数字。
 </div>
 </details>
 

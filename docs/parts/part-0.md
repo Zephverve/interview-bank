@@ -148,6 +148,168 @@ partColor: #6366f1
 和 Hermes 这类框架比，EvoAgent 更轻、更强调 **任务后技能结晶 + 对抗验证** 这条自我进化闭环。"
 
 
+### 【项目二 · 附录】EvoAgent 从 0 到 1 · 每一步怎么做（详细版）
+
+> **代码目录**：`/Users/yuyu/Downloads/GenericAgent-main`（EvoAgent 实现基座，核心约 3K 行）  
+> **使用说明**：面试讲 Agent 项目时，按 **启动配置 → 单任务 ReAct 循环 → 记忆读写 → Conductor 编排 → 任务后进化** 五段讲；与 `agent_loop.py`、`ga.py`、`conductor.py` 一致。
+
+**面试官**：EvoAgent 不是 PPT 架构，把你从用户发消息到任务完成、记忆沉淀，**每一步**讲清楚。
+
+**回答（结构化背诵版）**：
+
+
+#### 零、整体分层（先给面试官一张 mental map）
+
+| 层级 | 核心文件 | 职责 |
+|------|----------|------|
+| **接入层** | `frontends/conductor.py` + `conductor.html` | FastAPI + WebSocket；用户只和 Conductor 对话 |
+| **编排层** | `Conductor` 类 | inbox 事件队列、SubagentPool；**自己不执行工具** |
+| **执行层** | `agentmain.py` → `agent_loop.py` | `GenericAgent` 任务队列 + ~100 行 ReAct 主循环 |
+| **工具层** | `ga.py` | `GenericAgentHandler` 实现 9 个 `do_*` 工具 |
+| **LLM 层** | `llmcore.py` | `MixinSession` 多后端故障切换、流式 SSE、历史压缩 |
+| **记忆层** | `memory/` | L0–L4 文件化记忆 + working `key_info` |
+
+简历里的 **EvoAgent** 是在此架构上强化：四阶段 SOP、对抗验证 SubAgent、Conductor 生产化、与 RAG `search` 工具打通。
+
+
+#### 一、启动与配置（进程起来之后发生了什么）
+
+| 步骤 | 做什么 | 具体实现 |
+|------|--------|----------|
+| **1.1 Provider 配置** | 配多家 LLM | `mykey.py` 写 API Key、base_url、model；支持 Anthropic / OpenAI 兼容 / **Mixin 多后端列表** |
+| **1.2 加载 Session** | 构建可调用客户端 | `GenericAgent.load_llm_sessions()`：`resolve_client` 或 `MixinSession(all_sessions, cfg)`；Native 模型走 `NativeToolClient` |
+| **1.3 MixinSession** | 主备切换 | 主 Session 失败 → 轮询备用；`spring_back` 秒后回主线路；`tools`/`history` 等属性广播到所有 backend |
+| **1.4 记忆目录初始化** | L2 空文件兜底 | `memory/global_mem.txt`（L2 事实）、`global_mem_insight.txt`（L1 索引模板）不存在则创建 |
+| **1.5 工具 Schema** | Function Calling 定义 | `assets/tools_schema.json` 加载 9 个工具 JSON Schema；Windows 用 powershell，Linux 用 bash |
+| **1.6 System Prompt** | 注入全局记忆 | `get_system_prompt()` = `assets/sys_prompt.txt` + 当天日期 + `get_global_memory()`（读 L1/L2 摘要进 system） |
+
+**启动 Conductor**：`python frontends/conductor.py` → FastAPI `8900` → 起主 `GenericAgent` 线程 + IM 轮询线程。
+
+
+#### 二、用户发一条消息 → 执行层完整路径（SubAgent / 主 Agent 同构）
+
+用户消息 **不直接进 ReAct**，Conductor 模式先进 inbox；若是 CLI/`agent.put_task()` 则进 `task_queue`。
+
+| 步骤 | 模块 | 输入 → 处理 → 输出 |
+|------|------|-------------------|
+| **2.1 入队** | `GenericAgent.put_task(query)` | 创建 `display_queue`，任务 `{query, source, images}` 入 `task_queue` |
+| **2.2 取任务** | `GenericAgent.run()` | 阻塞 `task_queue.get()`；超长 prompt 落 `temp/user_prompt_*.md` 让 Agent `file_read` |
+| **2.3 构建 Handler** | `GenericAgentHandler` | 绑定 `cwd=temp/`、继承上轮 `key_info`（跨轮对话记忆）；`history` 在 **LLM Session** 里全量保留 |
+| **2.4 System 拼装** | `get_system_prompt()` + backend.extra | 含 L1/L2 全局记忆 + 可选 `[Peer]` 提示查 `model_responses/` |
+| **2.5 进入主循环** | `agent_runner_loop()` | `max_turns` 默认 80；每轮 yield turn 号给前端 |
+
+**单轮 Turn（ReAct 内核）——循环体 `while turn < max_turns`：**
+
+| 子步 | 动作 | 细节 |
+|------|------|------|
+| **2.5.1 LLM 推理** | `client.chat(messages, tools=TOOLS_SCHEMA)` | 流式 `yield` 到 `display_queue`；每 10 轮重置 `last_tools` 防工具描述粘连 |
+| **2.5.2 解析工具** | 有 `tool_calls` → 列表；无 → 虚拟 `no_tool` | JSON parse 参数；失败走 `bad_json` |
+| **2.5.3 分发执行** | `handler.dispatch(tool_name, args)` | 映射 `do_code_run`、`do_file_read`…；`plugins/hooks` 可插桩 |
+| **2.5.4 工具输出** | `StepOutcome` | `data` 进 tool_results；`next_prompt` 决定下一轮用户消息；`should_exit` 结束任务 |
+| **2.5.5 锚点注入** | `_get_anchor_prompt()` | 拼 **WORKING MEMORY**：`<earlier_context>` 折叠老历史 + 近 30 轮 `<history>` + `<key_info>` + `related_sop` |
+| **2.5.6 下一轮消息** | Session 侧保留全历史 | 本轮只追加 `{"role":"user","content":next_prompt,"tool_results":...}` |
+
+**异常与熔断**：
+
+- 连续 3 次空响应 → `no_tool` 触发退出  
+- `max_turns` 到 → `MAX_TURNS_EXCEEDED`  
+- 用户 `abort()` → `code_stop_signal` 杀 `code_run` 子进程  
+- Plan 模式第 10 轮起提示换策略 / `update_working_checkpoint`
+
+
+#### 三、四阶段 SOP 在代码里怎么对应（简历「探索—规划—执行—验证」）
+
+不是四个独立进程，而是 **prompt + 工具 + 模式位** 约束 ReAct：
+
+| 阶段 | 目标 | EvoAgent 落地 |
+|------|------|---------------|
+| **探索** | 弄清任务与环境 | `file_read` 读 L1/L2/L3；`web_scan` 看浏览器；`update_working_checkpoint` 写 `key_info` |
+| **规划** | 拆步骤、写计划 | `enter_plan_mode(plan.md)`：`working['in_plan_mode']`，`max_turns` 提到 100；plan 里 checkbox `[ ]` 跟踪进度 |
+| **执行** | 调工具做完 | `code_run` / `file_patch` / `web_execute_js`；**繁重或脏上下文** → Conductor 开 **独立 SubAgent**（新 `GenericAgent` 实例），主 Agent 只收摘要 |
+| **验证** | 防确认偏误 | ① Plan 模式声称完成时，`no_tool` **拦截**：无 `VERDICT` / 未启动验证 SubAgent 则强制继续；② 任务尾拉起 **对抗验证 SubAgent**（独立上下文，只读输出+工具日志挑刺） |
+
+
+#### 四、9 个原子工具（`tools_schema.json` → `ga.py`）
+
+| 工具 | 作用 | 实现要点 |
+|------|------|----------|
+| `code_run` | 跑 Python / shell | 子进程 + 60s 超时 + `code_run_header.py` 安全头；stdout 流式打印；`stop_signal` 可杀进程 |
+| `file_read` | 读文件 | 支持 start/count/keyword 定位；读 `memory/` 会记 access stats |
+| `file_patch` | 唯一匹配替换 | `old_content` 必须全文唯一；支持 `file:路径:起止行` 文件引用展开（双花括号语法） |
+| `file_write` | 整文件写 | 从 `<file_content>` 或回复代码块抽内容；overwrite/append/prepend |
+| `web_scan` | 浏览器快照 | TMWebDriver + `simphtml` 简化 DOM；可只列 tabs |
+| `web_execute_js` | 执行 JS | CDP 注入；大结果可 `save_to_file` |
+| `update_working_checkpoint` | 工作记忆 | 写 `working['key_info']`/`related_sop`，每轮 anchor 自动注入 |
+| `ask_user` | 人机协同 | 返回 `INTERRUPT`；前端/Conductor 收用户回复后续跑 |
+| `start_long_term_update` | 开启记忆结算 | 触发 L0 SOP 指引的 L2/L3 增量更新（见第五节） |
+
+复杂能力不靠加工具：**`code_run` 动态扩展** 或 **SubAgent 并行**。
+
+
+#### 五、L0–L4 分层记忆（文件化，非向量库）
+
+| 层级 | 路径/载体 | 存什么 | 怎么读写的 |
+|------|-----------|--------|------------|
+| **L0** | `memory/memory_management_sop.md` | **记忆更新规程** | `start_long_term_update` 时 `file_read` 注入 prompt |
+| **L1** | `memory/global_mem_insight.txt` | **索引**：有哪些 L2/L3 文件、关键词 | 拼进 system prompt 开头 |
+| **L2** | `memory/global_mem.txt` 等 | **已验证事实**（路径、账号、用户偏好） | `file_patch` 增量改；只追加不删 |
+| **L3** | `memory/*.md`、SOP | **任务 SOP / Skill**（踩坑步骤、前置条件） | 任务前 `file_read`；成功后精简写入 |
+| **L4** | `memory/L4_raw_sessions/` | **历史会话归档** | 定时把 `temp/model_responses/` 压缩摘要；12h cron |
+| **Working** | `handler.working` + Session history | 当前任务 `key_info`、plan 模式、近轮对话 | `_get_anchor_prompt` 每轮注入；`compress_history_tags` 裁老消息 |
+
+**自我进化闭环**：任务成功 → Agent 调 `start_long_term_update` → 按 L0 指引判断类型 → **最小局部** `file_patch` 更新 L2 或新建/改 L3 SOP → L1 索引同步。  
+**三层过滤**（防污染）：① 任务成功且经验证 SubAgent 通过；② 路径可结构化复用；③ 同类任务 ≥2 次才结晶。
+
+
+#### 六、Conductor 多 Agent 编排（`frontends/conductor.py`）
+
+**设计原则**：Conductor = **总管**，绝不自己 `code_run`；只做分析、派遣、验收、对用户 `POST /chat`。
+
+| 步骤 | 事件 | 处理 |
+|------|------|------|
+| **6.1 唤醒** | inbox 收到 `user_msg` / `subagent_done` / `im_signal` | 0.3s debounce 合并事件 |
+| **6.2 拼 prompt** | `_build_prompt(events)` | 注入 subagent 运行数、未读消息数；附 Conductor API readme |
+| **6.3 派主 Agent** | `agent.put_task(prompt, source="conductor")` | 主 `GenericAgent` 决定：给用户发消息 or `POST /subagent` |
+| **6.4 开 SubAgent** | `SubagentPool.start_subagent(prompt)` | **新建** `GenericAgent()` + 独立线程；`verbose=False` 减噪音 |
+| **6.5 监控输出** | `monitor_display_queue` | 流式更新卡片；完成时 `conductor.notify(subagent_done)` |
+| **6.6 key_info 注入** | `POST /subagent/{id}` action=keyinfo | 写入 `handler.working['key_info']`，**不重启** SubAgent |
+| **6.7 前端推送** | `schedule_broadcast` | WebSocket 推 chat / subagents / log；跨线程 `run_coroutine_threadsafe` |
+| **6.8 人机审批** | `POST /approval` | 危险任务先推前端待批，用户同意才变 SubAgent prompt |
+
+**与 RAG 联动**：SubAgent 的 `search` 可调科研问答 API；简单文献问 Conductor 可直接路由 RAG 短链路，复杂多工具才走 EvoAgent 全循环。
+
+
+#### 七、上下文压缩（控 Token）
+
+| 机制 | 位置 | 行为 |
+|------|------|------|
+| `compress_history_tags` | `llmcore.py` | 老消息里 `<thinking>`/`tool_result` 首尾截断 |
+| `_fold_earlier` | `ga.py` | 30 轮以前历史压成「N turns」单行摘要 |
+| `smart_format` | 全局 | 工具返回超长按 max_len 省略 |
+| 工具返回上限 | 各 `do_*` | 按 `_tool_num` 平分 8000/15000 字符预算 |
+
+
+#### 八、安全与容错
+
+- **code_run**：子进程、工作区 `temp/`、超时、Windows 隐藏窗口  
+- **MixinSession**：API 失败自动切备用模型  
+- **ask_user / approval**：删文件、改源码前必须人确认  
+- **对抗验证 SubAgent**：独立上下文审查，避免主 Agent 自证自错  
+
+
+**15 秒总述（开场用）**：
+
+「EvoAgent 约 3K 行核心：MixinSession 多模型 → `agent_runner_loop` ReAct → 9 原子工具在 `ga.py`；L0–L4 文件记忆 + 每轮 `key_info` 工作记忆；任务后 `start_long_term_update` 结晶 L3 Skill。多 Agent 靠 FastAPI Conductor：inbox 唤醒总管，SubagentPool 里每个 SubAgent 是独立 GenericAgent 实例，支持 key_info 运行时注入和 WebSocket 流式监控。」
+
+**常见追问**：
+
+- **和 ReAct 框架区别？** 不是 LangChain Agent 黑盒，而是自研 ~100 行循环 + 显式 `StepOutcome` 与 anchor prompt。  
+- **为什么文件记忆不用向量？** 科研/工程事实要可编辑、可审计；L1 索引定位比 embedding 更准。  
+- **Conductor 为何不执行？** 总管上下文要保持「调度视角」；执行污染上下文且难并行。  
+
+（单点深挖见 Part 2 **Q31–Q35、Q14、Q15、Q40**）
+
+
 ### 项目经历 · 遇到的问题与解决方案
 
 > **使用提示**：三个案例各约 1 分钟，主题分别是引用质量、数据质量、Agent 安全——与 Part 1 Q13、Q2、Q15 可交叉引用。
