@@ -145,9 +145,50 @@ nDCG 同时考虑召回和排序质量，理论上更全面，但它需要更细
 面试 Agent 岗时：**RAG 讲深度（Q1、Q37、Q41–Q45）**，EvoAgent 讲广度和工程完整性（Q31–Q35、本题）。论文方向简历上有，Agent 面试不主动展开，被问到再说算法功底。
 
 和 Hermes 区别：同是分层记忆+技能结晶，EvoAgent 更轻，强调 **对抗验证 SubAgent** 和 **Conductor 编排**，没有社区 Skill 市场。"
+</div>
+</details>
+
+</div>
+
+---
+
+<div class="question-card compact-card" id="q46">
+
+<h2 class="question-title"><span class="q-badge">Q46</span><span class="question-text">把你的 RAG 项目从上传 PDF 到返回答案，**每一步**具体怎么做？不要只说模块名，要说清输入输出和为什么。</span></h2>
+
+<details class="answer-reveal">
+<summary>展开面试回答</summary>
+<div class="answer-body">
+<div class="answer-extras">
+<div class="q-meta"><strong>轮次</strong>：一面 · 难度：⭐⭐⭐⭐ · 考察点：项目真实性 · 能否讲清完整 pipeline（与 Part 0 附录同一套答案）</div>
+<div class="q-conclusion">💡 <strong>15 秒结论</strong>：离线七步建库（MinerU→切片→BGE-M3→Qdrant+BM25→增量 upsert）；在线 LangGraph 十二节点（意图→改写→HyDE→混合检索→门控→压缩→生成→Guard→Self-RAG）；120 问评测 + QLoRA；FastAPI SSE + React。</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：某一步删掉指标掉多少？ · State 里有哪些字段？ · 和 Part 0 附录有何区别？</div>
+</div>
+
+"这道题我按 **Part 0【项目一附录】RAG 从 0 到 1 逐步详解** 来讲，和代码 `rag_graph.py` 节点一一对应。面试时建议面试官先听 **15 秒总述**，再按他兴趣展开某一段。
+
+**离线（7 步）**：
+
+1. 收 PDF（课题组目录或 Web 上传）
+2. **MinerU 解析**（失败降级 structured → basic）→ 带章节/表格/公式的页文本
+3. **Parent-child 切片**（子块检索、父块生成，子块带 `parent_id`）
+4. **BGE-M3** embed 子块（dense + sparse weights）
+5. **Qdrant** upsert 向量 + payload
+6. **BM25** 建库并落盘
+7. **单篇增量**：delete 旧 `paper_id` 向量 → upsert 新 chunk → 重建 BM25，不全库 re-embed
+
+**在线（LangGraph 主链路）**：
+
+`classify_intent` → `rewrite_query`（中文问句+英文关键词）→ `hyde_generate`（可选假设文档向量）→ `retrieve`（Dense+BM25+Sparse→RRF→Cross-Encoder；compare 走 Multi-hop 子问）→ `grade_retrieval`（分数/关键词门控）→ 不够则 `re_retrieve` 回改写（最多 1 次）→ `compress_context`（父块合并裁剪）→ `generate`（意图模板 + 微调/API）→ `faithfulness_guard`（引用格式+语义相似度）→ `self_rag_guard` → 失败则 `retry` 重生（最多 1 次）→ `persist_trace` 写日志 → 返回 citations。
+
+**SSE**：检索先跑完，生成流式推 token，Guard 在流结束后跑，最后推 citation 列表。
+
+**为什么这样拆**：检索错误生成救不了，所以门控在生成前；生成幻觉靠 Guard+微调负样本；对比类一次检索会混论文，所以 Multi-hop；口语问和论文文体不同，所以改写+HyDE。
+
+完整表格版在 **Part 0 项目一附录**，背那一节即可应对「逐步深挖」；本题是同一内容的口播入口。"
 
 
-> 📌 共 **44 问**（原 35 问 + Q36–Q40 + RAG 专项 Q41–Q45）。面试中可根据实际情况调整细节和数字。
+> 📌 共 **45 问**（原 35 问 + Q36–Q40 + RAG 专项 Q41–Q46 + Part 0 RAG 逐步附录）。面试中可根据实际情况调整细节和数字。
 </div>
 </details>
 
