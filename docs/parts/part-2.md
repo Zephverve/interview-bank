@@ -40,7 +40,7 @@ partColor: #8b5cf6
 
 ReAct 适合开放性任务。比如你跟 Agent 说'帮我查一下这个问题的相关论文，汇总成报告发给我'，你不知道 Agent 需要查几次、搜什么关键词、中间会不会遇到死胡同需要换方案——这些 LLM 自己探索更灵活。
 
-LangGraph 适合流程确定的任务。比如我做科研问答的那个 RAG pipeline——查询改写→检索→重排→引用校验——每一步的顺序和逻辑是确定的，不需要 LLM 来'决策'下一步做什么。用 StateGraph 的好处是每一步都可审计、可调试、可以单独优化。
+LangGraph 适合流程确定的任务。比如我的 Agentic RAG——意图路由→改写→（可选 HyDE）→混合检索→门控→压缩→生成→Faithfulness Guard→Self-RAG 条件边——主链路顺序是业务定的，LLM 不负责「下一步检还是生」。用 StateGraph 的好处是每一步可审计、可单独测、条件边显式。
 
 我的项目里两种都用到了。科研 RAG 用 LangGraph 做 Agentic 流水线——意图路由、质量门控、Faithfulness Guard 这些分支是预定义的。**EvoAgent** 里开放任务走 ReAct + 四阶段 SOP，繁重步骤委托 SubAgent，适合任务类型不确定的场景。
 
@@ -75,7 +75,7 @@ Native Function Calling 把工具定义以 JSON Schema 格式放在 API 的 tool
 
 文本协议是把工具描述拼在 system prompt 里，比如'你可以使用以下工具：file_read(path, start, count)'——这本质上依赖模型的阅读理解能力。模型需要从自然语言里推断工具名、参数和调用格式。问题在于，模型可能会'读出'不存在的参数，或者把一个工具的用法套到另一个工具上。
 
-我在 **EvoAgent** 的 Provider 抽象层里同时实现了 Native Function Calling 和文本协议兜底：**MixinSession** 优先走 API tools 字段，失败或模型不支持时自动切到 prompt 内嵌 schema。实践上和 GenericAgent 里 NativeClaudeSession vs ClaudeSession 的分工类似——Native 参数更准，文本协议兼容性更广。
+我在 **EvoAgent** 的 Provider 抽象层里同时实现了 Native Function Calling 和文本协议兜底：**MixinSession** 优先走 API `tools` 字段，失败或模型不支持时自动切到 prompt 内嵌 schema——主 Provider 挂了还能切备用后端，这和我在 RAG 侧「多模型调度」是同一套思路。Native 参数更准、支持 parallel tool calls；文本协议兼容性更广。
 
 一个具体的差异是 parallel tool calls。Native 模式下 LLM 可以一次返回多个 tool call——比如同时读两个文件。文本协议下很难实现这一点，因为你需要定义复杂的文本格式来区分'多个调用'和'一个调用里的多行参数'。
 
@@ -208,7 +208,7 @@ Native Function Calling 把工具定义以 JSON Schema 格式放在 API 的 tool
 
 **输出监控 + key_info 注入**——Conductor 可运行时往 SubAgent 注入 key_info（'用户改需求了''优先用方案 B'），不用重启整条链路。
 
-**多端协议**：Web 走 WebSocket 双向（下行流式 chunk + 上行 ask_user 确认）；只读展示可走 SSE。核心层只发 inbox 事件，协议适配在 Conductor 边缘——和 GenericAgent display_queue '协议无关' 的思想一致，但换成可扩展的消息总线。
+**多端协议**：Web 走 WebSocket 双向（下行流式 chunk + 上行 ask_user 确认）；RAG 问答走 **SSE** 只读流式。核心层只发 inbox 事件，协议适配在 Conductor 边缘——事件总线与前端解耦，换 React 页面或 CLI 不用动执行引擎。
 
 离线/移动端若要上线，我会把 inbox 持久化到 Redis，SDK 按 session_id 消费位点重放——这是 Q34 里设计的自然延伸。"
 </div>
