@@ -3,7 +3,7 @@ layout: home
 hero:
   name: 面试题库
   text: 大模型应用工程师 · Agent 方向
-  tagline: 内置 39 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
+  tagline: 内置 44 问 + 网页交互添加 · 结论句 + 完整答案 · 按轮次复习
   actions:
     - theme: brand
       text: 开始刷题 · Part 0

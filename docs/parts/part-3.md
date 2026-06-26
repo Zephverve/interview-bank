@@ -62,12 +62,12 @@ partColor: #f59e0b
 <h2 class="question-title"><span class="q-badge">Q6</span><span class="question-text">你简历提到对比了分层记忆和向量检索。假设现在有一个客服 Agent，需要记住每个客户的历史对话。你会用分层记忆还是向量检索？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：客服记忆分层 vs 向量</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：分层记忆为主（精确匹配+SOP），向量检索为辅（相似投诉兜底）；加时效性与只追加不删除。</div>
-<div class="q-followups">🔁 <strong>追问方向</strong>：和 GenericAgent L0-L4 怎么映射？ · 记忆更新策略？</div>
+<div class="q-followups">🔁 <strong>追问方向</strong>：和 EvoAgent L0-L4 怎么映射？ · 记忆更新策略？</div>
 </div>
 
 "我会用**分层记忆为主、向量检索为辅**的混合方案。
@@ -83,9 +83,9 @@ partColor: #f59e0b
 
 所以我不会完全放弃向量检索，而是把它作为 L2 的一个补充索引——当精确匹配找不到时，用向量检索做兜底。
 
-相比 GenericAgent 的四层架构，客服 Agent 的记忆系统需要加一个**时效性维度**。比如同一个客户昨天的对话比三个月前的对话优先级更高，我需要在 L1 索引里加时间权重。
+相比 **EvoAgent** 的 L0-L4，客服 Agent 还要加 **时效性维度**——昨天对话权重高于三个月前。L1 索引加时间权重。
 
-更新策略上，像客户联系方式变更这种，我不会删除旧记录——用追加的方式，新记录标为 active，旧记录标为 historical。这和 GenericAgent 的'只追加不删除'原则一致，避免了记忆污染。"
+更新策略：联系方式变更等用追加，新记录 active、旧记录 historical，和 EvoAgent「只追加不删除」一致。
 </div>
 </details>
 
@@ -98,7 +98,7 @@ partColor: #f59e0b
 <h2 class="question-title"><span class="q-badge">Q16</span><span class="question-text">如果让你设计一个多 Agent 协作系统——比如一个 Agent 负责查资料，一个 Agent 负责写作，一个 Agent 负责审核——它们之间怎么通信？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：多 Agent 通信</div>
@@ -108,9 +108,9 @@ partColor: #f59e0b
 
 "我会用消息队列 + 共享状态的双通道方案。
 
-**消息队列解决'谁做什么'**：每个 Agent 订阅一个 channel。协调 Agent 发布任务到对应 channel——'资料 Agent：请检索关于 XX 的论文'，资料 Agent 完成后发布结果。这是一个发布-订阅模式，和 GenericAgent 的 Agent BBS 设计类似。BBS 是一个极简实现——用文件做消息总线。生产环境可以用 Redis Pub/Sub 或者 RabbitMQ。
+**消息队列解决'谁做什么'**：每个 Agent 订阅 channel，协调 Agent 发布任务——这和 **EvoAgent Conductor** 的 inbox + SubagentPool 是同一思路，生产环境可换成 Redis Pub/Sub。
 
-**共享状态解决'做到哪了'**：三个 Agent 需要知道整体进度——资料 Agent 查完了吗？写作 Agent 写到第几段了？这需要一个中心化的状态管理器。类似 GenericAgent 里的 working memory，但在这里是跨 Agent 共享的。格式大概是：
+**共享状态解决'做到哪了'**：跨 Agent 的 working memory，格式像：
 
 ```json
 {
@@ -143,7 +143,7 @@ partColor: #f59e0b
 <h2 class="question-title"><span class="q-badge">Q22</span><span class="question-text">你的 Agent 在执行一个长任务中途，用户突然改了需求——比如原本是'帮我查 A、B、C 三只股票的行情'，Agent 查到一半用户说'等等，加一个 D'。你怎么设计系统支持这种动态变更？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐⭐ · 考察点：长任务中途改需求</div>
@@ -155,7 +155,7 @@ partColor: #f59e0b
 
 我的设计分三个部分：
 
-**第一，中断接受机制**。Agent 的 display_queue 同时作为上行通道和下行通道——用户发送新指令通过同一个队列的后门注入，而不是停下 Agent 重新启动。在 GenericAgent 的设计里，agentmain.py 的 `_intervene` 文件注入机制就是这个思路——用户在 temp/ 目录放一个指令文件，Agent 在每轮 turn_end_callback 时检查并消费它。
+**第一，中断接受机制**。EvoAgent Conductor 的 inbox 支持运行时 **key_info 注入**——用户改需求时不重启 Agent，Conductor 把新指令推给 SubAgent 或主循环。比 GenericAgent temp/ 文件注入更结构化。
 
 **第二，任务状态快照**。Agent 在每轮循环结束时自动保存当前状态——已经完成了哪些步骤、中间结果是什么、还有哪些步骤待执行。这个状态是一个 JSON 对象存在 working memory 里。用户改需求时，Agent 对比新旧需求，识别出哪些已完成的工作可以复用（A、B 的查询结果），哪些需要新增（D 的查询）。
 
@@ -176,7 +176,7 @@ partColor: #f59e0b
 <h2 class="question-title"><span class="q-badge">Q17</span><span class="question-text">你的 RAG 系统部署在实验室 NAS 上。如果要部署到阿里云/腾讯云，架构会有什么变化？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：实验室到云上架构变化</div>
@@ -192,7 +192,7 @@ partColor: #f59e0b
 
 **第三，FastAPI 从单机到 Serverless**。现在 FastAPI 是单进程跑在 NAS 的 Python 环境里。上云后适合用函数计算或者容器服务——用户请求来的时候拉起实例，没有请求的时候缩容到零。但有个坑：LLM 推理有冷启动延迟，需要配预置实例或者用存储快照加速启动。
 
-**第四，增加了 API 网关和鉴权层**。实验室环境不需要鉴权，Streamlit 直接连 FastAPI。生产环境需要 API 网关做请求路由、限流、鉴权。用户管理、API Key 管理、用量计费这些在实验室环境完全不需要，但上云必须有。
+**第四，增加了 API 网关和鉴权层**。实验室环境 **React** 前端直连 FastAPI SSE。生产环境需要 API 网关做路由、限流、鉴权。
 
 成本估算：按每天 100 次问答，每次平均 3k token 输入 + 500 token 输出、微调模型跑在 T4 GPU 上的话，一个月大概 800-1200 元。如果用 SaaS 向量数据库而不是自建，再加 200-300 元。和用 GPT-4 API 的纯托管方案比，自部署微调模型的成本大概是 1/3。"
 </div>
@@ -207,7 +207,7 @@ partColor: #f59e0b
 <h2 class="question-title"><span class="q-badge">Q23</span><span class="question-text">如果公司让你估算搭建一个内部 Agent 平台（100 人使用、每天 500 次调用）的月度成本，你会怎么算？</span></h2>
 
 <details class="answer-reveal">
-<summary>展开答案</summary>
+<summary>展开面试回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：二面 · 难度：⭐⭐⭐ · 考察点：Agent 平台成本估算</div>
