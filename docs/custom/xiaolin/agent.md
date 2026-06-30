@@ -15,9 +15,9 @@ partColor: #10b981
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/rag">🔍 RAG 面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG 面试题 →</a>
 
 </div>
 
@@ -2573,8 +2573,8 @@ Anthropic 在他们的 Agent 工程实践中总结了几种常见的 Workflow �
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/rag">🔍 RAG 面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG 面试题 →</a>
 
 </div>

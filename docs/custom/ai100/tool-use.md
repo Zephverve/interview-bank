@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/rag">← 🔍 RAG</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/multi-agent">👥 多 Agent →</a>
+<a class="chapter-nav-link chapter-nav-next" href="multi-agent">👥 多 Agent →</a>
 
 </div>
 
@@ -2644,10 +2644,10 @@ security_checklist = {
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/rag">← 🔍 RAG</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/multi-agent">👥 多 Agent →</a>
+<a class="chapter-nav-link chapter-nav-next" href="multi-agent">👥 多 Agent →</a>
 
 </div>

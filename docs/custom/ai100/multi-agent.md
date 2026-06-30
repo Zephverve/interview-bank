@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/tool-use">← 🔧 工具使用</a>
+<a class="chapter-nav-link" href="tool-use">← 🔧 工具使用</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/memory">🧠 记忆与状态 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="memory">🧠 记忆与状态 →</a>
 
 </div>
 
@@ -2360,10 +2360,10 @@ if __name__ == "__main__":
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/tool-use">← 🔧 工具使用</a>
+<a class="chapter-nav-link" href="tool-use">← 🔧 工具使用</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/memory">🧠 记忆与状态 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="memory">🧠 记忆与状态 →</a>
 
 </div>

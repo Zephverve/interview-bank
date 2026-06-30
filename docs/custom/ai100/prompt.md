@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/planning">← 🧩 规划与推理</a>
+<a class="chapter-nav-link" href="planning">← 🧩 规划与推理</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/evaluation">📊 评估 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="evaluation">📊 评估 →</a>
 
 </div>
 
@@ -2817,10 +2817,10 @@ Turn 15: System(2K) + History(40K) + ToolResults(85K)      = 127K tokens 💥
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/planning">← 🧩 规划与推理</a>
+<a class="chapter-nav-link" href="planning">← 🧩 规划与推理</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/evaluation">📊 评估 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="evaluation">📊 评估 →</a>
 
 </div>

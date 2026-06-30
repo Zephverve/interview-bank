@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/model">← 🏥 模型架构与策略</a>
+<a class="chapter-nav-link" href="model">← 🏥 模型架构与策略</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/deploy">🏥 假设不足与部署 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="deploy">🏥 假设不足与部署 →</a>
 
 </div>
 
@@ -354,10 +354,10 @@ HB0014可能因为特定原因不在策略C的评测中（论文提到验证集n
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/model">← 🏥 模型架构与策略</a>
+<a class="chapter-nav-link" href="model">← 🏥 模型架构与策略</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/deploy">🏥 假设不足与部署 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="deploy">🏥 假设不足与部署 →</a>
 
 </div>

@@ -15,11 +15,11 @@ partColor: #10b981
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/rag">← 🔍 RAG 面试题</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG 面试题</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/llm">🧠 大模型工程面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="llm">🧠 大模型工程面试题 →</a>
 
 </div>
 
@@ -1982,10 +1982,10 @@ MCP 是 Anthropic 在 2024 年底发布的，发布后发展速度很快，主�
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/rag">← 🔍 RAG 面试题</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG 面试题</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/llm">🧠 大模型工程面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="llm">🧠 大模型工程面试题 →</a>
 
 </div>

@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/agent-arch">← 🏛️ Agent 架构</a>
+<a class="chapter-nav-link" href="agent-arch">← 🏛️ Agent 架构</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/tool-use">🔧 工具使用 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="tool-use">🔧 工具使用 →</a>
 
 </div>
 
@@ -1581,10 +1581,10 @@ class CombinedAdvancedRAG:
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/agent-arch">← 🏛️ Agent 架构</a>
+<a class="chapter-nav-link" href="agent-arch">← 🏛️ Agent 架构</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/tool-use">🔧 工具使用 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="tool-use">🔧 工具使用 →</a>
 
 </div>

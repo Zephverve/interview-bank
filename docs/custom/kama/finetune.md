@@ -15,11 +15,11 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/rag">← 🔍 RAG</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/agent">🤖 Agent →</a>
+<a class="chapter-nav-link chapter-nav-next" href="agent">🤖 Agent →</a>
 
 </div>
 
@@ -1215,10 +1215,10 @@ DPO 现在经常被提到，是因为它工程上更轻。
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/rag">← 🔍 RAG</a>
+<a class="chapter-nav-link" href="rag">← 🔍 RAG</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/agent">🤖 Agent →</a>
+<a class="chapter-nav-link chapter-nav-next" href="agent">🤖 Agent →</a>
 
 </div>

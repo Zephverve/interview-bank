@@ -15,9 +15,9 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/transformer">← 🧠 Transformer</a>
+<a class="chapter-nav-link" href="transformer">← 🧠 Transformer</a>
 
 </div>
 
@@ -617,8 +617,8 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/transformer">← 🧠 Transformer</a>
+<a class="chapter-nav-link" href="transformer">← 🧠 Transformer</a>
 
 </div>

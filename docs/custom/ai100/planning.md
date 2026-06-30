@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/memory">← 🧠 记忆与状态</a>
+<a class="chapter-nav-link" href="memory">← 🧠 记忆与状态</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/prompt">✍️ 提示工程 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="prompt">✍️ 提示工程 →</a>
 
 </div>
 
@@ -2819,10 +2819,10 @@ post_grpo_algorithms = {
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/memory">← 🧠 记忆与状态</a>
+<a class="chapter-nav-link" href="memory">← 🧠 记忆与状态</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/prompt">✍️ 提示工程 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="prompt">✍️ 提示工程 →</a>
 
 </div>

@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/metrics">← 🏥 评价指标与训练</a>
+<a class="chapter-nav-link" href="metrics">← 🏥 评价指标与训练</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/innovation">🏥 创新点与展望 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="innovation">🏥 创新点与展望 →</a>
 
 </div>
 
@@ -204,10 +204,10 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/metrics">← 🏥 评价指标与训练</a>
+<a class="chapter-nav-link" href="metrics">← 🏥 评价指标与训练</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/innovation">🏥 创新点与展望 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="innovation">🏥 创新点与展望 →</a>
 
 </div>

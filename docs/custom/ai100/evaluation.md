@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/prompt">← ✍️ 提示工程</a>
+<a class="chapter-nav-link" href="prompt">← ✍️ 提示工程</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/safety">🛡️ 安全对齐 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="safety">🛡️ 安全对齐 →</a>
 
 </div>
 
@@ -2608,10 +2608,10 @@ Sandbox 同时承担两个职责：(1) **安全**——隔离 Agent 可能产生
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/prompt">← ✍️ 提示工程</a>
+<a class="chapter-nav-link" href="prompt">← ✍️ 提示工程</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/safety">🛡️ 安全对齐 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="safety">🛡️ 安全对齐 →</a>
 
 </div>

@@ -15,11 +15,11 @@ partColor: #10b981
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/agent">← 🤖 Agent 面试题</a>
+<a class="chapter-nav-link" href="agent">← 🤖 Agent 面试题</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/tools">🔧 工具调用面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="tools">🔧 工具调用面试题 →</a>
 
 </div>
 
@@ -2267,10 +2267,10 @@ RAG 最核心的价值体现在两点。一是知识可以随时热更新，往�
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/agent">← 🤖 Agent 面试题</a>
+<a class="chapter-nav-link" href="agent">← 🤖 Agent 面试题</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/xiaolin/tools">🔧 工具调用面试题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="tools">🔧 工具调用面试题 →</a>
 
 </div>

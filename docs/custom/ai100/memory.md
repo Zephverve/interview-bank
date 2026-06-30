@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/multi-agent">← 👥 多 Agent</a>
+<a class="chapter-nav-link" href="multi-agent">← 👥 多 Agent</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/planning">🧩 规划与推理 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="planning">🧩 规划与推理 →</a>
 
 </div>
 
@@ -2115,10 +2115,10 @@ evaluation_dimensions = {
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/multi-agent">← 👥 多 Agent</a>
+<a class="chapter-nav-link" href="multi-agent">← 👥 多 Agent</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/planning">🧩 规划与推理 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="planning">🧩 规划与推理 →</a>
 
 </div>

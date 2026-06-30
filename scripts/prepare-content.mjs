@@ -491,18 +491,18 @@ function buildChapterNav(category, subgroup) {
   const idx = category.subgroups.findIndex((sg) => sg.slug === subgroup.slug)
   const prev = category.subgroups[idx - 1]
   const next = category.subgroups[idx + 1]
-  const base = `/custom/${category.slug}/`
   const parts = []
 
-  parts.push(`<a class="chapter-nav-link" href="${base}">📑 总览</a>`)
+  // 相对路径：兼容 GitHub Pages 子路径（/interview-bank/）与本地 dev（/）
+  parts.push(`<a class="chapter-nav-link" href="../">📑 总览</a>`)
   if (prev) {
     parts.push(
-      `<a class="chapter-nav-link" href="${base}${getChapterSlug(category.slug, prev.slug)}">← ${prev.icon || ''} ${prev.title}</a>`
+      `<a class="chapter-nav-link" href="${getChapterSlug(category.slug, prev.slug)}">← ${prev.icon || ''} ${prev.title}</a>`
     )
   }
   if (next) {
     parts.push(
-      `<a class="chapter-nav-link chapter-nav-next" href="${base}${getChapterSlug(category.slug, next.slug)}">${next.icon || ''} ${next.title} →</a>`
+      `<a class="chapter-nav-link chapter-nav-next" href="${getChapterSlug(category.slug, next.slug)}">${next.icon || ''} ${next.title} →</a>`
     )
   }
 

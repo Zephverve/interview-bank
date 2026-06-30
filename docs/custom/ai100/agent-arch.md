@@ -16,9 +16,9 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/rag">🔍 RAG →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG →</a>
 
 </div>
 
@@ -3332,8 +3332,8 @@ graph.add_conditional_edges("reason", lambda s: s["next_step"])
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/rag">🔍 RAG →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG →</a>
 
 </div>

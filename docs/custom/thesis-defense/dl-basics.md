@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/gmm">← 🏥 GMM聚类与特征</a>
+<a class="chapter-nav-link" href="gmm">← 🏥 GMM聚类与特征</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/model">🏥 模型架构与策略 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="model">🏥 模型架构与策略 →</a>
 
 </div>
 
@@ -319,10 +319,10 @@ nnU-Net（no-new-Net）的设计哲学：不要发明新架构，而是把数据
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/gmm">← 🏥 GMM聚类与特征</a>
+<a class="chapter-nav-link" href="gmm">← 🏥 GMM聚类与特征</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/model">🏥 模型架构与策略 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="model">🏥 模型架构与策略 →</a>
 
 </div>

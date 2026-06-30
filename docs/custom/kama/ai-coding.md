@@ -15,9 +15,9 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/rag">🔍 RAG →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG →</a>
 
 </div>
 
@@ -3191,8 +3191,8 @@ rg &quot;ORDER_STATUS_PAID&quot;
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/rag">🔍 RAG →</a>
+<a class="chapter-nav-link chapter-nav-next" href="rag">🔍 RAG →</a>
 
 </div>

@@ -15,9 +15,9 @@ partColor: #10b981
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/tools">← 🔧 工具调用面试题</a>
+<a class="chapter-nav-link" href="tools">← 🔧 工具调用面试题</a>
 
 </div>
 
@@ -3704,8 +3704,8 @@ LLM 还有一个让传统 NLP 模型望尘莫及的特点，叫涌现能力（Em
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/xiaolin/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/xiaolin/tools">← 🔧 工具调用面试题</a>
+<a class="chapter-nav-link" href="tools">← 🔧 工具调用面试题</a>
 
 </div>

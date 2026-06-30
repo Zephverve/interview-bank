@@ -16,9 +16,9 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/production">← 🚀 生产部署</a>
+<a class="chapter-nav-link" href="production">← 🚀 生产部署</a>
 
 </div>
 
@@ -1769,8 +1769,8 @@ process.exit(0);  // allow
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/production">← 🚀 生产部署</a>
+<a class="chapter-nav-link" href="production">← 🚀 生产部署</a>
 
 </div>

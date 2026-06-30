@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/preprocess">← 🏥 数据预处理</a>
+<a class="chapter-nav-link" href="preprocess">← 🏥 数据预处理</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/dl-basics">🏥 深度学习基础 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="dl-basics">🏥 深度学习基础 →</a>
 
 </div>
 
@@ -336,10 +336,10 @@ ARI≈0说明GMM三分群和临床六分型之间几乎没有对应关系。
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/preprocess">← 🏥 数据预处理</a>
+<a class="chapter-nav-link" href="preprocess">← 🏥 数据预处理</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/dl-basics">🏥 深度学习基础 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="dl-basics">🏥 深度学习基础 →</a>
 
 </div>

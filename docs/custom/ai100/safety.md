@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/evaluation">← 📊 评估</a>
+<a class="chapter-nav-link" href="evaluation">← 📊 评估</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/production">🚀 生产部署 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="production">🚀 生产部署 →</a>
 
 </div>
 
@@ -1979,10 +1979,10 @@ attack_examples = {
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/evaluation">← 📊 评估</a>
+<a class="chapter-nav-link" href="evaluation">← 📊 评估</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/production">🚀 生产部署 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="production">🚀 生产部署 →</a>
 
 </div>

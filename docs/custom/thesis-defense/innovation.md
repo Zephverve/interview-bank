@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/deploy">← 🏥 假设不足与部署</a>
+<a class="chapter-nav-link" href="deploy">← 🏥 假设不足与部署</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/supplement">🏥 补充问题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="supplement">🏥 补充问题 →</a>
 
 </div>
 
@@ -269,10 +269,10 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/deploy">← 🏥 假设不足与部署</a>
+<a class="chapter-nav-link" href="deploy">← 🏥 假设不足与部署</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/supplement">🏥 补充问题 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="supplement">🏥 补充问题 →</a>
 
 </div>

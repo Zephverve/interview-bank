@@ -15,11 +15,11 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/framework">← 🏥 医学背景与整体框架</a>
+<a class="chapter-nav-link" href="framework">← 🏥 医学背景与整体框架</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/gmm">🏥 GMM聚类与特征 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="gmm">🏥 GMM聚类与特征 →</a>
 
 </div>
 
@@ -459,10 +459,10 @@ NIfTI使用RAS坐标系（Right-Anterior-Superior），X方向与DICOM相反。
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/framework">← 🏥 医学背景与整体框架</a>
+<a class="chapter-nav-link" href="framework">← 🏥 医学背景与整体框架</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/thesis-defense/gmm">🏥 GMM聚类与特征 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="gmm">🏥 GMM聚类与特征 →</a>
 
 </div>

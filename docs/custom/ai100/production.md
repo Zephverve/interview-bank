@@ -16,11 +16,11 @@ partColor: #6366f1
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/safety">← 🛡️ 安全对齐</a>
+<a class="chapter-nav-link" href="safety">← 🛡️ 安全对齐</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/frameworks">🧰 框架选型 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="frameworks">🧰 框架选型 →</a>
 
 </div>
 
@@ -3593,10 +3593,10 @@ v2: harness / sandbox 解耦
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/ai100/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/ai100/safety">← 🛡️ 安全对齐</a>
+<a class="chapter-nav-link" href="safety">← 🛡️ 安全对齐</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/ai100/frameworks">🧰 框架选型 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="frameworks">🧰 框架选型 →</a>
 
 </div>

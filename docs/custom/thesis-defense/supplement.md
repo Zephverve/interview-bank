@@ -15,9 +15,9 @@ partColor: #0d9488
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/innovation">← 🏥 创新点与展望</a>
+<a class="chapter-nav-link" href="innovation">← 🏥 创新点与展望</a>
 
 </div>
 
@@ -246,8 +246,8 @@ InstanceNorm：对单个样本的每个通道独立标准化 → 不依赖batch 
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/thesis-defense/innovation">← 🏥 创新点与展望</a>
+<a class="chapter-nav-link" href="innovation">← 🏥 创新点与展望</a>
 
 </div>

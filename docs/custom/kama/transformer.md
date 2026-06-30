@@ -15,11 +15,11 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/agent">← 🤖 Agent</a>
+<a class="chapter-nav-link" href="agent">← 🤖 Agent</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/real">📋 真实面经 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="real">📋 真实面经 →</a>
 
 </div>
 
@@ -589,10 +589,10 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/agent">← 🤖 Agent</a>
+<a class="chapter-nav-link" href="agent">← 🤖 Agent</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/real">📋 真实面经 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="real">📋 真实面经 →</a>
 
 </div>

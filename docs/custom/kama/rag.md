@@ -15,11 +15,11 @@ partColor: #06b6d4
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/ai-coding">← 💻 AI 编程</a>
+<a class="chapter-nav-link" href="ai-coding">← 💻 AI 编程</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/finetune">🎯 模型微调 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="finetune">🎯 模型微调 →</a>
 
 </div>
 
@@ -1441,10 +1441,10 @@ splitter = RecursiveCharacterTextSplitter(
 
 <div class="chapter-nav">
 
-<a class="chapter-nav-link" href="/custom/kama/">📑 总览</a>
+<a class="chapter-nav-link" href="../">📑 总览</a>
 
-<a class="chapter-nav-link" href="/custom/kama/ai-coding">← 💻 AI 编程</a>
+<a class="chapter-nav-link" href="ai-coding">← 💻 AI 编程</a>
 
-<a class="chapter-nav-link chapter-nav-next" href="/custom/kama/finetune">🎯 模型微调 →</a>
+<a class="chapter-nav-link chapter-nav-next" href="finetune">🎯 模型微调 →</a>
 
 </div>
