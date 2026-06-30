@@ -122,7 +122,56 @@ function getBase() {
 
 // ─── Markdown 转换工具 ───────────────────────────────────────────
 
-function wrapAnswers(content, extrasBlock = '') {
+function extractAnswerSections(content) {
+  const reciteMatch = content.match(/### 背诵回答[^\n]*\n([\s\S]*?)\n### 回答/)
+  const interviewMatch = content.match(/### 回答[^\n]*\n([\s\S]*)$/)
+  return {
+    recite: reciteMatch?.[1]?.trim() || '',
+    interview: interviewMatch?.[1]?.trim() || '',
+    head: content.replace(/### 背诵回答[^\n]*\n[\s\S]*?\n### 回答[^\n]*\n[\s\S]*$/, '').trim(),
+  }
+}
+
+function buildDualAnswerHtml(reciteBody, interviewBody, extrasBlock, anchorId) {
+  const modeName = `mode-${anchorId || 'answer'}`
+  return `<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
+<div class="answer-body">
+${extrasBlock}<div class="answer-dual" data-anchor="${anchorId || ''}">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="${modeName}" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="${modeName}" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+${reciteBody}
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
+
+${interviewBody}
+
+</div>
+</div>
+</div>
+</details>
+`
+}
+
+function wrapAnswers(content, extrasBlock = '', anchorId = '') {
+  if (/### 背诵回答/.test(content)) {
+    const { recite, interview, head } = extractAnswerSections(content)
+    if (recite && interview) {
+      return `${head}\n${buildDualAnswerHtml(recite, interview, extrasBlock, anchorId)}`
+    }
+  }
+
   const marker = /### 回答[^\n]*\n/
   const idx = content.search(marker)
   if (idx === -1) return content
@@ -165,7 +214,7 @@ function buildAnswerExtras(...parts) {
   return `<div class="answer-extras">\n${inner}\n</div>\n\n`
 }
 
-function transformBody(body, frontmatterMetaHtml = '') {
+function transformBody(body, frontmatterMetaHtml = '', anchorId = '') {
   let content = body.replace(/\n---\n/g, '\n')
   let questionText = ''
 
@@ -187,8 +236,8 @@ function transformBody(body, frontmatterMetaHtml = '') {
     followups.html
   )
 
-  if (/### 回答/.test(content)) {
-    content = wrapAnswers(content, extrasBlock)
+  if (/### 回答/.test(content) || /### 背诵回答/.test(content)) {
+    content = wrapAnswers(content, extrasBlock, anchorId)
   } else if (extrasBlock) {
     content =
       `<details class="answer-reveal">\n<summary>展开详情</summary>\n<div class="answer-body">\n${extrasBlock}\n</div>\n</details>\n` +
@@ -281,7 +330,7 @@ ${content}
 
 function transformSingleQuestion(meta, body, anchorId, options = {}) {
   const metaHtml = metaFromFrontmatter(meta)
-  const { content, questionText } = transformBody(body, metaHtml)
+  const { content, questionText } = transformBody(body, metaHtml, anchorId)
   const display = questionText || meta.question || meta.title || '未命名题目'
   const badgeClass = options.interviewFormat ? 'q-badge ai100-badge' : 'q-badge custom-badge'
   const badgeLabel = options.qNum ? `Q${options.qNum}` : '✦'

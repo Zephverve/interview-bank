@@ -27,14 +27,38 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q72</span><span class="question-text">论文最大的创新点是什么？请逐项说明价值。</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 创新点 · 考察点：创新点</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：三个层次创新，形成闭环：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q01-论文最大的创新点是什么-请逐项说明价值">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q01-论文最大的创新点是什么-请逐项说明价值" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q01-论文最大的创新点是什么-请逐项说明价值" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+第一个创新：用GMM让数据自己告诉我们分几类，而不是死守医生的六分类。
+第二个创新：用SPADE把解剖知识"缝"进网络的每一层，而不是只在入口贴一张便签。
+第三个创新：用MoE实现"又统一又定制"——共享共性的同时保留各段的特殊性。
+
+这三个不是孤立的——GMM告诉你"分几类合适"，SPADE帮你把"位置信息"注入网络，MoE让模型根据位置自动分配专家。
+串起来就是一条完整的逻辑链。
+💡 GMM→SPADE→MoE，三个创新一条链。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 三个层次创新，形成闭环：
 
@@ -65,6 +89,9 @@ partColor: #0d9488
 
 
 三者不是孤立的：GMM提供分型依据 → SPADE注入解剖信息 → MoE实现专家协作 → 完整闭环。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -76,14 +103,39 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q73</span><span class="question-text">如果样本增加十倍（1000例+），模型怎么改进？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 未来展望 · 考察点：未来展望</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：105→1000例，很多当前约束都会放宽：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q02-如果样本增加十倍-1000例-模型怎么改进">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q02-如果样本增加十倍-1000例-模型怎么改进" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q02-如果样本增加十倍-1000例-模型怎么改进" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+框架不变，但每个环节都可以升级：
+编码器→可以换成带注意力机制（Transformer）的更强大网络
+解剖先验→可以加入真实的食管分割、器官轮廓，不再只是体廓估算
+分型→可以回到更细的分类（五类甚至六类）
+输出→加一个置信度热力图，告诉医生"哪些地方模型不太确定"
+
+核心思想保留：GMM找结构+先验引导+专家协作。数据多了就是做得更精细。
+💡 框架不变，每个模块用更多数据做得更精细。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 105→1000例，很多当前约束都会放宽：
 
@@ -102,6 +154,9 @@ partColor: #0d9488
 
 
 核心框架（GMM→先验→SPADE→MoE）的设计思想在大数据下仍然有价值，只是可以做得更精细。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -113,14 +168,38 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q74</span><span class="question-text">这个框架能否迁移到其他肿瘤类型？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 未来展望 · 考察点：未来展望</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：可以，而且是论文方法的通用性体现：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q03-这个框架能否迁移到其他肿瘤类型">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q03-这个框架能否迁移到其他肿瘤类型" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q03-这个框架能否迁移到其他肿瘤类型" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+能。原理是通用的。
+
+任何"沿着一条自然轴分布、不同段有不同特征"的肿瘤都适用——肺癌（上中下叶）、肝癌（8个段）、宫颈癌等等。
+
+迁移的时候改两个东西就行：①根据新器官重新设计解剖先验图；②调整MoE专家数量和分段规则。
+其他的——数据处理、GMM聚类、SPADE+MoE架构——都是通用的。
+💡 通用框架。换器官=换先验图+调专家数。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 可以，而且是论文方法的通用性体现：
 
@@ -147,6 +226,9 @@ partColor: #0d9488
 
 
 对任何"沿自然解剖轴分布、不同区段有不同特性"的肿瘤都适用。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -158,14 +240,39 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q75</span><span class="question-text">做这个题目遇到的最大困难是什么？怎么解决的？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 团队与反思 · 考察点：团队与反思</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：典型困难及解决：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q04-做这个题目遇到的最大困难是什么-怎么解决的">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q04-做这个题目遇到的最大困难是什么-怎么解决的" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q04-做这个题目遇到的最大困难是什么-怎么解决的" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+四个大坎：
+① 原始数据一团乱→建了严格的质控流程，双路径验证标签
+② 105例太少还分布不均→GMM自动找三类+MoE共享编码器
+③ 模型老是把正常组织当肿瘤画→Focal-Tversky狠狠管+阈值提到0.95
+④ 怎么让模型知道"位置"这件事→三张先验地图+SPADE每层提醒
+
+每跨过一个坎，模型性能就上一个台阶。
+💡 四个困难，四个解法。一坎一台阶。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 典型困难及解决：
 
@@ -196,6 +303,9 @@ partColor: #0d9488
 
 
 这些困难本质上都源于"小样本医学AI"——每解决一个，论文质量就提升一个层次。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -207,14 +317,35 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q76</span><span class="question-text">如果重新做一遍，你会改变什么？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 团队与反思 · 考察点：团队与反思</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：几点反思性改进：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q05-如果重新做一遍-你会改变什么">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q05-如果重新做一遍-你会改变什么" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q05-如果重新做一遍-你会改变什么" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+加上交叉验证让评估更稳；做完整的消融实验把每个模块的贡献量化出来；加上可解释性分析（热力图）；试试CT+PET-CT多模态。
+
+但竞赛时间有限，在限制条件下完成了从数据到模型的完整闭环，已经很不容易了。
+💡 知道哪里可以更好本身就是科研进步。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 几点反思性改进：
 
@@ -235,6 +366,9 @@ partColor: #0d9488
 
 
 但竞赛有时间限制，在有限时间内完成从数据到模型的完整链路已属不易。以上更多是"理想情况下的扩展"。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -246,8 +380,8 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q77</span><span class="question-text">你觉得你们论文最大的亮点是什么？如果用一句话向非专业人士介绍？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 团队与反思 · 考察点：团队与反思</div>
@@ -255,11 +389,34 @@ partColor: #0d9488
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
 
+<div class="answer-dual" data-anchor="q06-你觉得你们论文最大的亮点是什么-如果用一句话向非专业人士介绍">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q06-你觉得你们论文最大的亮点是什么-如果用一句话向非专业人士介绍" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q06-你觉得你们论文最大的亮点是什么-如果用一句话向非专业人士介绍" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+给AI装了一双"医生的眼睛"——先给它一张人体地图（告诉它食管在哪、周围都有什么），再让三位专科医生（三个专家）一起会诊，帮医生自动画出食管癌的放疗靶区。
+💡 地图+会诊=自动画靶。
+附加：消融与工程
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
+
 学术角度：在105例小样本条件下，用数据驱动的聚类+解剖先验增强+混合专家架构，实现了食管癌GTV自动分割的"统分最优折中"，在不遗漏和不误画之间取得了最佳平衡。
 
 
 
 通俗一句话：给AI装上了"医生的眼睛"——不是让模型闭着眼从CT灰度里瞎找肿瘤，而是给了它一张人体解剖地图（先验），再让三位不同位置的"专科医生"（专家）一起会诊。
+
+</div>
+</div>
 </div>
 </details>
 

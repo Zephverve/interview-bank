@@ -25,14 +25,36 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q78</span><span class="question-text">论文中做了哪些消融实验？你觉得还应该补充哪些？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 补充 · 考察点：补充</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：论文的消融实验（Ablation Study）主要包括：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q01-论文中做了哪些消融实验-你觉得还应该补充哪些">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q01-论文中做了哪些消融实验-你觉得还应该补充哪些" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q01-论文中做了哪些消融实验-你觉得还应该补充哪些" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+明确做了三组：①阈值τ从0.5到0.95的逐级对比；②Dice+BCE和Focal-Tversky的对比；③四种策略A/B/C/D的对比。
+
+该补但没做的：去掉SPADE看效果降多少、去掉解剖先验看哪个最重要、Gate去掉改成平均融合、专家数试1/2/3/4个。
+没做是因为竞赛时间不够——但这些问题答辩时评审会问，提前准备好解释。
+💡 做了三类消融，还有五类可以补做。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 论文的消融实验（Ablation Study）主要包括：
 
@@ -63,6 +85,9 @@ partColor: #0d9488
 
 
 竞赛的时间限制使得无法做完整消融，但以上是评审可能会追问的。建议答辩时诚实说明已做/未做的消融。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -117,14 +142,36 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q80</span><span class="question-text">为什么SPADE中使用InstanceNorm而不是BatchNorm？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 补充 · 考察点：补充</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：这是一个有意为之的技术选择：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q03-为什么SPADE中使用InstanceNorm而不是BatchNorm">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q03-为什么SPADE中使用InstanceNorm而不是BatchNorm" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q03-为什么SPADE中使用InstanceNorm而不是BatchNorm" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+3D医学图像训练时一次只能放2到4个样本进GPU（因为显存不够）。BatchNorm在这么小的批次上做跨样本统计会非常不稳定。
+
+InstanceNorm是在单个样本内部做的归一化——不管你batch多大，统计都是准的。
+而且SPADE的设计就是IN→去"风格差异"、留"结构"→再用位置信息定制外观。IN和SPADE是天生的一对。
+💡 小batch下IN比BN统计更稳，SPADE原装配置。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 这是一个有意为之的技术选择：
 
@@ -147,6 +194,9 @@ InstanceNorm：对单个样本的每个通道独立标准化 → 不依赖batch 
 
 
 简单理解：InstanceNorm"去掉每张图的风格差异"，SPADE再根据空间位置"加上个性化的风格调整"。BatchNorm的"跨样本平均"反而会模糊图片间的个体差异。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -158,14 +208,37 @@ InstanceNorm：对单个样本的每个通道独立标准化 → 不依赖batch 
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q81</span><span class="question-text">论文的GTV特征向量构建时，为什么质心Z用的是物理坐标而不是体素索引？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 补充 · 考察点：补充</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：因为不同患者的扫描范围不同：有的CT从脖子到腹腔（Z范围约-1000~0mm），有的只扫胸部（-800~-400mm）。</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q04-论文的GTV特征向量构建时-为什么质心Z用的是物理坐标而不是体素索引">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q04-论文的GTV特征向量构建时-为什么质心Z用的是物理坐标而不是体素索引" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q04-论文的GTV特征向量构建时-为什么质心Z用的是物理坐标而不是体素索引" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+层号是"在CT里的第几层"——这个值没有任何物理意义。因为不同病人扫描范围不同，同是胸中段，大范围CT可能在150层，小范围CT在80层。
+
+物理坐标是解剖位置（毫米），不受扫描范围影响。不管扫了多少层，胸中段食管的物理位置始终在大约-500mm附近。
+
+简单说：物理坐标是"世界的经纬度"，层号只是"照片的第几张"。
+💡 物理坐标=经纬度，层号=照片编号。经纬度才有跨人比较的意义。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 因为不同患者的扫描范围不同：有的CT从脖子到腹腔（Z范围约-1000~0mm），有的只扫胸部（-800~-400mm）。
 
@@ -180,6 +253,9 @@ InstanceNorm：对单个样本的每个通道独立标准化 → 不依赖batch 
 
 
 这就是为什么论文强调使用"DicomZ轴"而非"体素Z索引"——前者是测量工具，后者只是数字编号。
+
+</div>
+</div>
 </div>
 </details>
 

@@ -502,6 +502,84 @@ details.answer-reveal summary:hover {
   word-break: break-word;
 }
 
+/* ===== 双版本回答切换（背诵 / 面试） ===== */
+.answer-dual-reveal .answer-mode-tabs {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 16px;
+}
+
+.answer-mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--vp-c-divider);
+  background: var(--vp-c-bg);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.answer-mode-btn input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.answer-mode-left {
+  margin-right: auto;
+}
+
+.answer-mode-right {
+  margin-left: auto;
+}
+
+.answer-dual:has(.answer-mode-left input:checked) .answer-mode-left {
+  border-color: #0d9488;
+  background: rgba(13, 148, 136, 0.12);
+  color: #0d9488;
+}
+
+.answer-dual:has(.answer-mode-right input:checked) .answer-mode-right {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+.answer-dual .answer-mode-panel {
+  display: none;
+}
+
+.answer-dual:has(.answer-mode-left input:checked) .answer-mode-recite {
+  display: block;
+}
+
+.answer-dual:has(.answer-mode-right input:checked) .answer-mode-interview {
+  display: block;
+}
+
+.answer-mode-btn:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.answer-mode-recite {
+  border-left: 4px solid #0d9488;
+  padding-left: 14px;
+}
+
+.answer-mode-interview {
+  border-left: 4px solid #6366f1;
+  padding-left: 14px;
+}
+
 .answer-body p {
   margin: 12px 0;
   text-align: left;

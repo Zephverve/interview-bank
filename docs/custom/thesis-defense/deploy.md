@@ -70,14 +70,37 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q68</span><span class="question-text">论文提到的三个不足如何改进？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 模型假设 · 考察点：模型假设</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：不足1（样本仅105例）：短期→半监督/自监督利用更多无标注CT；长期→多中心合作收集数据</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q02-论文提到的三个不足如何改进">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q02-论文提到的三个不足如何改进" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q02-论文提到的三个不足如何改进" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+第一，样本只有105例。这是最大的瓶颈。改进方向：找更多医院合作、用半监督学习利用无标注数据。
+第二，类别不均衡——颈段才7例。改进方向：过采样少数类别、数据增强、类别平衡采样。
+第三，解剖先验不够精细——目前是基于人体外轮廓估的，不是真实的食管走线。改进方向：引入真实的食管分割或器官轮廓作为先验。
+
+这三个不足都是"小样本医学AI"的共性挑战，不是我们独有的。但我们诚实面对、给出了清晰的改进方向。
+💡 数据少+不均衡+先验粗。每个都有改法。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 不足1（样本仅105例）：短期→半监督/自监督利用更多无标注CT；长期→多中心合作收集数据
 
@@ -88,6 +111,9 @@ partColor: #0d9488
 
 
 这三个不足是105例小样本医学AI的共性挑战，论文的诚实态度和清晰的改进思路是加分项。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -99,14 +125,35 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q69</span><span class="question-text">模型对颈段（仅7例）能保证分割效果吗？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 模型假设 · 考察点：模型假设</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：论文采取了多层次保障：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q03-模型对颈段-仅7例-能保证分割效果吗">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q03-模型对颈段-仅7例-能保证分割效果吗" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q03-模型对颈段-仅7例-能保证分割效果吗" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+我们有保险措施：共享编码器让这7例参与全105例的训练→学到了食管癌的通用特征；高位专家专门负责高位区域；Z轴位置图让模型明确知道"这是脖子那段"。
+
+但必须诚实说：7例真的太少了。高位区域的分割精度大概率不如有46例的胸中段。我们需要更多的颈段数据。
+💡 有保障但非完美。7例是最大数据瓶颈。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 论文采取了多层次保障：
 
@@ -119,6 +166,9 @@ partColor: #0d9488
 
 
 但必须诚实承认：7例确实太少，颈段的分割精度大概率不及胸中段（46例）。这可以通过收集更多颈段数据或从外部数据集迁移预训练权重来改善。
+
+</div>
+</div>
 </div>
 </details>
 
@@ -130,14 +180,41 @@ partColor: #0d9488
 
 <h2 class="question-title"><span class="q-badge ai100-badge">Q70</span><span class="question-text">如果实际临床部署，还需要解决哪些问题？</span></h2>
 
-<details class="answer-reveal">
-<summary>展开面试回答</summary>
+<details class="answer-reveal answer-dual-reveal">
+<summary>展开回答</summary>
 <div class="answer-body">
 <div class="answer-extras">
 <div class="q-meta"><strong>轮次</strong>：答辩/硕士 · 难度：⭐⭐⭐ · 标签：答辩, 食管癌, GTV分割, 临床部署 · 考察点：临床部署</div>
 <div class="q-conclusion">💡 <strong>15 秒结论</strong>：从竞赛模型到临床产品，至少还需六个环节：</div>
 <div class="q-followups">🔁 <strong>追问方向</strong>：为什么这样设计？ · 临床意义是什么？ · 有没有消融/验证支撑？</div>
 </div>
+
+<div class="answer-dual" data-anchor="q04-如果实际临床部署-还需要解决哪些问题">
+<div class="answer-mode-tabs">
+<label class="answer-mode-btn answer-mode-left">
+<input type="radio" name="mode-q04-如果实际临床部署-还需要解决哪些问题" value="recite" checked>
+<span>📖 背诵用 · 通俗版</span>
+</label>
+<label class="answer-mode-btn answer-mode-right">
+<input type="radio" name="mode-q04-如果实际临床部署-还需要解决哪些问题" value="interview">
+<span>🎯 面试用 · 正式版</span>
+</label>
+</div>
+<div class="answer-mode-panel answer-mode-recite">
+
+现在还处于"竞赛概念验证"阶段。真正用到医院需要走六步：
+① 在多家医院、多台CT上验证→证明不是"只在这105例上碰巧有效"
+② 推理速度优化→目前一例要几分钟，临床最好控制在2分钟以内
+③ 医生交互界面→模型画出来，医生审、可以手动改
+④ 可解释性→告诉医生"我为什么画这里"（热力图）
+⑤ 药监局审批→作为AI辅助诊断软件需要正规批文
+⑥ 持续监控→用的时间长了性能会不会下降，需要持续追踪
+
+这是从"论文模型"到"医生工具"的必经之路。
+💡 概念验证→多中心→加速→界面→审批→监控。六步。
+
+</div>
+<div class="answer-mode-panel answer-mode-interview">
 
 从竞赛模型到临床产品，至少还需六个环节：
 
@@ -158,6 +235,9 @@ partColor: #0d9488
 
 
 当前论文处于"概念验证"阶段，以上六步是从"论文模型"到"临床产品"的必经之路。
+
+</div>
+</div>
 </div>
 </details>
 
