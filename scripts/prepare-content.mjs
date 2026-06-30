@@ -103,6 +103,16 @@ const CUSTOM_MERGE_GROUPS = [
     desc: '小林 Agent / RAG / LLM 面经',
     order: 22,
   },
+  {
+    prefix: 'thesis-defense-',
+    slug: 'thesis-defense',
+    title: '答辩问题 · 食管癌 GTV',
+    icon: '🏥',
+    color: '#0d9488',
+    desc: '数学建模答辩 82 问 · 8 模块 + 补充',
+    order: 5,
+    interviewFormat: true,
+  },
 ]
 
 function getBase() {

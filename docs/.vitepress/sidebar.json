@@ -146,6 +146,52 @@
     "link": "/custom/3d-lidar"
   },
   {
+    "text": "🏥 答辩问题 · 食管癌 GTV",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "📑 总览",
+        "link": "/custom/thesis-defense/"
+      },
+      {
+        "text": "🏥 医学背景与整体框架 (10)",
+        "link": "/custom/thesis-defense/framework"
+      },
+      {
+        "text": "🏥 数据预处理 (14)",
+        "link": "/custom/thesis-defense/preprocess"
+      },
+      {
+        "text": "🏥 GMM聚类与特征 (9)",
+        "link": "/custom/thesis-defense/gmm"
+      },
+      {
+        "text": "🏥 深度学习基础 (8)",
+        "link": "/custom/thesis-defense/dl-basics"
+      },
+      {
+        "text": "🏥 模型架构与策略 (16)",
+        "link": "/custom/thesis-defense/model"
+      },
+      {
+        "text": "🏥 评价指标与训练 (9)",
+        "link": "/custom/thesis-defense/metrics"
+      },
+      {
+        "text": "🏥 假设不足与部署 (5)",
+        "link": "/custom/thesis-defense/deploy"
+      },
+      {
+        "text": "🏥 创新点与展望 (6)",
+        "link": "/custom/thesis-defense/innovation"
+      },
+      {
+        "text": "🏥 补充问题 (5)",
+        "link": "/custom/thesis-defense/supplement"
+      }
+    ]
+  },
+  {
     "text": "🤖 Agent Interview 100",
     "collapsed": false,
     "items": [

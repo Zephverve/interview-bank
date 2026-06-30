@@ -137,6 +137,13 @@ features:
   <span class="part-card-round">我的题库</span>
 </a>
 
+<a class="part-card custom-part-card" href="/custom/thesis-defense/" style="--card-accent: #0d9488">
+  <span class="part-card-icon">🏥</span>
+  <h3>答辩问题 · 食管癌 GTV</h3>
+  <p>数学建模答辩 82 问 · 8 模块 + 补充 · 82 题 · 9 章</p>
+  <span class="part-card-round">我的题库</span>
+</a>
+
 <a class="part-card custom-part-card" href="/custom/ai100/" style="--card-accent: #6366f1">
   <span class="part-card-icon">🤖</span>
   <h3>Agent Interview 100</h3>

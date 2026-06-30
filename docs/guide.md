@@ -53,6 +53,7 @@
 
 - `custom/today-interview/` — 今日面试复盘（19 题）
 - `custom/3d-lidar/` — 3D 激光感知（1 题）
+- `custom/thesis-defense-framework/` 等 9 个子目录 — **答辩问题 · 食管癌 GTV**（82 题）
 - `custom/ai100-agent-arch/` 等 11 个子目录 — **Agent Interview 100**（100 题）
 - `custom/kama-ai-coding/` 等 6 个子目录 — **卡码笔记**（97 题）
 - `custom/xiaolin-agent/` 等 4 个子目录 — **小林面试笔记**（74 题）
