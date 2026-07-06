@@ -17,14 +17,66 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-**📖 核心要点**
+#### 🗣️ 先用大白话说
+
+**一句话**：超时处理分两层——节点级用 asyncio.wait_for 限时，超时走 fallback；图级 API 设总 SLA，超时 cancel 任务。
+
+**打个比方**：像外卖配送——每道工序有截止时间（节点级），整个订单有总时限（图级 SLA），超时不取消订单而是告知用户「还在做，可继续等或换简餐」。
+
+#### 📖 面试展开（详细版）
+
+超时处理是**用户体验的关键**，考察节点级和图级两层超时设计。
+
+**Layer 1：节点级超时**
+```python
+async def llm_node(state):
+    try:
+        result = await asyncio.wait_for(
+            llm.ainvoke(state["messages"]),
+            timeout=30.0  # 单节点 30 秒
+        )
+        return {"messages": [result]}
+    except asyncio.TimeoutError:
+        return {"llm_timeout": True}
+```
+- 超时 → 写 `timeout_error` 进 state → 条件边走 fallback/degraded 路径
+- 不同节点可设不同 timeout（LLM 30s，tool 10s，retrieve 5s）
+
+**Layer 2：图级 SLA**
+- API 层设总 SLA（如 60 秒）
+- 超时 → cancel asyncio task
+- checkpoint 保留最后完成的 step → 可 resume
+
+**cancel 后 checkpoint 状态**：
+- 被取消的 step **不会写入** checkpoint
+- checkpoint 里是 cancel 前最后成功完成的 state
+- resume 时从那个 state 继续，被取消的 step 重跑
+
+**用户体验**：
+- 不要返回裸 504 → 返回「处理超时，您可以选择继续等待或简化问题」
+- 提供「继续等待」（resume）和「简化问题」（走 degraded 路径）两个选项
+
+**监控**：超时率按节点统计，P99 延迟超 SLA 比例进 alert。
+
+#### 💡 核心要点
 - 节点级超时
 - 图级 SLA watchdog
 - 超时后 checkpoint 可恢复
 
-**🗣️ 标准口语答案**
+#### 📝 代码/配置示例
 
-节点内 asyncio.wait_for(llm.ainvoke(...), timeout=30)，超时捕获写 timeout_error 进 state，条件边 fallback。图级 API 设总 SLA，超时 cancel asyncio task，checkpoint 留最后完成步可续。
+```python
+async def llm_node(state):
+    try:
+        result = await asyncio.wait_for(llm.ainvoke(state["messages"]), timeout=30)
+        return {"messages": [result]}
+    except asyncio.TimeoutError:
+        return {"llm_timeout": True}
 
-告诉用户「处理超时，可继续等待或简化问题」比 504 裸错误好。
+def route_after_llm(state):
+    return "fallback" if state.get("llm_timeout") else "next"
+```
 
+#### 🔁 追问怎么接
+
+- **「cancel 后 checkpoint 状态？」** → 被取消的 step 不写入 checkpoint；checkpoint 保留 cancel 前最后成功的 state；resume 从那个 state 继续，被取消的 step 重跑；不会丢数据也不会重复执行已完成的 step。

@@ -17,16 +17,49 @@ source: 牛客 · 阿里淘天
 
 **优先级**：P0 · 4+ 篇面经
 
-**📖 核心要点**
+#### 🗣️ 先用大白话说
+
+State 是 LangGraph 里所有节点共享的「公共笔记本」。设计时要先画业务流程，再决定哪些信息需要跨步骤传递。每条字段都要注明更新方式：messages 只追加不覆盖，current_intent 直接覆盖，临时检索结果用完就清空。原则很简单：只放跨节点共享的数据，不要把数据库连接塞进去；列表字段必须配 reducer；图里只留当前任务需要的，历史和大文档走外部存储。
+
+#### 📖 面试展开（详细版）
+
+**① 是什么**
+
+State 通常用 TypedDict 或 Pydantic 定义，是图内所有节点的输入输出契约。每个字段可绑定 reducer 声明合并语义。节点只返回 partial update，框架合并成完整 state。
+
+**② 为什么重要**
+
+阿里淘天一面原题「节点间状态流转」本质就是 State schema 设计。设计不好，半年后图变成谁也不敢改的黑箱；设计好，新人看 schema 就懂数据怎么流。
+
+**③ 怎么用 / 四步设计法**
+
+第一步，画业务流程，标决策点和回退路径。第二步，定义 TypedDict，每字段注明 append/merge/覆盖/清空策略。第三步，节点写成纯函数，只返回 update。第四步，在特定边之后清空临时字段，防 checkpoint 膨胀。
+
+**④ 项目例子（科研 RAG Agent）**
+
+EvoAgent State 示例：messages（add_messages append-only）、retrieval_docs（append，汇总后清空）、current_intent（覆盖）、quality_score（覆盖）、retry_count（累加）、citation_status（覆盖，审核后清空）。跨会话用户偏好放 PostgreSQL，不进 state。
+
+**⑤ 常见坑**
+
+字段爆炸成 giant dict；不可序列化对象进 state；列表无 reducer 被并发覆盖；什么都塞 state 导致 checkpoint 膨胀。
+
+#### 💡 核心要点
 - 只放跨节点共享的数据，工具局部变量不进 state
 - messages 用 add_messages append-only
 - 临时字段在特定边之后清空，防 checkpoint 膨胀
 
-**🗣️ 标准口语答案**
+#### 📝 代码/配置示例
 
-State 设计我习惯四步。先画业务流程，标出决策点和回退路径。再定义 TypedDict，给每个字段注明更新策略：messages 是 append-only，current_intent 覆盖写，temp_search_results 在汇总后清空。
+```python
+class AgentState(TypedDict):
+    messages: Annotated[list, add_messages]
+    retrieval_docs: Annotated[list, operator.add]
+    current_intent: str  # 默认覆盖
+    retry_count: Annotated[int, lambda a, b: a + b]
+```
 
-原则有三：只放跨节点共享的，不要把数据库连接、HTTP client 这类不可序列化对象塞进去；列表类字段必须配 reducer，否则并发节点会覆盖；图里只留当前任务推进必需的，跨会话历史和知识库走外置存储。
+#### 🔁 追问怎么接
 
-阿里面经爱问「节点间状态流转」——本质就是这份 schema 约定。团队里没人写 reducer 语义，半年后图会变成谁也不敢动的黑箱，所以我会把 state 演化策略写进 README 或代码注释。
-
+- 「字段太多」：拆子图独立 state；编排 state 和领域 state 分离
+- 「重构成本」：新增字段向后兼容；删字段要迁移脚本
+- 「团队规范」：每字段写清谁写、谁读、reducer、何时清空

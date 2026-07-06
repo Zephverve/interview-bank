@@ -94,6 +94,22 @@ function buildQuestionMd(q, meta) {
   const displayTitle = q.title.length > 48 ? `${q.title.slice(0, 48)}…` : q.title
   const tags = [...new Set([...(q.tags || []), ...meta.tags])]
 
+  const plainTalk =
+    q.plainTalk ||
+    `**一句话**：${q.conclusion}\n\n${q.analogy ? `**打个比方**：${q.analogy}` : ''}`.trim()
+
+  const detailAnswer =
+    q.detailAnswer ||
+    [q.oralAnswer, q.projectTip ? `\n**结合项目怎么说**：\n${q.projectTip}` : '', q.pitfalls ? `\n**常见踩坑**：\n${q.pitfalls}` : '']
+      .filter(Boolean)
+      .join('\n')
+
+  const followupBlock = q.followupTips
+    ? `#### 🔁 追问怎么接\n\n${q.followupTips}`
+    : q.followups
+      ? `#### 🔁 追问怎么接\n\n${q.followups.split('·').map((f) => `- ${f.trim()}`).join('\n')}`
+      : null
+
   const body = [
     '---',
     `title: ${yamlQuote(displayTitle)}`,
@@ -115,14 +131,22 @@ function buildQuestionMd(q, meta) {
     '',
     q.priority ? `**优先级**：${q.priority}${q.freq ? ` · ${q.freq}` : ''}` : null,
     '',
-    '**📖 核心要点**',
+    '#### 🗣️ 先用大白话说',
+    '',
+    plainTalk,
+    '',
+    '#### 📖 面试展开（详细版）',
+    '',
+    detailAnswer,
+    '',
+    '#### 💡 核心要点',
     ...(q.keyPoints || []).map((p) => `- ${p}`),
     '',
-    '**🗣️ 标准口语答案**',
-    '',
-    q.oralAnswer,
-    '',
-    q.extra ? `**🔍 补充追问**\n\n${q.extra}` : null,
+    q.codeExample
+      ? `#### 📝 代码/配置示例\n\n\`\`\`python\n${q.codeExample.trim()}\n\`\`\`\n`
+      : null,
+    followupBlock,
+    q.extra ? `\n#### 📌 补充\n\n${q.extra}` : null,
     '',
   ]
     .filter((line) => line !== null)

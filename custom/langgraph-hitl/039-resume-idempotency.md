@@ -17,16 +17,50 @@ source: 牛客 · 百度
 
 **优先级**：P0 · 2+ 篇面经
 
-**📖 核心要点**
+#### 🗣️ 先用大白话说
+
+百度面经深挖题。interrupt 恢复时要交代清楚：checkpoint 里哪些 channel 已写入、哪些外部副作用已发生、resume 时 pending 边会不会重跑节点。涉及发邮件、下单、扣款的工具必须配幂等键，恢复前先查是否已成功。state 里可维护 executed_actions 列表。thread_id 恢复是编排层，业务主键恢复是领域层——两层都要答才完整。
+
+#### 📖 面试展开（详细版）
+
+**核心问题**：interrupt 恢复后，框架可能重跑 pending 边的节点。如果该节点有外部副作用（发邮件、扣款、写数据库），重跑就会导致重复执行。
+
+**幂等三层防护**：第一，工具层 idempotency_key——用业务主键（order_id）做 dedup key，外部 API 保证同一 key 只执行一次。第二，state 层 executed_actions 列表——副作用节点执行前查列表，已存在则跳过。第三，恢复前查外部系统——resume 之前查「这笔订单是否已扣款」，已扣则跳过。
+
+**pending 边是否重跑**：resume 时，被 interrupt 暂停的节点可能重新执行（取决于 interrupt 位置和 LangGraph 版本行为）。工程上假设「可能重跑」，所有副作用节点都做幂等防护。
+
+**thread 恢复 vs 业务恢复**：thread_id 恢复是编排层——加载 checkpoint 继续图执行；业务恢复是领域层——用 order_id 等查外部系统判断副作用状态。两者正交，都要做。
+
+**已提交 state vs pending 边**：checkpoint 里已提交的 channel 值不会丢；但 pending 边指向的节点 resume 时可能再跑。副作用节点应放在 interrupt 之后且做好幂等，或放在 interrupt 之前确保已审才执行。
+
+**踩坑**：假设 resume 不会重跑节点导致重复扣款；只用 thread_id 不做业务层检查；executed_actions 没持久化到 checkpoint。
+
+#### 💡 核心要点
 - 外部操作配 idempotency_key
 - 记录 executed_actions 进 state
 - resume 前查业务主键状态
 
-**🗣️ 标准口语答案**
+#### 📝 代码/配置示例
 
-百度面经深挖题。interrupt 恢复时要交代：哪些 channel 已写入 checkpoint、哪些外部副作用已发生、pending 边 resume 时是否重跑节点。
+```python
+def send_email_node(state):
+    action_id = f"email:{state['order_id']}:confirmation"
+    if action_id in state.get("executed_actions", []):
+        return {"email_status": "already_sent"}
+    if external_email_sent(state["order_id"]):
+        return {
+            "email_status": "already_sent",
+            "executed_actions": [action_id],
+        }
+    send_email(idempotency_key=action_id, to=state["email"])
+    return {
+        "email_status": "sent",
+        "executed_actions": [action_id],
+    }
+```
 
-工具调用涉及发邮件、下单、扣款，必须幂等键——用业务 id 做 dedup，恢复时先查是否已成功。state 里可维护 executed_actions 列表，副作用节点先查再执行。
+#### 🔁 追问怎么接
 
-thread_id 恢复是编排层；业务恢复是领域层——两者都要答才完整。
+**「pending 边会不会重跑？」**——可能会，工程上假设会重跑，所有副作用节点做幂等。具体行为取决于 interrupt 位置。
 
+**「thread 恢复和业务恢复区别？」**——thread 是编排层加载 checkpoint；业务是用 order_id 查外部系统。两层正交都要答。

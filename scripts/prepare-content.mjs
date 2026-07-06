@@ -724,7 +724,7 @@ function buildCustomSidebarItems(categories) {
 
   return categories.map((cat) => ({
     text: `${cat.icon || '✏️'} ${cat.title}`,
-    collapsed: false,
+    collapsed: true,
     items: [
       { text: '📄 全部题目', link: `/custom/${cat.slug}` },
       ...cat.questions.map((q) => ({
@@ -759,7 +759,7 @@ function buildSidebarItems(customCategories, notePages = []) {
       if (note.chapters?.length) {
         items.push({
           text: `${note.icon || '📖'} ${note.title}`,
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '📑 总览', link: `/notes/${note.slug}/` },
             ...note.chapters.map((ch) => ({
@@ -784,7 +784,7 @@ function buildSidebarItems(customCategories, notePages = []) {
       if (cat.subgroups?.length) {
         items.push({
           text: `${cat.icon || '✏️'} ${cat.title}`,
-          collapsed: false,
+          collapsed: true,
           items: [
             { text: '📑 总览', link: `/custom/${cat.slug}/` },
             ...cat.subgroups.map((sg) => ({
