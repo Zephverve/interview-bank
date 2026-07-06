@@ -1,0 +1,5 @@
+title: LangGraph · 控制流
+icon: 🔀
+color: "#8b5cf6"
+desc: 循环 · 条件边 · 重试 · fallback
+order: 52

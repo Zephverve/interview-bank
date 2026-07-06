@@ -192,6 +192,48 @@
     ]
   },
   {
+    "text": "🕸️ LangGraph 面经题库",
+    "collapsed": false,
+    "items": [
+      {
+        "text": "📑 总览",
+        "link": "/custom/langgraph/"
+      },
+      {
+        "text": "🕸️ LangGraph · 基础概念 (12)",
+        "link": "/custom/langgraph/basics"
+      },
+      {
+        "text": "📦 LangGraph · 状态管理 (11)",
+        "link": "/custom/langgraph/state"
+      },
+      {
+        "text": "🔀 LangGraph · 控制流 (11)",
+        "link": "/custom/langgraph/flow"
+      },
+      {
+        "text": "⏸️ LangGraph · 持久化与 HITL (9)",
+        "link": "/custom/langgraph/hitl"
+      },
+      {
+        "text": "👥 LangGraph · 多 Agent (9)",
+        "link": "/custom/langgraph/multi"
+      },
+      {
+        "text": "🚀 LangGraph · 工程实践 (12)",
+        "link": "/custom/langgraph/production"
+      },
+      {
+        "text": "📋 LangGraph · 真实面经 (12)",
+        "link": "/custom/langgraph/real"
+      },
+      {
+        "text": "🔬 LangGraph · 进阶扩展 (24)",
+        "link": "/custom/langgraph/advanced"
+      }
+    ]
+  },
+  {
     "text": "🤖 Agent Interview 100",
     "collapsed": false,
     "items": [

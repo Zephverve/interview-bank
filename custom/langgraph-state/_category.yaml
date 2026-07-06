@@ -1,0 +1,5 @@
+title: LangGraph · 状态管理
+icon: 📦
+color: "#0ea5e9"
+desc: State · AgentState · reducer · 并发写
+order: 51

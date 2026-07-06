@@ -113,6 +113,16 @@ const CUSTOM_MERGE_GROUPS = [
     order: 5,
     interviewFormat: true,
   },
+  {
+    prefix: 'langgraph-',
+    slug: 'langgraph',
+    title: 'LangGraph 面经题库',
+    icon: '🕸️',
+    color: '#6366f1',
+    desc: 'LangGraph 面试 100 题 · 8 主题 · 含真实面经',
+    order: 15,
+    interviewFormat: true,
+  },
 ]
 
 function getBase() {
