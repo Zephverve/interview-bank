@@ -5,11 +5,20 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { buildSlugOralMap } from './parse-langgraph-intel-oral.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
 const CUSTOM = path.resolve(ROOT, 'custom')
 const DATA_DIR = path.resolve(__dirname, 'langgraph-questions')
+const INTEL_MD = path.resolve(ROOT, '../interview-intel/langgraph-2026-07-06.md')
+
+let intelOralMap = {}
+try {
+  intelOralMap = buildSlugOralMap(fs.readFileSync(INTEL_MD, 'utf-8'))
+} catch {
+  console.warn('⚠ 未找到面经原文，将使用题库内置口语答案')
+}
 
 const CATEGORIES = {
   'langgraph-basics': {
@@ -90,25 +99,71 @@ function yamlQuote(s) {
   return JSON.stringify(String(s))
 }
 
+/** 将 detailAnswer 的①②③结构压成连贯口播稿 */
+function flattenDetailToOral(text) {
+  return text
+    .replace(/\*\*[①②③④⑤⑥][^*]+\*\*\n\n?/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+/** 将 detailAnswer 改写成面经口播风格 */
+function toIntelStyle(q, detail) {
+  const flat = flattenDetailToOral(detail)
+  if (!flat) return ''
+
+  if (/^我(会|选|踩|按|设计|习惯|同意|认为|先)/.test(flat)) return flat
+
+  const title = q.title || ''
+  let opener = ''
+
+  if (/区别|对比|vs|VS/.test(title)) {
+    opener = '我会先把定位说清楚：'
+  } else if (/为什么选|过度设计|缺点/.test(title)) {
+    opener = '我选 LangGraph 不是因为追新，而是业务上确实需要这套能力。'
+  } else if (/踩坑|坑/.test(title)) {
+    opener = '结合我实际做 Agent 项目的经验，我踩过几个比较典型的坑。'
+  } else if (/checkpoint|持久化|thread/i.test(title)) {
+    opener = '我会从 checkpoint 解决什么问题讲起。'
+  } else if (/State|state|reducer|全局/i.test(title)) {
+    opener = '我先说结论，再展开原因。'
+  } else if (/interrupt|HITL|人工/i.test(title)) {
+    opener = 'Human-in-the-loop 在 LangGraph 里主要靠 interrupt 机制落地。'
+  } else if (/重试|fallback|retry/i.test(title)) {
+    opener = '我一般会按分层来设计重试，而不是在一个 try-except 里兜一切。'
+  } else if (/循环|死循环|recursion/i.test(title)) {
+    opener = '循环在 LangGraph 里靠回边实现，防死循环要设好几道保险。'
+  } else if (/Supervisor|多 Agent|子图|Handoff/i.test(title)) {
+    opener = '多 Agent 编排我最常见的是 Supervisor 模式，复杂场景再拆子图。'
+  } else if (/部署|生产|监控|测试/i.test(title)) {
+    opener = '上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。'
+  } else {
+    opener = '这道题我会这样回答面试官：'
+  }
+
+  if (flat.startsWith(opener)) return flat
+  return `${opener}\n\n${flat}`
+}
+
+/** 标准口语答案：面经原文优先，否则改写成面经口播风格 */
+function standardOralAnswer(q) {
+  if (intelOralMap[q.slug]) return intelOralMap[q.slug]
+
+  const oral = (q.oralAnswer || '').trim()
+  const detail = (q.detailAnswer || '').trim()
+
+  if (detail && detail.length > oral.length + 80) {
+    return toIntelStyle(q, detail)
+  }
+  if (oral && /^我(会|选|踩|按|设计|习惯)/.test(oral)) return oral
+  if (oral) return toIntelStyle(q, oral)
+  return toIntelStyle(q, detail)
+}
+
 function buildQuestionMd(q, meta) {
   const displayTitle = q.title.length > 48 ? `${q.title.slice(0, 48)}…` : q.title
   const tags = [...new Set([...(q.tags || []), ...meta.tags])]
-
-  const plainTalk =
-    q.plainTalk ||
-    `**一句话**：${q.conclusion}\n\n${q.analogy ? `**打个比方**：${q.analogy}` : ''}`.trim()
-
-  const detailAnswer =
-    q.detailAnswer ||
-    [q.oralAnswer, q.projectTip ? `\n**结合项目怎么说**：\n${q.projectTip}` : '', q.pitfalls ? `\n**常见踩坑**：\n${q.pitfalls}` : '']
-      .filter(Boolean)
-      .join('\n')
-
-  const followupBlock = q.followupTips
-    ? `#### 🔁 追问怎么接\n\n${q.followupTips}`
-    : q.followups
-      ? `#### 🔁 追问怎么接\n\n${q.followups.split('·').map((f) => `- ${f.trim()}`).join('\n')}`
-      : null
+  const oral = standardOralAnswer(q)
 
   const body = [
     '---',
@@ -131,22 +186,11 @@ function buildQuestionMd(q, meta) {
     '',
     q.priority ? `**优先级**：${q.priority}${q.freq ? ` · ${q.freq}` : ''}` : null,
     '',
-    '#### 🗣️ 先用大白话说',
+    '**🗣️ 标准口语答案**',
     '',
-    plainTalk,
+    oral,
     '',
-    '#### 📖 面试展开（详细版）',
-    '',
-    detailAnswer,
-    '',
-    '#### 💡 核心要点',
-    ...(q.keyPoints || []).map((p) => `- ${p}`),
-    '',
-    q.codeExample
-      ? `#### 📝 代码/配置示例\n\n\`\`\`python\n${q.codeExample.trim()}\n\`\`\`\n`
-      : null,
-    followupBlock,
-    q.extra ? `\n#### 📌 补充\n\n${q.extra}` : null,
+    q.extra ? `**🔍 补充追问**\n\n${q.extra}` : null,
     '',
   ]
     .filter((line) => line !== null)

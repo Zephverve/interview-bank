@@ -17,11 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-Map-Reduce 在 LangGraph 里就是 Send + reducer 的组合拳。splitter 节点把大任务拆成 N 份，Send 给 worker 并行处理，reduce 节点把各 worker 结果合并——可以拼接、投票或再调 LLM 综合。部分 worker 失败时让它返回 error 标志，reduce 决定跳过或重试，别让一颗老鼠屎坏整锅粥。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **Map 阶段**：splitter 节点将输入拆分为子任务列表，通过 Send API fan-out 到 worker 节点。每个 worker 独立处理一个子任务，写回 state 的对应字段（需 reducer 合并）。
 
@@ -35,32 +33,3 @@ Map-Reduce 在 LangGraph 里就是 Send + reducer 的组合拳。splitter 节点
 
 **踩坑**：worker 抛异常导致整图失败；reduce 节点等所有 worker 但某个永远不回；合并时 token 超限要分段 reduce。
 
-#### 💡 核心要点
-- fan-out → 并行 worker → fan-in
-- 失败 worker 结果标 error 仍进 reduce
-- 适合批量文档/多源检索
-
-#### 📝 代码/配置示例
-
-```python
-def split_docs(state):
-    chunks = chunk_document(state["document"])
-    return [Send("summarize_worker", {"chunk": c, "id": i}) for i, c in enumerate(chunks)]
-
-def summarize_worker(state):
-    try:
-        s = llm_summarize(state["chunk"])
-        return {"partial_summaries": [{"id": state["id"], "text": s, "ok": True}]}
-    except Exception as e:
-        return {"partial_summaries": [{"id": state["id"], "ok": False, "err": str(e)}]}
-
-def reduce_node(state):
-    ok = [p for p in state["partial_summaries"] if p["ok"]]
-    return {"final_summary": llm_merge(ok)}
-```
-
-#### 🔁 追问怎么接
-
-**「部分 worker 失败怎么办？」**——worker 返回 error 标志不抛异常；reduce 统计成功率决定继续/重试/fallback；可 Send 重试失败 chunk。
-
-**「适合什么业务？」**——批量文档处理、多源检索、eval 跑批。不适合强顺序依赖的任务。

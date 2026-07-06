@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：state 里存 ID 不存大对象，节点内按需查库；图状态管编排进度，业务库管业务数据，用业务键关联。
-
-**打个比方**：state 像工作台的便签纸（只写订单号），详细信息去档案柜（数据库）查；便签纸轻方便携，档案柜存完整记录。
-
-#### 📖 面试展开（详细版）
+我先说结论，再展开原因。
 
 外部数据库集成考察**图状态与业务数据的划界**，是系统设计高频题。
 
@@ -52,27 +48,3 @@ state = {"user_id": "u123", "order_id": "o456"}
 
 **恢复时的幂等**：resume 图之前，先查业务 DB「这个 order_id 的操作是否已执行」，已执行则跳过副作用节点。
 
-#### 💡 核心要点
-- 引用不嵌套大对象
-- 副作用在 tool 节点事务提交
-- checkpoint 与业务库分离
-
-#### 📝 代码/配置示例
-
-```python
-class AgentState(TypedDict):
-    order_id: str
-    user_id: str
-    payment_executed: bool  # 幂等标志
-
-async def payment_node(state):
-    if state.get("payment_executed"):
-        return {}  # 已执行，跳过（幂等）
-    async with db.transaction():
-        await charge(state["user_id"], state["order_id"])
-    return {"payment_executed": True}
-```
-
-#### 🔁 追问怎么接
-
-- **「双写一致性？」** → checkpoint 和业务库是两套存储，不追求强一致；用业务键关联 + 幂等标志（executed=True）；resume 前先查业务库确认副作用是否已发生，已发生则跳过。

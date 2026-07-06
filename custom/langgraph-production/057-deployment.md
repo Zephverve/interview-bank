@@ -17,13 +17,9 @@ source: GitHub + 工程实践
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：生产部署 = API 层无状态（多副本随便扩）+ checkpointer 有状态（Postgres 共享）+ 图启动时 compile 一次 + 长任务丢队列。
-
-**打个比方**：餐厅前台（API）可以开很多个收银台，但订单记录（checkpoint）存在中央数据库里，哪个收银台都能查到同一桌的点菜历史。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 LangGraph 生产部署的核心架构是「无状态 API + 有状态 checkpointer」，实现水平扩展。
 
@@ -35,33 +31,3 @@ checkpointer 层：开发用 MemorySaver，生产用 PostgresSaver（或 Redis�
 
 其他生产要点：secrets（API key）走环境变量，不进 state（checkpoint 会序列化 state）；stream 用 SSE 或 WebSocket；Guardrails 输入输出安全在部署层（API gateway）和图内节点双层配合；可选 LangGraph Platform 托管，自研方案是 Docker + K8s + 共享 PG + LangSmith trace。
 
-#### 💡 核心要点
-- 无状态 API + 有状态 checkpointer
-- 水平扩展靠共享 Postgres
-- stream 用 SSE/WebSocket
-
-#### 📝 代码/配置示例
-
-```python
-# FastAPI 生产部署骨架
-from contextlib import asynccontextmanager
-
-@asynccontextmanager
-async def lifespan(app):
-    app.state.graph = builder.compile(checkpointer=PostgresSaver(conn_string))
-    yield
-
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    config = {"configurable": {"thread_id": req.thread_id}}
-    async for event in app.state.graph.astream(
-        {"messages": [HumanMessage(req.message)]}, config
-    ):
-        yield sse_event(event)
-```
-
-#### 🔁 追问怎么接
-
-- **LangGraph Platform**：官方托管方案，自研是 Docker+K8s+共享 PG
-- **多副本 state**：Postgres checkpointer 共享，API 无状态随便扩
-- **加分项**：长任务异步队列、secrets 不进 state、Guardrails 双层配合

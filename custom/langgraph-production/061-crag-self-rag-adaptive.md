@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：CRAG、Self-RAG、Adaptive RAG 不是三个框架，而是三种「图拓扑」——区别只在于节点和条件边怎么连，论文算法 = 图上的 node + edge。
-
-**打个比方**：三种 RAG 像三种导航策略——CRAG 是「本地地图不够就上网查」；Self-RAG 是「到了目的地自己评价路线对不对」；Adaptive 是「出发前先决定开车、地铁还是步行」。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 这三种高级 RAG 变体在 LangGraph 里的实现差异，本质上是「图拓扑不同」——论文里的算法 = 图上的节点和条件边。面试讲清楚这一点，比背论文公式更有说服力。
 
@@ -35,29 +31,3 @@ Adaptive RAG：入口多一个 router 节点，根据问题类型（事实问答
 
 三种模式可以组合：Adaptive 选策略 → CRAG 质量门控 → Self-RAG 生成自评。
 
-#### 💡 核心要点
-- 每种是不同条件边拓扑
-- Self-RAG 多 generate+critique 环
-- Adaptive 多一路由节点
-
-#### 📝 代码/配置示例
-
-```python
-# CRAG：grade 低分走 web_search 补检索
-builder.add_conditional_edges("grade", lambda s: "web" if s["score"] < 0.5 else "generate", {
-    "web": "web_search", "generate": "generate"
-})
-builder.add_edge("web_search", "merge_context")
-builder.add_edge("merge_context", "generate")
-
-# Adaptive：入口 router 选策略
-builder.add_conditional_edges("router", lambda s: s["strategy"], {
-    "vector_rag": "retrieve", "direct": "generate", "sql": "sql_query"
-})
-```
-
-#### 🔁 追问怎么接
-
-- **和科研问答 grade_retrieval 关系**：就是 CRAG 思想——grade 不够好就改写/补充再检索
-- **加分项**：「论文算法 = 图上的 node + edge」；三种模式可组合
-- **区分点**：CRAG 补外部资料、Self-RAG 生成后自评、Adaptive 入口选策略

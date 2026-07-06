@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 并行有两种——静态扇出（同一前驱连多个后继自动并行）和动态 fan-out（Send API 按运行时数据分发）；结果靠 reducer 合并。
-
-**打个比方**：静态并行像同时派三个侦察兵去不同方向；动态并行像根据敌人数量决定派几个兵，数量运行时才知道。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 并行执行是 LangGraph **性能优化的关键手段**，考察对 super-step 模型的理解。
 
@@ -43,26 +39,3 @@ source: GitHub 100 Questions
 
 **注意事项**：IO 密集节点用 async def + ainvoke；LLM 并发受 rate limit 约束，不是无脑越多越好；并行节点的 state 写入冲突靠 reducer 解决。
 
-#### 💡 核心要点
-- add_edge 扇出到多节点
-- super-step 同步点
-- ainvoke 提升 IO 密集
-
-#### 📝 代码/配置示例
-
-```python
-# 静态并行：fan-out
-builder.add_edge("retrieve", "grade")
-builder.add_edge("retrieve", "summarize")  # 同一 super-step 并行
-
-# 动态并行：Send API
-def dispatch_embed(state):
-    return [Send("embed_worker", {"chunk": c}) for c in state["chunks"]]
-
-class State(TypedDict):
-    results: Annotated[list, operator.add]  # reducer 合并
-```
-
-#### 🔁 追问怎么接
-
-- **「异步 ainvoke 注意什么？」** → 节点定义 async def，图用 ainvoke/astream；别在 async 节点里调阻塞 IO（用 httpx async 或 asyncio.to_thread）；FastAPI 路由里 await graph.ainvoke 不堵 worker。

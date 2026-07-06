@@ -17,13 +17,9 @@ source: GitHub Premium Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：checkpointer 可插拔——开发用 Memory、单机用 SQLite、生产用 Postgres、要极速用 Redis；按 checkpoint 频率和查询需求选。
-
-**打个比方**：像选存储方案——开发用内存（MemorySaver），小项目用本地硬盘（SQLite），生产用云数据库（Postgres），缓存用 Redis。
-
-#### 📖 面试展开（详细版）
+我会从 checkpoint 解决什么问题讲起。
 
 State 持久化策略考察**生产选型的工程判断**。
 
@@ -57,24 +53,3 @@ graph = builder.compile(checkpointer=checkpointer)
 - TTL：每个 checkpoint 设 expire
 - 命名空间：thread_id 作 key prefix
 
-#### 💡 核心要点
-- checkpointer 可插拔
-- Postgres 支持查询 thread 列表
-- TTL 策略各后端不同
-
-#### 📝 代码/配置示例
-
-```python
-# 生产 Postgres
-from langgraph.checkpoint.postgres import PostgresSaver
-checkpointer = PostgresSaver.from_conn_string(DB_URL)
-graph = builder.compile(checkpointer=checkpointer)
-
-# 开发 Memory
-from langgraph.checkpoint.memory import MemorySaver
-graph = builder.compile(checkpointer=MemorySaver())
-```
-
-#### 🔁 追问怎么接
-
-- **「自定义 Redis checkpointer 要点？」** → 序列化大小（state 可能很大，考虑 gzip 压缩）；TTL 每个 checkpoint 设 expire；命名空间 thread_id 作 key prefix；注意 Redis 单 value 大小限制（512MB）。

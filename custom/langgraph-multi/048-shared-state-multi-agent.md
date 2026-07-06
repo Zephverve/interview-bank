@@ -17,13 +17,9 @@ source: 字节 Agent 二面
 
 **优先级**：P1 · 2 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：不是「全共享」或「全隔离」二选一——任务描述和最终结果大家看同一份，各 agent 的草稿和中间变量各自隔离，工具按角色授权。
-
-**打个比方**：项目组共享一份需求文档和最终交付物，但每个工程师有自己的本地草稿文件夹，而且测试同学没有生产库删除权限。
-
-#### 📖 面试展开（详细版）
+我先说结论，再展开原因。
 
 这是字节 Agent 二面的经典原题：「能不能所有子 agent 共享工具和 state？」标准答法不是简单的「能」或「不能」，而是按协作紧密度分层设计。
 
@@ -35,27 +31,3 @@ State 层面：紧耦合协作（Supervisor 模式下的研究团队）应共享
 
 选型原则：协作越紧密，共享越多；协作越松散，隔离越多。面试时主动提「字节追问共享工具」的背景，说明考虑过权限和安全边界，是加分项。
 
-#### 💡 核心要点
-- 共享：统一任务描述、汇总结果
-- 隔离：各 agent 私有 scratchpad
-- 工具按角色授权
-
-#### 📝 代码/配置示例
-
-```python
-class TeamState(TypedDict):
-    messages: Annotated[list, add_messages]  # 共享
-    task_brief: str                            # 共享
-    coder_scratchpad: str                      # coder 私有
-    writer_scratchpad: str                      # writer 私有
-
-# 工具按角色授权
-CODER_TOOLS = [execute_code, read_file]
-RESEARCHER_TOOLS = [search_web, read_paper]
-```
-
-#### 🔁 追问怎么接
-
-- **为什么字节追问共享工具**：考察安全边界意识——不是技术能不能，而是该不该
-- **冲突怎么解**：并行写同一字段配 reducer；私有 scratchpad 隔离中间变量
-- **加分项**：分层设计（共享 task_brief + 隔离 scratchpad + 工具按角色授权）

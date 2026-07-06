@@ -17,13 +17,9 @@ source: GitHub Production Guide
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：生产级 Agent = demo 能跑通 + 崩溃能恢复 + 操作有幂等 + 全程可监控 + bad case 能回流改进。缺任何一条都是玩具。
-
-**打个比方**：demo 是「实验室里跑通一次实验」；生产级是「工厂 24 小时运转——机器坏了能修、次品能检出、工艺能迭代」。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 GitHub Production Guide 和多家面经（百度、阿里、编程导航）共同指向的生产级 checklist，按优先级排列：
 
@@ -39,34 +35,3 @@ GitMMQ 生产指南核心观点：LangGraph 价值是把黑盒循环变成可审
 
 和 demo 的最大差别：demo 是 invoke 能跑通；生产级考虑了崩溃恢复、幂等、监控、bad case 闭环、schema 版本化。面试按「可恢复 > 可观测 > 可评测 > 安全韧性」顺序讲，体现工程优先级感。
 
-#### 💡 核心要点
-- 可恢复 > 可观测 > 可评测
-- 幂等和 HITL 缺一不可
-- 别跳过 Workflow 验证阶段
-
-#### 📝 代码/配置示例
-
-```python
-# 生产级 checklist 骨架
-# 1. 启动时 compile + Postgres checkpointer
-app.state.graph = builder.compile(
-    checkpointer=PostgresSaver(DB_URL),
-    interrupt_before=["execute_action"],
-)
-
-# 2. 请求带 thread_id + trace
-config = {
-    "configurable": {"thread_id": req.thread_id},
-    "recursion_limit": 25,
-}
-
-# 3. 流式 + 监控
-async for event in app.state.graph.astream(input, config):
-    yield event  # LangSmith 自动 trace
-```
-
-#### 🔁 追问怎么接
-
-- **和生产 demo 最大差别**：demo 能跑通；生产级有恢复、幂等、监控、评测闭环
-- **第一优先级做什么**：可恢复（Postgres checkpoint + thread 隔离 + fallback）
-- **加分项**：GitMMQ 推荐路径「先 Workflow 验证再迁 LangGraph」、按优先级排序

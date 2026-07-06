@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LLM 生成的 tool 参数不能 blindly 执行——加 validate 节点用 Pydantic 校验，不过就回 agent 让它重生成，过了才调真实 tool。
-
-**打个比方**：像银行转账前的二次确认——不是用户说转多少就转多少，先校验金额格式、账户合法性，不对就退回让用户重新输入。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 工具参数校验是**生产安全的基础防线**——LLM 生成的 tool_calls 参数可能是错的、越界的、甚至恶意的。
 
@@ -42,30 +38,3 @@ source: GitHub 100 Questions
 
 **高危 tool 额外加 policy 节点**：检查用户权限（这个 user 能调 delete 吗？）、参数范围（删除数量 < 100？）、操作频率（5 分钟内不超过 3 次？）。
 
-#### 💡 核心要点
-- 独立 validate 节点
-- schema 与 tool 定义同源
-- 校验失败不进真实 tool
-
-#### 📝 代码/配置示例
-
-```python
-class SearchArgs(BaseModel):
-    query: str = Field(min_length=1, max_length=200)
-    top_k: int = Field(ge=1, le=20, default=5)
-
-def validate_node(state):
-    call = state["messages"][-1].tool_calls[0]
-    try:
-        SearchArgs(**call["args"])
-        return {"validation_passed": True}
-    except ValidationError as e:
-        return {"validation_error": str(e), "validation_passed": False}
-
-def route_after_validate(state):
-    return "tool" if state["validation_passed"] else "agent"
-```
-
-#### 🔁 追问怎么接
-
-- **「和 JSON schema 关系？」** → Pydantic model 自动生成 JSON schema；@tool 装饰器的 args_schema 就是 JSON schema；validate 节点和 tool 定义同源，LLM 看到的 schema 和校验用的 schema 一致。

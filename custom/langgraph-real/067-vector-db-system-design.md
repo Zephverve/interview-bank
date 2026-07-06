@@ -18,13 +18,9 @@ sourceUrl: https://www.codefather.cn/post/2067118684236795905
 
 **优先级**：P0 · 2 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：把「数据落向量库」建模成一条 ETL 子图，每个步骤是一个 node，失败从 checkpoint 断点续跑，不重复已成功批次。
-
-**打个比方**：像工厂流水线——原料入口分三条线（PDF/网页/结构化），每条线经过切分→向量化→装箱入库，任何一站停电（失败）从上一站成品接着干，不用从头再来。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 这是二面系统设计题，考察**能否把 ETL 流程用图编排讲清楚**，而不是背 Qdrant API。
 
@@ -44,28 +40,3 @@ sourceUrl: https://www.codefather.cn/post/2067118684236795905
 
 **增量更新**：state 里记 `doc_version`，upsert 用 doc_id 做幂等键，新版本走 update 节点而非全量重跑。
 
-#### 💡 核心要点
-- parse → chunk → embed → upsert 各为 node
-- 失败重试不回滚已成功批次
-- 元数据过滤与多租户
-
-#### 📝 代码/配置示例
-
-```python
-class IngestState(TypedDict):
-    source_type: str
-    chunks: Annotated[list, operator.add]
-    batch_id: str
-    progress: int
-
-def route_source(state):
-    return {"pdf": "parse_pdf", "web": "parse_web"}[state["source_type"]]
-
-# embed 完 upsert 失败 → checkpoint resume 从 upsert 续
-graph = builder.compile(checkpointer=PostgresSaver(...))
-```
-
-#### 🔁 追问怎么接
-
-- **「多路召回怎么接？」** → 入库完成后，问答子图 retrieve 节点并行查 vector + keyword + graph，Send API fan-out，reducer 合并多路结果到 `docs[]`。
-- **「增量更新？」** → upsert 节点用 doc_id 幂等键；state 记 version，变更文档只 re-embed 变更 chunk，checkpoint 支持单文档断点续跑。

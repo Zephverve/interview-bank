@@ -17,13 +17,9 @@ source: 牛客 · 阿里淘天
 
 **优先级**：P1 · 1 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 里 prompt 不是一个大模板，而是每个节点有自己的 prompt——静态 system 段管角色，动态段从 state 注入当前步需要的上下文。
-
-**打个比方**：像做菜每道工序有自己的「小纸条」——切配看食材清单，炒菜看火候说明，摆盘看出品标准——而不是一张 5000 字的总菜谱从头看到尾。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 阿里淘天一面原题，考察**prompt 工程在图编排里的落地方式**。
 
@@ -40,26 +36,3 @@ source: 牛客 · 阿里淘天
 
 **防 prompt 漂移**：Git 版本化 + LangSmith prompt hub；改 prompt 必须跑回归集；线上 A/B 对比新旧 prompt 的成功率和 token 消耗。
 
-#### 💡 核心要点
-- 每节点独立 prompt 模板
-- state 字段填充动态段
-- 版本化+A/B
-
-#### 📝 代码/配置示例
-
-```python
-# 每个节点独立 prompt 模板
-GENERATE_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", SYSTEM_PROMPT),  # 静态，Git 版本化
-    ("human", "参考文档：\n{docs}\n\n用户问题：{query}"),  # 动态，从 state 填充
-])
-
-def generate_node(state):
-    prompt = GENERATE_PROMPT.format(docs=state["docs"], query=state["query"])
-    return {"messages": [llm.invoke(prompt)]}
-```
-
-#### 🔁 追问怎么接
-
-- **「和 LangGraph 节点关系？」** → 节点即 prompt 边界；每个 node 有自己的 prompt template，从 state 取当前步需要的字段；换节点 = 换 prompt 策略。
-- **「怎么防 prompt 漂移？」** → Git 版本化 + 改 prompt 必跑回归集 + LangSmith A/B 对比；禁止线上直接改 prompt 不记录版本。

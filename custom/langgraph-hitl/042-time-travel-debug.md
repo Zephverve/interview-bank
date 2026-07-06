@@ -17,11 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-时间旅行就是 get_state_history(thread_config) 列出该 thread 所有历史 checkpoint，选中某个 checkpoint_id 用 update_state 从该点 fork 新执行分支。开发时特别好用：用户报了 bug，回到出错前一步，改 state 或改路由重跑，看「如果当时走了另一条路」会怎样。LangSmith 可视化每步 state 变化，和时间旅行互补。生产环境回滚要谨慎，涉及已发生的副作用。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **是什么**：Time Travel 利用 checkpointer 保存的历史 checkpoint，可以查看、回滚、fork 任意 super-step 的执行状态，是从历史点重新执行或修改后重跑的能力。
 
@@ -35,30 +33,3 @@ source: GitHub 100 Questions
 
 **踩坑**：生产环境随意 fork 导致副作用重复；history 太多不清理占存储；回滚后不更新代码版本导致行为不一致。
 
-#### 💡 核心要点
-- 每个 checkpoint 有 checkpoint_id
-- update_state 从旧点 fork 新分支
-- 开发利器，生产慎用随意回滚
-
-#### 📝 代码/配置示例
-
-```python
-config = {"configurable": {"thread_id": "debug-thread-1"}}
-
-# 查看历史
-history = list(app.get_state_history(config))
-for i, snap in enumerate(history):
-    print(i, snap.config["configurable"]["checkpoint_id"], snap.values.get("current_step"))
-
-# 从第 3 步 fork 新分支
-old_config = history[3].config
-app.update_state(old_config, {"route_key": "alternative_path"})
-for event in app.stream(None, old_config):
-    print(event)
-```
-
-#### 🔁 追问怎么接
-
-**「和 LangSmith 关系？」**——LangSmith 可视化 trace；Time Travel 是运行时 fork 重跑能力。互补。
-
-**「生产能开吗？」**——查看 history 可以（注意权限）；随意 fork 回滚生产慎用，副作用可能已发生。

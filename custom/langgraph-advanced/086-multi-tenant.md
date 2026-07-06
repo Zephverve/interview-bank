@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：多租户靠三层隔离——thread_id 含 tenant_id、checkpointer 分区存储、configurable 注入租户配置和工具权限。
-
-**打个比方**：像 SaaS 公寓——每个租户有自己的房间号（thread_id）、自己的储物柜（checkpoint 分区）、自己的门禁权限（tool 白名单）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 多租户设计是**B 端 Agent 产品的必答题**，考察数据隔离和配置隔离。
 
@@ -54,26 +50,3 @@ config = {"configurable": {
 
 **租户级 rate limit 和模型**：免费 tenant 限 10 req/day + mini 模型；付费 tenant 1000 req/day + 4o 模型。
 
-#### 💡 核心要点
-- 命名空间隔离 checkpoint
-- 租户级 rate limit 和模型
-- 向量库 metadata filter
-
-#### 📝 代码/配置示例
-
-```python
-# thread_id 命名空间
-thread_id = f"{tenant_id}/{user_id}/{task_id}"
-
-# 检索节点 tenant 隔离
-def retrieve_node(state, config):
-    tenant = config["configurable"]["tenant_id"]
-    docs = vectorstore.similarity_search(
-        state["query"], filter={"tenant_id": tenant}
-    )
-    return {"docs": docs}
-```
-
-#### 🔁 追问怎么接
-
-- **「数据隔离怎么做？」** → 向量库 metadata filter tenant_id；业务 DB 所有查询带 tenant_id；checkpointer 分区存储；网关层校验 tenant_id 与用户身份匹配；工具权限按 tenant 白名单。

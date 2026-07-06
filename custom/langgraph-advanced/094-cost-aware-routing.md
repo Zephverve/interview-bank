@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：成本感知路由 = 简单问题用小模型，复杂问题用大模型，超预算强制降级——在 router 节点做决策。
-
-**打个比方**：像打车——短途走路/骑车（mini），长途打专车（4o），月预算花完了就只能走路（模板回复）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 成本感知路由考察**商业意识和工程优化能力**，字节面经百万 token 成本是经典题。
 
@@ -60,24 +56,3 @@ def route_by_complexity(state):
 
 **监控**：每 tenant 日 token 消耗、模型分布、成本/请求比。
 
-#### 💡 核心要点
-- intent+长度估计复杂度
-- configurable 模型名
-- token_budget 写 state
-
-#### 📝 代码/配置示例
-
-```python
-def router_node(state):
-    complexity = "complex" if len(state["query"]) > 200 else "simple"
-    return {"complexity": complexity, "token_spent": 0}
-
-def route_by_cost(state):
-    if state["token_spent"] > TOKEN_BUDGET:
-        return "template_fallback"
-    return "llm_4o" if state["complexity"] == "complex" else "llm_mini"
-```
-
-#### 🔁 追问怎么接
-
-- **「字节问百万 token 成本怎么答？」** → 估算 token 数 × 单价 × 调用量；优化三板斧：压缩（减 input）、缓存（命中重复 query）、小模型路由（80% 简单 query 走 mini）；给出具体数字显得有商业意识。

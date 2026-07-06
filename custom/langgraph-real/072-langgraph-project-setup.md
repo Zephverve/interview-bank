@@ -17,13 +17,9 @@ source: 编程导航面经
 
 **优先级**：P0 · 2 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：搭 LangGraph 项目有固定五步法——定义 State → 写纯函数节点 → 条件边连接 → compile 绑 checkpointer → API 层暴露 stream。
-
-**打个比方**：像搭乐高——先定底板规格（State schema），再拼每个模块（node），用卡扣决定连接方式（条件边），最后装电池（checkpointer）和遥控器（FastAPI stream）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 编程导航一面/二面 P0 原题，**五步法**必须能脱稿背诵，再结合自己项目替换节点名。
 
@@ -47,33 +43,3 @@ class AgentState(TypedDict):
 
 **替换点**：说成自己的科研问答/简历项目，每个节点准备一个 data point（grade 阈值 0.7、rewrite 最多 3 次、P99 延迟 2.3s）。
 
-#### 💡 核心要点
-- 五步法可背诵
-- 结合自己项目替换节点名
-- 强调可测试和可恢复
-
-#### 📝 代码/配置示例
-
-```python
-builder = StateGraph(AgentState)
-builder.add_node("retrieve", retrieve_node)
-builder.add_node("grade", grade_node)
-builder.add_conditional_edges("grade", route_after_grade)
-builder.set_entry_point("retrieve")
-
-graph = builder.compile(
-    checkpointer=PostgresSaver.from_conn_string(DB_URL),
-    interrupt_before=["publish"],
-)
-
-# FastAPI 暴露
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    async for event in graph.astream(input, config={"thread_id": req.session_id}):
-        yield sse_event(event)
-```
-
-#### 🔁 追问怎么接
-
-- **「最强节点是哪个？」** → 选有技术深度的节点（如 grade 或 cite_check），讲设计理由 + 评测指标 + 优化过程；避免说「都重要」。
-- **「重构过什么？」** → 准备一个真实重构 story：如「最初 messages 没配 reducer 被覆盖，后来改成 add_messages + 外置历史」；体现踩坑和迭代。

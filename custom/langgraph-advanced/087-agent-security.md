@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：Agent 安全分五层——输入过滤、工具白名单、HITL 审批、输出过滤、secret 不进 state。
-
-**打个比方**：像机场安检——入口安检（输入过滤）、登机口验票（工具权限）、危险品需额外审批（HITL）、出口检查（输出过滤）、机密文件不进普通行李（secret 隔离）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 Agent 安全是**生产上线的硬性要求**，考察多层防御思维。
 
@@ -55,28 +51,3 @@ Agent 安全是**生产上线的硬性要求**，考察多层防御思维。
 
 **提示注入防御**：system prompt 边界清晰 + 检索内容用 user 角色注入（不当 system）+ tool 结果不直接拼进 system prompt。
 
-#### 💡 核心要点
-- 入口 sanitize 节点
-- tool 按角色授权
-- interrupt 敏感写操作
-
-#### 📝 代码/配置示例
-
-```python
-def sanitize_node(state):
-    user_input = state["messages"][-1].content
-    if detect_injection(user_input):
-        return {"blocked": True, "reason": "prompt_injection"}
-    if detect_pii(user_input):
-        return {"messages": [redact_pii(state["messages"][-1])]}
-    return {}
-
-graph = builder.compile(
-    interrupt_before=["delete", "publish"],
-    checkpointer=PostgresSaver(...),
-)
-```
-
-#### 🔁 追问怎么接
-
-- **「提示注入怎么防？」** → system 边界清晰 + 检索内容用 user 角色注入 + tool 结果不当 system + 输入 Guardrails 节点检测注入模式 + 输出过滤敏感信息。

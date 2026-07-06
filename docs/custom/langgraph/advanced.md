@@ -36,13 +36,9 @@ partColor: #6366f1
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：任务步骤能预先列清单 → Plan-and-Execute；得边做边想、工具调用不确定 → ReAct；实际常混合用。
-
-**打个比方**：Plan-and-Execute 像按菜谱做菜（先列步骤再执行）；ReAct 像侦探破案（推理→行动→观察→再推理，下一步取决于上一步结果）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。
 
@@ -60,29 +56,6 @@ Agent 架构模式选型题，考察**能否根据任务结构选模式**，而�
 **混合模式**（生产常见）：planner 出粗粒度里程碑（3-5 步）→ 每个 milestone 内嵌 ReAct 子图做细粒度执行。例如「写研报」plan 出「收集数据→分析→撰写→审核」，「收集数据」这一步内部用 ReAct 调多个搜索 tool。
 
 **面试技巧**：画两张拓扑图——Plan 是 DAG+replanner 回边；ReAct 是 agent↔tool 环——比背定义强十倍。
-
-#### 💡 核心要点
-- Plan 适合报告生成、流程固定
-- ReAct 适合探索、工具链不确定
-- 混合：plan 粗粒度 react 细执行
-
-#### 📝 代码/配置示例
-
-```python
-# Plan-and-Execute 骨架
-def planner_node(state):
-    steps = llm.invoke(f"为任务 '{state['goal']}' 列出步骤")
-    return {"plan": steps, "current_step": 0}
-
-def executor_node(state):
-    step = state["plan"][state["current_step"]]
-    result = execute_step(step)
-    return {"results": [result], "current_step": state["current_step"] + 1}
-```
-
-#### 🔁 追问怎么接
-
-- **「能画两种拓扑吗？」** → Plan：planner → executor → (条件边) replanner/下一步/END；ReAct：agent ↔ tool 环 + should_continue 条件边；混合：plan 出 milestones，每个 milestone 是 ReAct 子图。
 </div>
 </details>
 
@@ -105,13 +78,9 @@ def executor_node(state):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LLM 生成的 tool 参数不能 blindly 执行——加 validate 节点用 Pydantic 校验，不过就回 agent 让它重生成，过了才调真实 tool。
-
-**打个比方**：像银行转账前的二次确认——不是用户说转多少就转多少，先校验金额格式、账户合法性，不对就退回让用户重新输入。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 工具参数校验是**生产安全的基础防线**——LLM 生成的 tool_calls 参数可能是错的、越界的、甚至恶意的。
 
@@ -129,34 +98,6 @@ def executor_node(state):
 **schema 同源原则**：@tool 装饰器的 args_schema 和 validate 节点用同一个 Pydantic model，避免两套定义不一致。
 
 **高危 tool 额外加 policy 节点**：检查用户权限（这个 user 能调 delete 吗？）、参数范围（删除数量 < 100？）、操作频率（5 分钟内不超过 3 次？）。
-
-#### 💡 核心要点
-- 独立 validate 节点
-- schema 与 tool 定义同源
-- 校验失败不进真实 tool
-
-#### 📝 代码/配置示例
-
-```python
-class SearchArgs(BaseModel):
-    query: str = Field(min_length=1, max_length=200)
-    top_k: int = Field(ge=1, le=20, default=5)
-
-def validate_node(state):
-    call = state["messages"][-1].tool_calls[0]
-    try:
-        SearchArgs(**call["args"])
-        return {"validation_passed": True}
-    except ValidationError as e:
-        return {"validation_error": str(e), "validation_passed": False}
-
-def route_after_validate(state):
-    return "tool" if state["validation_passed"] else "agent"
-```
-
-#### 🔁 追问怎么接
-
-- **「和 JSON schema 关系？」** → Pydantic model 自动生成 JSON schema；@tool 装饰器的 args_schema 就是 JSON schema；validate 节点和 tool 定义同源，LLM 看到的 schema 和校验用的 schema 一致。
 </div>
 </details>
 
@@ -179,13 +120,9 @@ def route_after_validate(state):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 并行有两种——静态扇出（同一前驱连多个后继自动并行）和动态 fan-out（Send API 按运行时数据分发）；结果靠 reducer 合并。
-
-**打个比方**：静态并行像同时派三个侦察兵去不同方向；动态并行像根据敌人数量决定派几个兵，数量运行时才知道。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 并行执行是 LangGraph **性能优化的关键手段**，考察对 super-step 模型的理解。
 
@@ -204,30 +141,6 @@ def route_after_validate(state):
 **super-step 同步点**：同一 super-step 的所有并行节点完成后，才进入下一个 super-step。这是 LangGraph 的 BSP（Bulk Synchronous Parallel）模型。
 
 **注意事项**：IO 密集节点用 async def + ainvoke；LLM 并发受 rate limit 约束，不是无脑越多越好；并行节点的 state 写入冲突靠 reducer 解决。
-
-#### 💡 核心要点
-- add_edge 扇出到多节点
-- super-step 同步点
-- ainvoke 提升 IO 密集
-
-#### 📝 代码/配置示例
-
-```python
-# 静态并行：fan-out
-builder.add_edge("retrieve", "grade")
-builder.add_edge("retrieve", "summarize")  # 同一 super-step 并行
-
-# 动态并行：Send API
-def dispatch_embed(state):
-    return [Send("embed_worker", {"chunk": c}) for c in state["chunks"]]
-
-class State(TypedDict):
-    results: Annotated[list, operator.add]  # reducer 合并
-```
-
-#### 🔁 追问怎么接
-
-- **「异步 ainvoke 注意什么？」** → 节点定义 async def，图用 ainvoke/astream；别在 async 节点里调阻塞 IO（用 httpx async 或 asyncio.to_thread）；FastAPI 路由里 await graph.ainvoke 不堵 worker。
 </div>
 </details>
 
@@ -250,13 +163,9 @@ class State(TypedDict):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：节点可以是 async def，图用 ainvoke 调用；但别在 async 节点里写阻塞代码（如 requests.get），会堵死 event loop。
-
-**打个比方**：async 节点像异步电话——可以同时打多个电话等回复；但在异步电话里用对讲机（阻塞 IO）会卡住所有线路。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 异步节点是 LangGraph **高并发场景的基础**，考察对 Python async 的理解。
 
@@ -275,35 +184,6 @@ class State(TypedDict):
 **同步/异步混用**：LangGraph 支持 sync 和 async 节点混在同一图里，框架自动调度。但建议 IO 密集的全用 async，CPU 密集的可保持 sync。
 
 **和线程池关系**：`asyncio.to_thread` 把阻塞调用放到线程池，不阻塞 event loop；适合必须用的同步库（如某些 DB driver）。
-
-#### 💡 核心要点
-- async 节点 + ainvoke 配对
-- 阻塞调用用 asyncio.to_thread
-- FastAPI 原生 async
-
-#### 📝 代码/配置示例
-
-```python
-# 正确：async 节点 + async HTTP
-async def search_node(state):
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"https://api.example.com/search?q={state['query']}")
-    return {"search_results": resp.json()}
-
-# 错误：async 节点里阻塞 IO
-async def bad_node(state):
-    resp = requests.get(...)  # 阻塞 event loop！
-    return {"results": resp.json()}
-
-# FastAPI 集成
-@app.post("/chat")
-async def chat(req):
-    result = await graph.ainvoke(input, config)  # 不堵 worker
-```
-
-#### 🔁 追问怎么接
-
-- **「和线程池关系？」** → asyncio.to_thread 把阻塞调用（如同步 DB driver）放到线程池执行，不阻塞 event loop；适合不得不用同步库的场景；但首选原生 async 库（httpx、aiohttp、asyncpg）。
 </div>
 </details>
 
@@ -326,13 +206,9 @@ async def chat(req):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：限流分三层——API 网关限用户 QPS、图入口检查 quota、LLM 节点内 token bucket；429 错误走退避重试而不是硬怼。
-
-**打个比方**：像高速公路收费站——入口限流（网关）、路段限速（节点内）、堵车了绕道（429 fallback），不能一辆车堵死整条路。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 限流是**生产级 Agent 的必答题**，考察多层防御思维。
 
@@ -359,31 +235,6 @@ async def chat(req):
 - 避免「一个大租户占满所有 worker」
 
 **监控**：限流触发次数、429 比例、backoff 重试成功率——这些指标进 dashboard。
-
-#### 💡 核心要点
-- 网关层用户级限流
-- LLM 调用前 acquire
-- 指数退避写重试节点
-
-#### 📝 代码/配置示例
-
-```python
-async def llm_node(state, config):
-    await token_bucket.acquire()  # Layer 3
-    try:
-        return {"messages": [await llm.ainvoke(state["messages"])]}
-    except RateLimitError as e:
-        return {"retry_after": e.retry_after}
-
-def route_after_llm(state):
-    if "retry_after" in state:
-        return "backoff"
-    return "next_node"
-```
-
-#### 🔁 追问怎么接
-
-- **「多租户公平调度？」** → fair queue 保证每 tenant 最小配额；tenant 级并发上限；监控每 tenant 的 QPS/token 消耗，异常 tenant 自动降级。
 </div>
 </details>
 
@@ -406,13 +257,9 @@ def route_after_llm(state):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：configurable 是「本次运行的配置」——模型名、温度、租户 ID——通过 invoke 传入，节点从 config 参数读取，不进 checkpoint。
-
-**打个比方**：state 是病人的病历（要存档），configurable 是今天用哪个科室的医生（临时指定，不需要写进病历）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 configurable 是 LangGraph **运行时配置的标准机制**，考察对 state vs config 划界的理解。
 
@@ -446,28 +293,6 @@ def llm_node(state, config):
 | 用途 | 任务推进 | 模型路由/特性开关 |
 
 **最佳实践**：configurable 放「运行环境参数」，state 放「业务数据」；不要把 model_name 写进 state，否则 checkpoint 会污染历史。
-
-#### 💡 核心要点
-- 不进 checkpoint 的运行配置
-- 节点 (state, config) 签名
-- 适合模型路由和特性开关
-
-#### 📝 代码/配置示例
-
-```python
-def llm_node(state, config):
-    cfg = config.get("configurable", {})
-    model = cfg.get("model", "gpt-4o-mini")
-    llm = ChatOpenAI(model=model, temperature=cfg.get("temperature", 0))
-    return {"messages": [llm.invoke(state["messages"])]}
-
-# 调用
-graph.invoke(state, config={"configurable": {"model": "gpt-4o", "tenant": "acme"}})
-```
-
-#### 🔁 追问怎么接
-
-- **「和 state 区别？」** → state 是业务数据、跨 step 持久化、进 checkpoint；configurable 是运行参数、单次 invoke、不进 checkpoint；model_name/tenant_id 放 configurable，query/docs 放 state。
 </div>
 </details>
 
@@ -490,13 +315,9 @@ graph.invoke(state, config={"configurable": {"model": "gpt-4o", "tenant": "acme"
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：state 里存 ID 不存大对象，节点内按需查库；图状态管编排进度，业务库管业务数据，用业务键关联。
-
-**打个比方**：state 像工作台的便签纸（只写订单号），详细信息去档案柜（数据库）查；便签纸轻方便携，档案柜存完整记录。
-
-#### 📖 面试展开（详细版）
+我先说结论，再展开原因。
 
 外部数据库集成考察**图状态与业务数据的划界**，是系统设计高频题。
 
@@ -524,31 +345,6 @@ state = {"user_id": "u123", "order_id": "o456"}
 4. 失败 → rollback → 写 error 进 state
 
 **恢复时的幂等**：resume 图之前，先查业务 DB「这个 order_id 的操作是否已执行」，已执行则跳过副作用节点。
-
-#### 💡 核心要点
-- 引用不嵌套大对象
-- 副作用在 tool 节点事务提交
-- checkpoint 与业务库分离
-
-#### 📝 代码/配置示例
-
-```python
-class AgentState(TypedDict):
-    order_id: str
-    user_id: str
-    payment_executed: bool  # 幂等标志
-
-async def payment_node(state):
-    if state.get("payment_executed"):
-        return {}  # 已执行，跳过（幂等）
-    async with db.transaction():
-        await charge(state["user_id"], state["order_id"])
-    return {"payment_executed": True}
-```
-
-#### 🔁 追问怎么接
-
-- **「双写一致性？」** → checkpoint 和业务库是两套存储，不追求强一致；用业务键关联 + 幂等标志（executed=True）；resume 前先查业务库确认副作用是否已发生，已发生则跳过。
 </div>
 </details>
 
@@ -571,13 +367,9 @@ async def payment_node(state):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：在 agent 节点前加 trim 节点，按 token 预算保留 system + 最近 k 轮，旧的 summarize 或删除，控制送进 LLM 的上下文大小。
-
-**打个比方**：像整理桌面——只留当前任务需要的文件（最近 k 轮），旧文件归档到文件夹（summary 字段）或扔掉（RemoveMessage）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 Message Trimming 是**控制 token 成本和上下文窗口的关键手段**，字节/阿里面经高频。
 
@@ -598,30 +390,6 @@ Message Trimming 是**控制 token 成本和上下文窗口的关键手段**，�
 - 如果需要完整历史，外置到 PostgreSQL/Redis，trim 节点只影响送进 LLM 的上下文
 
 **和压缩节点串联**：先 compress（summarize 旧消息）→ 再 trim（按 token 硬截断），双保险。
-
-#### 💡 核心要点
-- trim 作为独立节点
-- RemoveMessage 删旧消息
-- 摘要进 state.summary 字段
-
-#### 📝 代码/配置示例
-
-```python
-def trim_node(state):
-    messages = state["messages"]
-    token_count = count_tokens(messages)
-    if token_count <= MAX_TOKENS:
-        return {}
-    # 保留 system + 最近 k 轮
-    trimmed = [messages[0]] + messages[-(K_ROUNDS * 2):]
-    return {"messages": trimmed, "trimmed": True}
-
-builder.add_edge("trim", "agent")  # trim 在 agent 前
-```
-
-#### 🔁 追问怎么接
-
-- **「和 checkpoint 冲突吗？」** → 不冲突，裁剪后 checkpoint 存裁剪后的 state 是有意设计；完整历史外置存储，trim 只影响送进 LLM 的上下文；resume 时从裁剪后的 state 继续，不会恢复已删消息。
 </div>
 </details>
 
@@ -644,13 +412,9 @@ builder.add_edge("trim", "agent")  # trim 在 agent 前
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 评测分两级——端到端看最终答案+轨迹，节点级看每个 node 的输入输出；LangSmith 跑批量回归。
-
-**打个比方**：端到端像考最终成绩，节点级像考每科分数——总分高但数学不及格，说明 generate 节点有问题。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 LangGraph Agent 评测考察**是否理解图编排的评测优势**——能评轨迹，不只是评最终答案。
 
@@ -680,31 +444,6 @@ results = evaluate(
 - 多次采样：同一问题跑 3 次，成功率 > 66% 算 pass
 
 **CI 集成**：夜间跑回归集，节点级 + 端到端，失败自动通知 + block merge。
-
-#### 💡 核心要点
-- 端到端+轨迹断言
-- 节点级黄金输入输出
-- 回归 CI 夜间跑
-
-#### 📝 代码/配置示例
-
-```python
-# 轨迹断言
-def trajectory_match(run, example):
-    expected_nodes = ["retrieve", "grade", "generate"]
-    actual_nodes = [s["node"] for s in run.steps]
-    return {"score": all(n in actual_nodes for n in expected_nodes)}
-
-# 节点级单测
-def test_grade_node():
-    state = {"docs": [mock_doc], "query": "test"}
-    result = grade_node(state)
-    assert result["grade_score"] > 0.7
-```
-
-#### 🔁 追问怎么接
-
-- **「非确定性怎么评？」** → LLM-as-judge 评质量；结构匹配（JSON schema/关键词/citation 数）；多次采样取成功率；节点级评测用 mock state 测确定性部分（如 intent 分类）。
 </div>
 </details>
 
@@ -727,13 +466,9 @@ def test_grade_node():
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：多租户靠三层隔离——thread_id 含 tenant_id、checkpointer 分区存储、configurable 注入租户配置和工具权限。
-
-**打个比方**：像 SaaS 公寓——每个租户有自己的房间号（thread_id）、自己的储物柜（checkpoint 分区）、自己的门禁权限（tool 白名单）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 多租户设计是**B 端 Agent 产品的必答题**，考察数据隔离和配置隔离。
 
@@ -763,30 +498,6 @@ config = {"configurable": {
 - 工具权限：tenant A 不能调 tenant B 的内部 API
 
 **租户级 rate limit 和模型**：免费 tenant 限 10 req/day + mini 模型；付费 tenant 1000 req/day + 4o 模型。
-
-#### 💡 核心要点
-- 命名空间隔离 checkpoint
-- 租户级 rate limit 和模型
-- 向量库 metadata filter
-
-#### 📝 代码/配置示例
-
-```python
-# thread_id 命名空间
-thread_id = f"{tenant_id}/{user_id}/{task_id}"
-
-# 检索节点 tenant 隔离
-def retrieve_node(state, config):
-    tenant = config["configurable"]["tenant_id"]
-    docs = vectorstore.similarity_search(
-        state["query"], filter={"tenant_id": tenant}
-    )
-    return {"docs": docs}
-```
-
-#### 🔁 追问怎么接
-
-- **「数据隔离怎么做？」** → 向量库 metadata filter tenant_id；业务 DB 所有查询带 tenant_id；checkpointer 分区存储；网关层校验 tenant_id 与用户身份匹配；工具权限按 tenant 白名单。
 </div>
 </details>
 
@@ -809,13 +520,9 @@ def retrieve_node(state, config):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：Agent 安全分五层——输入过滤、工具白名单、HITL 审批、输出过滤、secret 不进 state。
-
-**打个比方**：像机场安检——入口安检（输入过滤）、登机口验票（工具权限）、危险品需额外审批（HITL）、出口检查（输出过滤）、机密文件不进普通行李（secret 隔离）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 Agent 安全是**生产上线的硬性要求**，考察多层防御思维。
 
@@ -846,32 +553,6 @@ Agent 安全是**生产上线的硬性要求**，考察多层防御思维。
 - **绝不进 state/checkpoint**——否则持久化后泄露
 
 **提示注入防御**：system prompt 边界清晰 + 检索内容用 user 角色注入（不当 system）+ tool 结果不直接拼进 system prompt。
-
-#### 💡 核心要点
-- 入口 sanitize 节点
-- tool 按角色授权
-- interrupt 敏感写操作
-
-#### 📝 代码/配置示例
-
-```python
-def sanitize_node(state):
-    user_input = state["messages"][-1].content
-    if detect_injection(user_input):
-        return {"blocked": True, "reason": "prompt_injection"}
-    if detect_pii(user_input):
-        return {"messages": [redact_pii(state["messages"][-1])]}
-    return {}
-
-graph = builder.compile(
-    interrupt_before=["delete", "publish"],
-    checkpointer=PostgresSaver(...),
-)
-```
-
-#### 🔁 追问怎么接
-
-- **「提示注入怎么防？」** → system 边界清晰 + 检索内容用 user 角色注入 + tool 结果不当 system + 输入 Guardrails 节点检测注入模式 + 输出过滤敏感信息。
 </div>
 </details>
 
@@ -894,13 +575,9 @@ graph = builder.compile(
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：事件驱动 = 外部事件（Kafka/Webhook）触发 invoke 图，每事件一个新 thread，event_id 做幂等键防重复。
-
-**打个比方**：像外卖订单系统——每来一个订单（事件）触发一次处理流程（invoke 图），订单号（event_id）防重复下单。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 事件驱动 Agent 考察**图编排与非交互式场景的结合**。
 
@@ -931,31 +608,6 @@ initial_state = {
 - 适合：非实时、允许延迟的场景
 
 **关键原则**：图 compile 一次（应用启动时），每事件一次 invoke，不 per-event compile。
-
-#### 💡 核心要点
-- 消息队列消费触发
-- 图一次编译反复 invoke
-- 事件 id 作幂等键
-
-#### 📝 代码/配置示例
-
-```python
-# Worker 消费 Kafka 事件
-async def handle_event(event):
-    initial_state = {
-        "event_id": event.id,
-        "event_payload": event.data,
-    }
-    config = {"configurable": {"thread_id": event.id}}
-    result = await graph.ainvoke(initial_state, config)
-
-# 幂等：event_id 作 thread_id
-# 重复消费 → checkpoint 已存在 → 跳过
-```
-
-#### 🔁 追问怎么接
-
-- **「和 cron 结合？」** → 定时器触发 batch 子图：query 积压事件 → Send API fan-out 并行处理；适合非实时场景；cron 负责「什么时候跑」，图负责「怎么跑」。
 </div>
 </details>
 
@@ -978,13 +630,9 @@ async def handle_event(event):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：可视化用 draw_mermaid_png 导出图结构；调试用 stream_mode="values" 看每步 state 变化；LangSmith 看完整轨迹。
-
-**打个比方**：可视化像看地图（图结构），调试像看行车记录仪（每步 state 变化），LangSmith 像黑匣子（完整轨迹回放）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 可视化和调试是**开发效率的关键**，也是面试加分项。
 
@@ -1017,31 +665,6 @@ result = grade_node(mock_state)  # 直接调，不跑全图
 - 单元测试的基础
 
 **面试加分**：带一张自己项目的 Mermaid 图，30 秒画完 ReAct 环或 RAG 流程，比纯口述强十倍。
-
-#### 💡 核心要点
-- Mermaid/PNG 导出
-- stream_mode=values
-- 断点单步 invoke
-
-#### 📝 代码/配置示例
-
-```python
-# 可视化
-png_bytes = graph.get_graph().draw_mermaid_png()
-with open("graph.png", "wb") as f:
-    f.write(png_bytes)
-
-# 调试：逐步看 state
-for event in graph.stream(input, stream_mode="values"):
-    print(f"Step: {event}")
-
-# 单节点调试
-result = grade_node({"docs": mock_docs, "query": "test"})
-```
-
-#### 🔁 追问怎么接
-
-- **「给面试官画过图吗？」** → 准备一张自己项目的 Mermaid 图（PNG 或手绘）；面试时 30 秒画完核心拓扑（3-5 个节点 + 条件边）；重点展示环（ReAct）或回边（grade→rewrite）。
 </div>
 </details>
 
@@ -1064,13 +687,9 @@ result = grade_node({"docs": mock_docs, "query": "test"})
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：优雅降级是「主路径不行走备用路径，备用还不行走兜底」——用户总能拿到结构化响应，不是 500 错误。
-
-**打个比方**：像GPS导航——首选高速（GPT-4o+向量检索），高速堵了走国道（mini+缓存），国道也堵了给你文字指引（模板回复），总比说「找不到路」强。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 优雅降级考察**生产环境的容错设计**——用户感知到的是「慢/简/缺」，不是「挂了」。
 
@@ -1099,31 +718,6 @@ def route_by_health(state):
 - **Fallback**：终极出口，通常是无 LLM 的模板/人工
 
 **监控**：`state["degradation_level"]` 记录当前级别，统计各级占比——如果 Level 2/3 占比 > 10%，说明主路径有问题需要修。
-
-#### 💡 核心要点
-- 多级降级链
-- LLM 失败换小模型
-- 检索失败换关键词搜索
-
-#### 📝 代码/配置示例
-
-```python
-def route_after_primary(state):
-    if state.get("llm_timeout"):
-        return "degraded_llm"
-    if state.get("retrieval_empty"):
-        return "keyword_fallback"
-    return END
-
-# 监控
-state["degradation_level"] = 0  # primary
-state["degradation_level"] = 1  # degraded_llm
-state["degradation_level"] = 2  # keyword_fallback
-```
-
-#### 🔁 追问怎么接
-
-- **「和 fallback 区别？」** → degradation 是沿途多级备用（质量逐步降但仍有价值）；fallback 是终极出口（模板/人工）；degradation 是「尽量服务」，fallback 是「不服务了但给个交代」。
 </div>
 </details>
 
@@ -1146,13 +740,9 @@ state["degradation_level"] = 2  # keyword_fallback
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：不是无脑删旧消息，而是根据当前意图选择性保留相关历史——聊订单保留订单轮次，闲聊压缩掉。
-
-**打个比方**：像整理笔记本——不是把旧页全撕了，而是当前写数学就只留数学相关页，语文笔记归档到文件夹。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 上下文感知记忆压缩是**比简单 trim 更智能的策略**，字节面经长期记忆考点。
 
@@ -1178,30 +768,6 @@ state["degradation_level"] = 2  # keyword_fallback
 - 字节考点：动态召回 + 选择性保留 + 沉淀机制
 - LangGraph 实现：compress 节点（选择性压缩）+ retrieve 节点（按意图回填）+ 外置存储（长期记忆）
 - 图内管「当前任务上下文」，图外管「跨会话记忆」
-
-#### 💡 核心要点
-- intent 变化触发重摘要
-- 相关轮次保留
-- 外置 mem0/向量存长期
-
-#### 📝 代码/配置示例
-
-```python
-def compress_node(state):
-    intent = state["current_intent"]
-    relevant, irrelevant = [], []
-    for msg in state["messages"]:
-        if is_relevant(msg, intent):
-            relevant.append(msg)
-        else:
-            irrelevant.append(msg)
-    summary = llm.invoke(f"摘要以下对话：{irrelevant}")
-    return {"messages": relevant, "archived_summary": summary}
-```
-
-#### 🔁 追问怎么接
-
-- **「和字节动态长期记忆？」** → 同一思想：compress 节点按 intent 选择性压缩 + retrieve 节点按 intent 回填 + 外置 mem0/Postgres 存长期记忆；字节考动态召回，LangGraph 考节点实现。
 </div>
 </details>
 
@@ -1224,13 +790,9 @@ def compress_node(state):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：超时处理分两层——节点级用 asyncio.wait_for 限时，超时走 fallback；图级 API 设总 SLA，超时 cancel 任务。
-
-**打个比方**：像外卖配送——每道工序有截止时间（节点级），整个订单有总时限（图级 SLA），超时不取消订单而是告知用户「还在做，可继续等或换简餐」。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 超时处理是**用户体验的关键**，考察节点级和图级两层超时设计。
 
@@ -1264,29 +826,6 @@ async def llm_node(state):
 - 提供「继续等待」（resume）和「简化问题」（走 degraded 路径）两个选项
 
 **监控**：超时率按节点统计，P99 延迟超 SLA 比例进 alert。
-
-#### 💡 核心要点
-- 节点级超时
-- 图级 SLA watchdog
-- 超时后 checkpoint 可恢复
-
-#### 📝 代码/配置示例
-
-```python
-async def llm_node(state):
-    try:
-        result = await asyncio.wait_for(llm.ainvoke(state["messages"]), timeout=30)
-        return {"messages": [result]}
-    except asyncio.TimeoutError:
-        return {"llm_timeout": True}
-
-def route_after_llm(state):
-    return "fallback" if state.get("llm_timeout") else "next"
-```
-
-#### 🔁 追问怎么接
-
-- **「cancel 后 checkpoint 状态？」** → 被取消的 step 不写入 checkpoint；checkpoint 保留 cancel 前最后成功的 state；resume 从那个 state 继续，被取消的 step 重跑；不会丢数据也不会重复执行已完成的 step。
 </div>
 </details>
 
@@ -1309,13 +848,9 @@ def route_after_llm(state):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：图版本管理 = 多实例共存 + 路由层选版本 + 新 thread 用新版、旧 thread 用旧版 finish。
-
-**打个比方**：像手机系统升级——新买家用新系统（新 thread → v2），老用户可以选择不升级直到当前任务完成（旧 thread → v1 finish）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 图版本管理是**生产迭代的必答题**，考察零停机升级思维。
 
@@ -1352,28 +887,6 @@ def get_graph(config):
 - state schema 变更必须向后兼容（新增字段给默认值）
 - graph_version 和 schema_version 绑定发布
 - 不兼容变更 → 新 graph_version + 迁移脚本
-
-#### 💡 核心要点
-- 多实例共存
-- 路由层选版本
-- 回滚=切流量+停新 thread
-
-#### 📝 代码/配置示例
-
-```python
-# 多版本共存
-graphs = {"v1": graph_v1, "v2": graph_v2}
-
-@app.post("/chat")
-async def chat(req):
-    version = get_thread_version(req.thread_id) or "v2"
-    graph = graphs[version]
-    return await graph.ainvoke(req.input, config)
-```
-
-#### 🔁 追问怎么接
-
-- **「schema 版本一起管吗？」** → 是，graph_version 和 schema_version 绑定发布；新增字段给默认值（向后兼容）；不兼容变更需要新 graph_version + 迁移脚本；旧 thread 的 checkpoint schema 不能 break。
 </div>
 </details>
 
@@ -1396,13 +909,9 @@ async def chat(req):
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：成本感知路由 = 简单问题用小模型，复杂问题用大模型，超预算强制降级——在 router 节点做决策。
-
-**打个比方**：像打车——短途走路/骑车（mini），长途打专车（4o），月预算花完了就只能走路（模板回复）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 成本感知路由考察**商业意识和工程优化能力**，字节面经百万 token 成本是经典题。
 
@@ -1438,28 +947,6 @@ def route_by_complexity(state):
   3. 小模型路由（80% 简单 query 走 mini，成本降 10x）
 
 **监控**：每 tenant 日 token 消耗、模型分布、成本/请求比。
-
-#### 💡 核心要点
-- intent+长度估计复杂度
-- configurable 模型名
-- token_budget 写 state
-
-#### 📝 代码/配置示例
-
-```python
-def router_node(state):
-    complexity = "complex" if len(state["query"]) > 200 else "simple"
-    return {"complexity": complexity, "token_spent": 0}
-
-def route_by_cost(state):
-    if state["token_spent"] > TOKEN_BUDGET:
-        return "template_fallback"
-    return "llm_4o" if state["complexity"] == "complex" else "llm_mini"
-```
-
-#### 🔁 追问怎么接
-
-- **「字节问百万 token 成本怎么答？」** → 估算 token 数 × 单价 × 调用量；优化三板斧：压缩（减 input）、缓存（命中重复 query）、小模型路由（80% 简单 query 走 mini）；给出具体数字显得有商业意识。
 </div>
 </details>
 
@@ -1482,13 +969,9 @@ def route_by_cost(state):
 
 **优先级**：P0 · 3+ 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：最小 Agent 就 10 行——MessagesState + llm_node + START→LLM→END；加 tool 变 ReAct 环，加 MemorySaver 变多轮。
-
-**打个比方**：最小 Agent 像「Hello World」——证明你理解核心概念；加 tool 是「Hello World with input」，加 memory 是「Hello World with persistence」。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 手写最小 Agent 是**一面 P0 白板题**，必须能脱稿写。
 
@@ -1526,32 +1009,6 @@ graph.invoke(input, config={"configurable": {"thread_id": "session_1"}})
 ```
 
 **ModelEngine 社区要点**：reducer（add_messages）、START/END、返回 dict 自动合并——全中。面试能脱稿写加分，加讲每步含义更加分。
-
-#### 💡 核心要点
-- 10 行核心骨架
-- 加 tool 变 ReAct 环
-- 加 MemorySaver 即多轮
-
-#### 📝 代码/配置示例
-
-```python
-from langgraph.graph import StateGraph, START, END, MessagesState
-from langgraph.prebuilt import ToolNode
-
-def llm_node(state):
-    return {"messages": [llm.invoke(state["messages"])]}
-
-builder = StateGraph(MessagesState)
-builder.add_node("llm", llm_node)
-builder.add_edge(START, "llm")
-builder.add_edge("llm", END)
-graph = builder.compile()
-```
-
-#### 🔁 追问怎么接
-
-- **「加 tool 怎么改？」** → 加 ToolNode + should_continue 条件边（有 tool_calls → tools，没有 → END）+ tools→llm 回边，变成 ReAct 环。
-- **「加 memory 怎么改？」** → compile 时传 checkpointer=MemorySaver()，invoke 时 config 传 thread_id，同 thread_id 自动加载历史 messages。
 </div>
 </details>
 
@@ -1574,13 +1031,9 @@ graph = builder.compile()
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：早期 Agent 是黑盒（给工具和目标，内部怎么跑看不清）；LangGraph 是白盒（每个节点、每条边都显式），可测可审计。
-
-**打个比方**：黑盒像自动售货机（投币出饮料，不知道内部机制）；白盒像开放式厨房（每道工序看得见），出问题能定位到哪一步。
-
-#### 📖 面试展开（详细版）
+我会先把定位说清楚：
 
 黑盒 vs 白盒是**理解 LangGraph 价值的根本问题**。
 
@@ -1602,15 +1055,6 @@ graph = builder.compile()
 - **前期投入大**：State schema、reducer 约定、节点契约都要先设计
 
 **为什么生产选白盒**：审计（金融/医疗必须知道 AI 做了什么）、合规（每步可追溯）、排障（bad case 定位到具体 node）、评测（节点级回归）。这就是 LangGraph 取代黑盒 Agent 的根本原因。
-
-#### 💡 核心要点
-- 黑盒：工具+目标全自动
-- 白盒：节点边显式
-- 可控性换设计成本
-
-#### 🔁 追问怎么接
-
-- **「白盒代价是什么？」** → 设计成本（先画流程再写代码）、灵活性降低（LLM 不能随意跳步）、前期投入大（State/reducer/节点契约）；但生产环境的审计/合规/排障需求使白盒成为必选项。
 </div>
 </details>
 
@@ -1633,13 +1077,9 @@ graph = builder.compile()
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：选型看核心需求——数据索引用 LlamaIndex，简单链用 LangChain，快速原型用 CrewAI，复杂可控流程用 LangGraph；可以组合使用。
-
-**打个比方**：像选交通工具——运货用卡车（LlamaIndex），短途用自行车（LangChain），团建包车用巴士（CrewAI），复杂物流调度用调度系统（LangGraph）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 框架选型决策树是**二面 P1 题**，考察全局视野而非只会一个框架。
 
@@ -1672,15 +1112,6 @@ graph = builder.compile()
 - CrewAI 快速验证 → 生产迁移到 LangGraph
 
 **面试技巧**：说 trade-off 比背名字强——「CrewAI 适合快速验证，但如果要 HITL 和 checkpoint，生产一定上 LangGraph」。
-
-#### 💡 核心要点
-- 数据-heavy 先 LlamaIndex
-- 原型 CrewAI
-- 生产复杂 Agent LangGraph
-
-#### 🔁 追问怎么接
-
-- **「能说出 trade-off 吗？」** → 每个框架一句话 trade-off：LlamaIndex 检索强但不包编排；LangChain 生态大但复杂流程难表达；CrewAI 快但控不住；LangGraph 稳但重；实际项目常组合使用。
 </div>
 </details>
 
@@ -1703,13 +1134,9 @@ graph = builder.compile()
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 可以不当 Agent 用——固定边 + 规则条件边（不调 LLM）就是确定性 Workflow，仍有 checkpoint 和 HITL 能力。
-
-**打个比方**：LangGraph 像瑞士军刀——能当 Agent 用（LLM 决策），也能当 Workflow 用（固定流程），还能混合用（前面固定后面 Agent）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 这道题考察**对 LangGraph 定位的理解**——它不只是 Agent 框架，也是 Workflow 引擎。
 
@@ -1742,27 +1169,6 @@ def route_by_status(state):
 | 适合 | retrieve→LLM→format | 大数据 ETL、定时批处理 |
 
 **实际用法**：很多团队用 LangGraph 管「含 LLM 步骤」的工作流（如内容审核：上传→LLM 审核→人工审批→发布），纯数据 ETL 仍用 Airflow。
-
-#### 💡 核心要点
-- 固定边=工作流
-- 条件边可纯规则
-- checkpoint 是优势
-
-#### 📝 代码/配置示例
-
-```python
-# 确定性 Workflow：条件边不调 LLM
-def route_by_status(state):
-    return {"approved": "publish", "rejected": "notify"}[state["status"]]
-
-builder.add_edge("upload", "llm_review")
-builder.add_conditional_edges("llm_review", route_by_status)
-builder.add_edge("publish", END)
-```
-
-#### 🔁 追问怎么接
-
-- **「和 Airflow 区别？」** → LangGraph 轻量、原生 LLM 集成、适合含 AI 步骤的流水线；Airflow 是通用 ETL 调度、重量、适合大数据批处理；实际常组合：Airflow 调度触发 LangGraph 图。
 </div>
 </details>
 
@@ -1785,13 +1191,9 @@ builder.add_edge("publish", END)
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：checkpointer 可插拔——开发用 Memory、单机用 SQLite、生产用 Postgres、要极速用 Redis；按 checkpoint 频率和查询需求选。
-
-**打个比方**：像选存储方案——开发用内存（MemorySaver），小项目用本地硬盘（SQLite），生产用云数据库（Postgres），缓存用 Redis。
-
-#### 📖 面试展开（详细版）
+我会从 checkpoint 解决什么问题讲起。
 
 State 持久化策略考察**生产选型的工程判断**。
 
@@ -1824,28 +1226,6 @@ graph = builder.compile(checkpointer=checkpointer)
 - 序列化：state 可能很大，考虑压缩（gzip）
 - TTL：每个 checkpoint 设 expire
 - 命名空间：thread_id 作 key prefix
-
-#### 💡 核心要点
-- checkpointer 可插拔
-- Postgres 支持查询 thread 列表
-- TTL 策略各后端不同
-
-#### 📝 代码/配置示例
-
-```python
-# 生产 Postgres
-from langgraph.checkpoint.postgres import PostgresSaver
-checkpointer = PostgresSaver.from_conn_string(DB_URL)
-graph = builder.compile(checkpointer=checkpointer)
-
-# 开发 Memory
-from langgraph.checkpoint.memory import MemorySaver
-graph = builder.compile(checkpointer=MemorySaver())
-```
-
-#### 🔁 追问怎么接
-
-- **「自定义 Redis checkpointer 要点？」** → 序列化大小（state 可能很大，考虑 gzip 压缩）；TTL 每个 checkpoint 设 expire；命名空间 thread_id 作 key prefix；注意 Redis 单 value 大小限制（512MB）。
 </div>
 </details>
 
@@ -1868,39 +1248,29 @@ graph = builder.compile(checkpointer=MemorySaver())
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：生产上线 12 项 checklist——编译单例、PG checkpoint、幂等、HITL、限流、监控、评测、降级、版本、secrets、文档化 state 约定。
-
-**打个比方**：像飞机起飞检查清单——12 项全绿才放行；漏一项可能不是立即坠机，但会在某个恶劣条件下暴露。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 生产上线 Checklist 是**二面收尾题**，考察能否把分散工程点串成体系。
 
 **12 项 Checklist**：
 
-**① 图全局 compile 单例**
 - 应用启动时 compile 一次，全局复用
 - 绝不 per-request compile
 
-**② Postgres checkpointer**
 - 生产不用 MemorySaver
 - 配 TTL 防膨胀
 
-**③ thread 租户隔离**
 - thread_id 含 tenant_id
 - 网关层校验
 
-**④ tool 幂等**
 - 副作用 tool 配幂等键
 - resume 前先查业务库
 
-**⑤ 高危 interrupt**
 - 写操作 interrupt_before 审批
 - audit log 记录
 
-**⑥ recursion_limit + fallback**
 - 防死循环
 - 超限走 fallback 不是 500
 
@@ -1931,36 +1301,6 @@ graph = builder.compile(checkpointer=MemorySaver())
 **上线前最后一项**：用生产流量 shadow 跑新版本，对比 trace/失败率/token，确认无退化才切流量。
 
 **state 约定文档化**：reducer 规则、字段含义、生命周期写进 wiki，oncall 能看懂。
-
-#### 💡 核心要点
-- 12 项 checklist
-- 先跑 shadow traffic
-- state 约定写进 wiki
-
-#### 📝 代码/配置示例
-
-```python
-# 生产 compile 单例
-graph = None
-def get_graph():
-    global graph
-    if graph is None:
-        graph = builder.compile(
-            checkpointer=PostgresSaver.from_conn_string(DB_URL),
-            interrupt_before=["publish"],
-        )
-    return graph
-
-# 上线前 shadow
-async def shadow_test(prod_input):
-    v1_result = await graph_v1.ainvoke(prod_input)
-    v2_result = await graph_v2.ainvoke(prod_input)  # 不返回用户
-    compare_traces(v1_result, v2_result)
-```
-
-#### 🔁 追问怎么接
-
-- **「上线前最后一项检查什么？」** → shadow traffic：用生产真实输入跑新版本，对比 trace/节点失败率/token 消耗/答案质量，确认无退化才切流量；同时确认 state reducer 约定已文档化，oncall 能看懂。
 </div>
 </details>
 

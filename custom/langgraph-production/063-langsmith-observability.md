@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangSmith 和 LangGraph 是亲兄弟——开个环境变量，每次运行自动记录每个节点、每次 LLM 调用、每个工具的输入输出和耗时，像给 Agent 装了行车记录仪。
-
-**打个比方**：LangSmith 是「飞行黑匣子」——出问题时回放完整轨迹，看走了哪条路、哪一步慢了、哪一步错了。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 LangSmith 与 LangGraph 同属 LangChain 生态，集成成本极低但价值很大——是生产级 Agent 可观测性的默认方案。
 
@@ -35,31 +31,3 @@ LangSmith 与 LangGraph 同属 LangChain 生态，集成成本极低但价值很
 
 百度面经强调评测闭环：LangSmith 的核心价值是把在线 trace 沉淀成离线评测集的桥梁——线上 bad case → 一键入库 → 离线回归 → prompt 改进 → 上线验证。
 
-#### 💡 核心要点
-- 自动记录 node/LLM/tool span
-- dataset 回归评测
-- 反馈 bad run 到数据集
-
-#### 📝 代码/配置示例
-
-```python
-# LangSmith 零代码集成
-# export LANGCHAIN_TRACING_V2=true
-# export LANGCHAIN_API_KEY=ls-...
-# export LANGCHAIN_PROJECT=my-agent-prod
-
-# 自研 OpenTelemetry 方案
-from opentelemetry import trace
-tracer = trace.get_tracer("langgraph")
-
-def traced_node(state, config):
-    with tracer.start_as_current_span("intent_node") as span:
-        span.set_attribute("thread_id", config["configurable"]["thread_id"])
-        return intent_logic(state)
-```
-
-#### 🔁 追问怎么接
-
-- **不用 LangSmith 自建**：OpenTelemetry span per node，导出 Jaeger/Prometheus
-- **成本数据从哪来**：LLM callback 聚合 token，按 node/用户/时间段统计
-- **加分项**：评测闭环（在线 trace → 离线 dataset → 回归 → 改进）

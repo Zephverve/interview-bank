@@ -17,11 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-长任务不能指望一次 HTTP 请求跑完。标准模式是：启动时 invoke 传 thread_id，图按节点 checkpoint；HTTP 立即返回 task_id；客户端轮询 get_state 或订阅 stream 看进度。更重的任务放 Celery/ARQ worker 里 ainvoke，每步 checkpoint 后释放 worker。失败从最后 checkpoint 续跑，不从头来。几天级任务还要考虑 checkpoint TTL 和状态压缩。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **问题**：Agent 任务可能跑几分钟到几小时（批量处理、多轮 ReAct、大文档分析），HTTP 长连接会超时，进程崩溃会丢失进度。
 
@@ -37,34 +35,3 @@ source: GitHub 100 Questions
 
 **踩坑**：HTTP 同步等待长任务超时；没 checkpoint 崩溃后从头跑；进度不推送用户以为卡死。
 
-#### 💡 核心要点
-- 每 super-step checkpoint
-- 异步 ainvoke + 任务队列
-- stream 或 webhook 推进度
-
-#### 📝 代码/配置示例
-
-```python
-# API 层：异步提交
-@app.post("/tasks")
-async def start_task(req: TaskRequest):
-    task_id = str(uuid4())
-    thread_id = f"task-{task_id}"
-    celery_app.send_task("run_graph", args=[req.input, thread_id])
-    return {"task_id": task_id, "thread_id": thread_id}
-
-# Worker 层
-def run_graph(input_data, thread_id):
-    config = {"configurable": {"thread_id": thread_id}}
-    return app.invoke(input_data, config)
-
-# 前端轮询进度
-state = app.get_state({"configurable": {"thread_id": thread_id}})
-progress = state.values.get("current_step", "unknown")
-```
-
-#### 🔁 追问怎么接
-
-**「任务跑几天怎么设计？」**——checkpoint TTL + state 压缩 + 子图拆分 + durable execution。每天自动 summarization 减 state 体积。
-
-**「进度怎么给前端？」**——get_state 轮询简单；stream/WebSocket 实时体验好。展示 current_step 和百分比。

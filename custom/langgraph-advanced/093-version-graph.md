@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：图版本管理 = 多实例共存 + 路由层选版本 + 新 thread 用新版、旧 thread 用旧版 finish。
-
-**打个比方**：像手机系统升级——新买家用新系统（新 thread → v2），老用户可以选择不升级直到当前任务完成（旧 thread → v1 finish）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 图版本管理是**生产迭代的必答题**，考察零停机升级思维。
 
@@ -61,24 +57,3 @@ def get_graph(config):
 - graph_version 和 schema_version 绑定发布
 - 不兼容变更 → 新 graph_version + 迁移脚本
 
-#### 💡 核心要点
-- 多实例共存
-- 路由层选版本
-- 回滚=切流量+停新 thread
-
-#### 📝 代码/配置示例
-
-```python
-# 多版本共存
-graphs = {"v1": graph_v1, "v2": graph_v2}
-
-@app.post("/chat")
-async def chat(req):
-    version = get_thread_version(req.thread_id) or "v2"
-    graph = graphs[version]
-    return await graph.ainvoke(req.input, config)
-```
-
-#### 🔁 追问怎么接
-
-- **「schema 版本一起管吗？」** → 是，graph_version 和 schema_version 绑定发布；新增字段给默认值（向后兼容）；不兼容变更需要新 graph_version + 迁移脚本；旧 thread 的 checkpoint schema 不能 break。

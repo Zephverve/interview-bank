@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 评测分两级——端到端看最终答案+轨迹，节点级看每个 node 的输入输出；LangSmith 跑批量回归。
-
-**打个比方**：端到端像考最终成绩，节点级像考每科分数——总分高但数学不及格，说明 generate 节点有问题。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 LangGraph Agent 评测考察**是否理解图编排的评测优势**——能评轨迹，不只是评最终答案。
 
@@ -54,27 +50,3 @@ results = evaluate(
 
 **CI 集成**：夜间跑回归集，节点级 + 端到端，失败自动通知 + block merge。
 
-#### 💡 核心要点
-- 端到端+轨迹断言
-- 节点级黄金输入输出
-- 回归 CI 夜间跑
-
-#### 📝 代码/配置示例
-
-```python
-# 轨迹断言
-def trajectory_match(run, example):
-    expected_nodes = ["retrieve", "grade", "generate"]
-    actual_nodes = [s["node"] for s in run.steps]
-    return {"score": all(n in actual_nodes for n in expected_nodes)}
-
-# 节点级单测
-def test_grade_node():
-    state = {"docs": [mock_doc], "query": "test"}
-    result = grade_node(state)
-    assert result["grade_score"] > 0.7
-```
-
-#### 🔁 追问怎么接
-
-- **「非确定性怎么评？」** → LLM-as-judge 评质量；结构匹配（JSON schema/关键词/citation 数）；多次采样取成功率；节点级评测用 mock state 测确定性部分（如 intent 分类）。

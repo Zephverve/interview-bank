@@ -17,52 +17,11 @@ source: 牛客 · 阿里淘天
 
 **优先级**：P0 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-阿里淘天一面原题。状态流转是：框架把当前完整 state 传给节点，节点返回只含变更字段的 dict，框架用 reducer 合并，然后根据边定义决定下一个节点。比如 intent_node 写 current_intent → 条件边路由到 rag_node 或 tool_node → rag_node append retrieval_docs → summarize_node 读 docs 生成答案。讲流转时最好画一张图，标出每个节点读写哪些字段。
+我设计状态流转的习惯是四步。第一步，画业务流程图，标出每个决策点和可能的回退路径。第二步，定义 State schema，给每个字段注明更新策略——messages 是 append-only，current_intent 是覆盖写，temp_search_results 在某条边之后清空。第三步，每个节点写成纯函数，输入 state 返回 partial update，不在节点里做副作用。第四步，用条件边连接，路由函数只读 state 返回下一个节点名。
 
-#### 📖 面试展开（详细版）
+以【替换点：你的项目】为例，流程是：用户输入 → 意图识别节点 → 条件路由到 RAG 检索或工具调用 → 结果汇总 → 可选的人工审核 → 输出。意图识别写 current_intent，检索节点 append retrieval_context，审核节点可能触发 interrupt。
 
-**① 是什么**
+保证节点效果的做法是：每个节点有独立的输入输出契约、单元测试覆盖路由逻辑、线上监控节点级耗时和失败率，bad case 回流到评测集。
 
-状态流转公式：S_{t+1} = merge(S_t, node_output)。节点是纯函数：读 state，返回 partial update，不 mutate。合并后完整 state 传给下一节点或条件边路由函数。
-
-**② 为什么重要**
-
-阿里淘天一面核心项目题，结合「怎么保证节点效果」考工程深度。能画流转图 + 标字段策略是加分项。
-
-**③ 怎么用 / 四步设计**
-
-画业务流程 → 定义 schema 和 reducer → 节点纯函数返回 update → 条件边读合并后 state 路由。保证节点效果：独立 IO 契约、路由逻辑单测、线上监控节点耗时和失败率。
-
-**④ 项目例子（EvoAgent）**
-
-用户输入 → intent_node 写 current_intent → 条件边：research 走 rag_node append retrieval_docs → grade_node 写 quality_score → 条件边：不够 rewrite_node 改 query 回 rag_node，够了 generate_node append AIMessage → citation_check_node → interrupt 或 END。
-
-**⑤ 常见坑**
-
-节点内 mutate state；条件边读的是合并前旧 state（实际不会，但要理解时序）；临时字段不清空污染下游。
-
-#### 💡 核心要点
-- 节点不 mutate state，只返回 dict
-- 合并后整条 state 传给下一节点
-- 条件边读合并后的 state 做路由
-
-#### 📝 代码/配置示例
-
-```python
-# S_{t+1} = merge(S_t, node_output)
-def intent_node(state: AgentState) -> dict:
-    intent = classify(state["messages"][-1].content)
-    return {"current_intent": intent}  # 只返回变更
-
-# 条件边读合并后的 state
-def route(state) -> str:
-    return "rag" if state["current_intent"] == "research" else "chat"
-```
-
-#### 🔁 追问怎么接
-
-- 「保证节点效果」：IO 契约 + 单测 + 线上监控 + bad case 回流评测
-- 「复杂对象」：传 ID 不传全文；编排 state 和领域 data 分离
-- 「排查节点差」：LangSmith trace 看输入输出 state diff

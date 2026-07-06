@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：优雅降级是「主路径不行走备用路径，备用还不行走兜底」——用户总能拿到结构化响应，不是 500 错误。
-
-**打个比方**：像GPS导航——首选高速（GPT-4o+向量检索），高速堵了走国道（mini+缓存），国道也堵了给你文字指引（模板回复），总比说「找不到路」强。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 优雅降级考察**生产环境的容错设计**——用户感知到的是「慢/简/缺」，不是「挂了」。
 
@@ -53,27 +49,3 @@ def route_by_health(state):
 
 **监控**：`state["degradation_level"]` 记录当前级别，统计各级占比——如果 Level 2/3 占比 > 10%，说明主路径有问题需要修。
 
-#### 💡 核心要点
-- 多级降级链
-- LLM 失败换小模型
-- 检索失败换关键词搜索
-
-#### 📝 代码/配置示例
-
-```python
-def route_after_primary(state):
-    if state.get("llm_timeout"):
-        return "degraded_llm"
-    if state.get("retrieval_empty"):
-        return "keyword_fallback"
-    return END
-
-# 监控
-state["degradation_level"] = 0  # primary
-state["degradation_level"] = 1  # degraded_llm
-state["degradation_level"] = 2  # keyword_fallback
-```
-
-#### 🔁 追问怎么接
-
-- **「和 fallback 区别？」** → degradation 是沿途多级备用（质量逐步降但仍有价值）；fallback 是终极出口（模板/人工）；degradation 是「尽量服务」，fallback 是「不服务了但给个交代」。

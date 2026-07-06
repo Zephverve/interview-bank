@@ -17,11 +17,9 @@ source: CSDN + 牛客
 
 **优先级**：P0 · 3+ 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-Agent 死循环最常见的情况是：工具一直返回空，LLM 不死心反复重试，图就在 agent→tool→agent 之间空转。防法要设三道防线：框架级 recursion_limit 硬上限、state 里 step_count 软路由到 fallback、语义查重发现「同一工具同一参数调了 N 次」直接阻断。关键是不能让用户看到 GraphRecursionError 的 500，要在条件边里优雅降级，比如转人工或提示简化问题。
-
-#### 📖 面试展开（详细版）
+循环在 LangGraph 里靠回边实现，防死循环要设好几道保险。
 
 **是什么**：死循环指图在环里无限执行，super-step 不断增长直到触发 recursion_limit 或耗尽 token/时间预算。ReAct Agent 里最常见诱因是工具返回空/错误，LLM 换汤不换药地重试。
 
@@ -33,31 +31,3 @@ Agent 死循环最常见的情况是：工具一直返回空，LLM 不死心反�
 
 **踩坑**：只依赖 recursion_limit 不设 fallback，用户看到 500；step_count 忘了在节点里递增导致软路由失效；语义查重太严误杀合理重试。
 
-#### 💡 核心要点
-- 框架 recursion_limit 默认 1000，应调低
-- state 维护 step_count 路由到 fallback
-- 比对 last_tool_call 阻断重复撞墙
-
-#### 📝 代码/配置示例
-
-```python
-def smart_router(state):
-    if state.get("step_count", 0) >= 15:
-        return "fallback"
-    last = state.get("last_tool_call")
-    current = extract_tool_call(state["messages"][-1])
-    if last == current and state.get("repeat_count", 0) >= 2:
-        return "human_fallback"
-    return "continue"
-
-def agent_node(state):
-    return {"step_count": state.get("step_count", 0) + 1}
-
-app.invoke(input, config={"recursion_limit": 20})
-```
-
-#### 🔁 追问怎么接
-
-**「工具一直返回空怎么办？」**——分层处理：先 query_rewrite 换关键词重检；rewrite 仍失败走 fallback 坦诚告知；记录 failure_reason 进监控。
-
-**「人类如何介入？」**——step_count 超阈值或 repeat_count 触发时，条件边路由到 interrupt 节点挂起，前端展示当前 state 让人工接管或终止。

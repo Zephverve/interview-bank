@@ -38,54 +38,15 @@ partColor: #6366f1
 
 **优先级**：P0 · 4+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangGraph 最常踩的坑就五类——并发写 state 互相覆盖、没 reducer、死循环、每请求 compile 图、checkpoint 越存越大。能讲出「怎么发现、怎么修」比背概念加分十倍。
+我踩过最疼的一个坑是状态管理。LangGraph 里每个节点都能读写共享 state，但有些节点是并发执行的。有一次两个节点同时修改 state 里同一个字段，后执行的直接把先执行的覆盖了，完全没有警告。后来我们给列表类字段配了 Annotated reducer，比如 messages 用 add_messages，从「覆盖写」改成「合并写」。
 
-**打个比方**：像学开车——不是知道「不能闯红灯」就行，得讲出「哪次差点闯、怎么刹住的、后来装了什么提醒」。
+第二个坑是死循环。ReAct Agent 如果工具一直返回空结果，模型可能无限重试。我们加了 recursion_limit 和自定义的 should_continue 条件，超过 N 轮就路由到 fallback 节点。
 
-#### 📖 面试展开（详细版）
+第三个坑是生产环境重复编译图。compile 应该在应用启动时做一次，全局单例复用，而不是每个请求都 compile，否则延迟会很高。
 
-这是牛客某大厂/阿里国际面经的高频原题，面试官要的不是概念背诵，而是真实工程踩坑经历和闭环修复。
-
-第一个坑：并发节点覆盖 state 同一字段。LangGraph 节点可能并行执行，两个节点同时改 state 里同一个字段，后执行的直接把先执行的覆盖，完全没有警告。这是阿里国际面经里最高频的踩坑。修复：给列表类字段配 Annotated reducer，messages 用 add_messages，从「覆盖写」改成「合并写」。发现方式：stream_mode='values' 观察每步 state，发现某字段值突然变少或消失。
-
-第二个坑：ReAct 死循环。工具一直返回空结果，模型无限重试。修复：recursion_limit 设框架级上限；should_continue 条件边里加 step_count 计数；业务层检测重复 tool call 模式。超过 N 轮路由到 fallback 节点而非继续循环。
-
-第三个坑：每 HTTP 请求 compile 图。compile 会做结构检查、绑定 checkpointer、构建执行计划，毫秒到秒级开销。QPS 高时 CPU 浪费明显，P99 延迟抖动。修复：应用启动时 compile 一次存全局单例，请求路径只 invoke。
-
-第四个坑：checkpoint 膨胀。一开始什么都往 state 里塞——跨会话历史、海量检索结果、用户偏好——导致 checkpoint 体积巨大、恢复变慢。修复：图内只留当前任务推进必需的状态，跨会话历史和知识库走外置存储，配 TTL 和里程碑裁剪。
-
-第五个坑：LLM 条件路由不稳定。intent 分类偶尔飘，导致该走 RAG 的走了直答。修复：加规则 fallback（关键词匹配兜底）、confidence 阈值、路由结果日志监控。
-
-#### 💡 核心要点
-- 状态覆盖最常见
-- recursion_limit 要配业务 fallback
-- 生产禁止重复 compile
-
-#### 📝 代码/配置示例
-
-```python
-# 坑1修复：配 reducer
-from typing import Annotated
-from langgraph.graph.message import add_messages
-
-class AgentState(TypedDict):
-    messages: Annotated[list, add_messages]  # 合并写，不是覆盖
-
-# 坑3修复：启动时 compile
-app = builder.compile(checkpointer=pg_saver)  # 全局单例
-
-# 坑2修复：防死循环
-app = builder.compile(checkpointer=pg_saver)
-config = {"recursion_limit": 25}
-```
-
-#### 🔁 追问怎么接
-
-- **怎么监控发现**：stream 看 state 变化、LangSmith trace 定位节点、P99 延迟突增告警
-- **哪个坑印象最深**：选并发覆盖或 checkpoint 膨胀，讲清发现→定位→修复闭环
-- **加分项**：每个坑配「怎么发现」的方式，体现真实工程感
+第四个坑和 checkpoint 有关：一开始什么都往 state 里塞，导致 checkpoint 体积膨胀、恢复变慢。后来我们把跨会话的历史和知识库检索结果外置，图里只留当前任务推进必需的状态。【替换点：换成你真实踩过的坑】
 </div>
 </details>
 
@@ -108,13 +69,9 @@ config = {"recursion_limit": 25}
 
 **优先级**：P0 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：保证节点效果 = 先定清楚「进什么、出什么」，再单测、再离线评测、再线上监控，bad case 回流改进——像给流水线每个工位做质检。
-
-**打个比方**：工厂每个工位有检验标准（IO 契约）、抽检流程（单测）、批量质检报告（离线评测）、实时合格率大屏（线上监控），不合格品回流改进。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 阿里淘天一面原题，考察的是「节点级质量保障体系」而非「调 prompt 碰运气」。我习惯四件事闭环：
 
@@ -127,31 +84,6 @@ config = {"recursion_limit": 25}
 第四，线上节点级监控。LangSmith 或自研按 node_name 聚合：成功率、P99 耗时、token 消耗、错误类型分布。bad case 自动入库回流评测集。
 
 效果不好排查顺序：输入 state 是否被上游污染 → prompt 是否漂移（版本对比）→ reducer 合并是否丢数据 → 下游是否误读该节点输出。prompt 迭代必须版本化，A/B 对比节点输出指标再全量发布。
-
-#### 💡 核心要点
-- mock 上游 state 单测节点
-- 黄金集测该节点输出
-- 监控按 node 名聚合
-
-#### 📝 代码/配置示例
-
-```python
-# 节点 IO 契约 + 单测
-def intent_node(state: AgentState) -> dict:
-    """读: query | 写: intent (覆盖)"""
-    intent = classify(state["query"])
-    return {"intent": intent}
-
-def test_intent_node():
-    result = intent_node({"query": "论文检索方法", "messages": []})
-    assert result["intent"] == "vector_rag"
-```
-
-#### 🔁 追问怎么接
-
-- **效果不好怎么排查**：输入 state 脏 → prompt 漂移 → reducer 合并错 → 下游误读
-- **prompt 怎么迭代**：版本化、A/B 对比节点指标、再全量发布
-- **加分项**：四层闭环（契约→单测→评测集→监控）、bad case 回流
 </div>
 </details>
 
@@ -174,13 +106,9 @@ def test_intent_node():
 
 **优先级**：P0 · 2+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：节点级监控 = 给图里每个节点装一个「黑匣子」——记录谁、耗时多少、输入输出摘要、有没有报错，出问题时能定位到具体哪个节点而不是只知道「整体超时」。
-
-**打个比方**：端到端监控像只看「快递总时长」；节点级监控像看「揽收→分拣→运输→派送」每个环节各花了多久，哪一环慢了清清楚楚。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 阿里淘天面经原题「如何做监控」，以及百度面经强调的评测闭环，都指向节点级可观测性。实现分三层：
 
@@ -191,37 +119,6 @@ trace 贯穿：每次 invoke 生成 trace_id 写入 config.configurable，所有
 和整体 Agent 监控的核心区别：端到端只知道「回答超时 30s」，节点级能定位「retrieve_node P99 25s、generate_node P99 3s」——问题在检索不在生成。这是生产排障的关键能力。
 
 告警阈值：单节点失败率环比突增（如今日 5% vs 昨日 1%）；P99 延迟超 SLA；token 消耗突增（可能 prompt 膨胀或死循环）；attempt 次数异常（重试风暴）。告警触发后自动采样 bad case 入库离线评测集，形成监控→评测→改进闭环。
-
-#### 💡 核心要点
-- OpenTelemetry/LangSmith span per node
-- 记录 attempt 次数
-- 失败率突增告警
-
-#### 📝 代码/配置示例
-
-```python
-# LangSmith 自动 trace（设环境变量即可）
-# LANGCHAIN_TRACING_V2=true
-# LANGCHAIN_PROJECT=my-agent
-
-# 自研：节点入口打 span
-def monitored_node(state, config):
-    trace_id = config["configurable"].get("trace_id")
-    start = time.time()
-    try:
-        result = actual_node_logic(state)
-        log_span(trace_id, "intent_node", time.time()-start, ok=True)
-        return result
-    except Exception as e:
-        log_span(trace_id, "intent_node", time.time()-start, ok=False, error=str(e))
-        raise
-```
-
-#### 🔁 追问怎么接
-
-- **和整体监控区别**：节点级定位具体慢/失败的 node，端到端只知道总超时
-- **告警阈值**：单节点失败率环比、P99 延迟、token 突增、attempt 异常
-- **加分项**：监控→bad case 入库→离线评测→改进闭环
 </div>
 </details>
 
@@ -244,13 +141,9 @@ def monitored_node(state, config):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：测 Agent 分三层——先测每个节点函数（最便宜），再测图的路由走向（mock LLM），最后端到端黄金集（最贵放夜间跑）。LLM 非确定性用「录播回复」或「只断言结构」解决。
-
-**打个比方**：测汽车：先测每个零件（节点单测），再测组装后各系统联动（集成测），最后上路跑（E2E）——不会每改一个螺丝就上路跑一圈。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 LangGraph Agent 测试的核心优势是「图结构可分层测」——不必每次改 prompt 都跑完整 E2E。我习惯三层策略：
 
@@ -261,35 +154,6 @@ LangGraph Agent 测试的核心优势是「图结构可分层测」——不必�
 E2E 测试（端到端）：黄金问题集（50-100 条），用 recorded LLM responses（录播模式）或 contract test（只断言输出结构、不断言原文）。对比 state 轨迹 snapshot 或最终 answer 质量指标。夜间 CI 跑，成本较高。
 
 mock 非确定性 LLM 的两种策略：recorded responses——首次运行录下 LLM 输出，后续 replay；contract test——断言「回答包含引用来源」「intent 字段存在」等结构约束，不断言具体措辞。CI 策略：单元+集成每次 PR 跑，E2E 夜间或 pre-release 跑。
-
-#### 💡 核心要点
-- 节点函数纯函数化最好测
-- mock tools 固定返回
-- snapshot 测 state 演化
-
-#### 📝 代码/配置示例
-
-```python
-# 单元：节点单测
-def test_should_continue():
-    assert should_continue({"step_count": 5, "messages": []}) == "continue"
-    assert should_continue({"step_count": 25, "messages": []}) == "fallback"
-
-# 集成：mock LLM 测路由
-@pytest.fixture
-def mock_llm(monkeypatch):
-    monkeypatch.setattr("llm.invoke", lambda x: AIMessage(content="", tool_calls=[...]))
-
-def test_react_loop(mock_llm):
-    result = app.invoke({"messages": [HumanMessage("查天气")]})
-    assert "get_weather" in str(result)
-```
-
-#### 🔁 追问怎么接
-
-- **mock 非确定性 LLM**：recorded responses 录播 replay，或 contract test 只断言结构
-- **CI 怎么跑**：单元+集成每次 PR，E2E 夜间/pre-release
-- **加分项**：三层分离、snapshot 测 state 演化、条件边路由可单测
 </div>
 </details>
 
@@ -312,13 +176,9 @@ def test_react_loop(mock_llm):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：生产部署 = API 层无状态（多副本随便扩）+ checkpointer 有状态（Postgres 共享）+ 图启动时 compile 一次 + 长任务丢队列。
-
-**打个比方**：餐厅前台（API）可以开很多个收银台，但订单记录（checkpoint）存在中央数据库里，哪个收银台都能查到同一桌的点菜历史。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 LangGraph 生产部署的核心架构是「无状态 API + 有状态 checkpointer」，实现水平扩展。
 
@@ -329,37 +189,6 @@ checkpointer 层：开发用 MemorySaver，生产用 PostgresSaver（或 Redis�
 长任务处理：超过 30s 的 Agent 任务不应阻塞 HTTP 连接。模式：API 接收请求后立即返回 task_id，任务丢 Celery/RQ worker 异步执行，结果写 checkpointer；客户端轮询或 WebSocket 推送进度。worker 同样共享 Postgres checkpointer。
 
 其他生产要点：secrets（API key）走环境变量，不进 state（checkpoint 会序列化 state）；stream 用 SSE 或 WebSocket；Guardrails 输入输出安全在部署层（API gateway）和图内节点双层配合；可选 LangGraph Platform 托管，自研方案是 Docker + K8s + 共享 PG + LangSmith trace。
-
-#### 💡 核心要点
-- 无状态 API + 有状态 checkpointer
-- 水平扩展靠共享 Postgres
-- stream 用 SSE/WebSocket
-
-#### 📝 代码/配置示例
-
-```python
-# FastAPI 生产部署骨架
-from contextlib import asynccontextmanager
-
-@asynccontextmanager
-async def lifespan(app):
-    app.state.graph = builder.compile(checkpointer=PostgresSaver(conn_string))
-    yield
-
-@app.post("/chat")
-async def chat(req: ChatRequest):
-    config = {"configurable": {"thread_id": req.thread_id}}
-    async for event in app.state.graph.astream(
-        {"messages": [HumanMessage(req.message)]}, config
-    ):
-        yield sse_event(event)
-```
-
-#### 🔁 追问怎么接
-
-- **LangGraph Platform**：官方托管方案，自研是 Docker+K8s+共享 PG
-- **多副本 state**：Postgres checkpointer 共享，API 无状态随便扩
-- **加分项**：长任务异步队列、secrets 不进 state、Guardrails 双层配合
 </div>
 </details>
 
@@ -382,13 +211,9 @@ async def chat(req: ChatRequest):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：compile 图就像「编译代码」——启动时做一次，请求时只「运行」已编译好的实例。每请求 compile 等于每次访问网站都重新 npm build 一遍。
-
-**打个比方**：compile 是「把菜谱定稿并培训厨师」，invoke 是「按定稿菜谱做菜」。不会每个客人点菜都重新写菜谱、重新培训厨师。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 这是 CSDN 工程实践类面经的常考题，考察对 LangGraph 生命周期的理解。compile() 不是轻量操作——它做这些事：图结构验证（孤立节点检查、边完整性）；绑定 checkpointer 和 interrupt 配置；构建内部执行计划和节点调度表；创建 CompiledGraph 对象。整体开销从毫秒到秒级，取决于图复杂度。
 
@@ -397,34 +222,6 @@ async def chat(req: ChatRequest):
 正确做法：应用 lifespan/startup 事件里 compile 一次，存 app.state.graph 或模块级全局变量。请求路由里直接 app.state.graph.ainvoke(input, config)，零 compile 开销。FastAPI 用 @asynccontextmanager lifespan；Flask 用 before_first_request（已废弃）或应用工厂模式。
 
 热更新和多版本：加载 graph_v2 实例与 v1 并存，按 request header、tenant_id 或 thread 创建时间路由到对应版本。旧 thread 用旧图 finish，新 thread 用新图。灰度期间新旧并行，全量切换后下线旧实例。
-
-#### 💡 核心要点
-- compile 在 startup 事件
-- 请求路径零 compile
-- 版本变更灰度新 graph 实例
-
-#### 📝 代码/配置示例
-
-```python
-# 错误：每请求 compile
-@app.post("/chat")
-async def chat_bad(req):
-    app = builder.compile()  # 每次都 compile！
-    return await app.ainvoke(...)
-
-# 正确：启动时 compile 一次
-app.state.graph = builder.compile(checkpointer=pg_saver)
-
-@app.post("/chat")
-async def chat_good(req):
-    return await app.state.graph.ainvoke(...)
-```
-
-#### 🔁 追问怎么接
-
-- **热更新图**：加载新 graph 实例，按 header/tenant 路由，旧 thread 用旧图 finish
-- **多版本共存**：graph_v1 和 graph_v2 并存，灰度期间新旧并行
-- **加分项**：量化 compile 开销（毫秒到秒级）、serverless 冷启动场景
 </div>
 </details>
 
@@ -447,49 +244,9 @@ async def chat_good(req):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：改图就像改数据库 schema——新字段给默认值，删字段写迁移脚本，大改不兼容就让旧 thread 归档、新 thread 用新图。
-
-**打个比方**：App 升级后旧用户数据还要能读——新增字段默认空、删字段先迁移再删，大版本不兼容就「旧账号只读、新账号新体验」。
-
-#### 📖 面试展开（详细版）
-
-ModelEngine 社区和 GitHub 面经都考过这题：图定义变更后，旧 thread 的 checkpoint 可能与新 schema 失配。这是生产运维的真实问题，不是理论题。
-
-向后兼容变更（安全）：新增 state 字段——给默认值，节点读字段用 state.get("new_field", default)，旧 checkpoint 缺这个字段也能跑。删除 state 字段——先写迁移脚本把旧 checkpoint 里该字段洗掉或归档，再发新版图。修改 reducer 语义——最危险，等价于改合并逻辑，需要充分测试。
-
-不可兼容变更（需策略）：state schema 大改、节点 rename、边拓扑重构——旧 checkpoint 无法在新图里正确恢复。策略：旧 thread 只允许只读查看历史（archive 模式），不允许 resume；新 thread 用新图；或写专门的 migration 函数把旧 checkpoint 转换为新 schema。
-
-灰度方案：graph_version 写入 config 或 thread metadata，路由层按版本选择对应 compile 实例。graph_v1 和 graph_v2 并存，旧 thread 自动路由到 v1 finish，新 thread 路由到 v2。全量切换后下线 v1 实例。
-
-LangGraph 官方文档有 graph migration 指引。面试提到「版本化图定义 + 灰度 + 不可兼容时冻结旧 thread」，说明考虑过运维而非只写 demo。
-
-#### 💡 核心要点
-- 新增 channel 可选
-- checkpoint 与 schema 版本绑定
-- 不可兼容时冻结旧 thread
-
-#### 📝 代码/配置示例
-
-```python
-# 向后兼容：新字段用 .get()
-def new_node(state: AgentState) -> dict:
-    retry_count = state.get("retry_count", 0)  # 旧 checkpoint 无此字段
-    return {"retry_count": retry_count + 1}
-
-# 灰度：按版本路由
-GRAPHS = {"v1": graph_v1, "v2": graph_v2}
-def get_graph(config):
-    version = config.get("graph_version", "v2")
-    return GRAPHS[version]
-```
-
-#### 🔁 追问怎么接
-
-- **会不会毒化既有 thread**：向后兼容变更不会；不可兼容变更需冻结旧 thread 或写 migration
-- **官方迁移指引**：LangGraph 文档有 graph migration 章节
-- **加分项**：版本化图定义、灰度路由、不可兼容时 archive 旧 thread
+LangGraph 支持在启用 checkpointer 时迁移图定义。关键是 state schema 向后兼容——新增字段给默认值，删除字段要有迁移脚本。生产上建议版本化图定义，灰度期间新旧图并行，按 thread_id 路由到对应版本。
 </div>
 </details>
 
@@ -512,13 +269,9 @@ def get_graph(config):
 
 **优先级**：P1 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：RAG 在 LangGraph 里不是外挂插件，而是「检索→评判→不够好就改写重查→生成→校验引用」的节点链，每个环节是一条边，不够好可以回退重试。
-
-**打个比方**：线性 RAG Chain 像单行道——检索完只能往前生成；LangGraph RAG 像环岛——检索不满意可以绕回去换关键词再检索。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 RAG 与 LangGraph 的集成是 Agent 岗面经最高频的捆绑考点（阿里淘天、某大厂、编程导航均有）。核心思路：RAG 不是 LangGraph 的外挂插件，而是嵌入图内的节点链，每个环节是一个 node，环节之间的质量门控是条件边。
 
@@ -527,33 +280,6 @@ RAG 与 LangGraph 的集成是 Agent 岗面经最高频的捆绑考点（阿里�
 比线性 RAG Chain 的核心优势：检索失败能改写 query 重试（而非带着空结果让 LLM 幻觉）；生成质量不够能据引用校验回流；每个节点可独立单测和监控；checkpoint 让「检索→评判→改写→再检索」的完整轨迹可追溯。
 
 科研问答项目讲法：意图路由（intent_node 决定走向量 RAG 还是 GraphRAG）+ 质量门控（grade + rewrite 环）+ 引用校验（cite_check 环）。面试最好画 state 字段（query、retrieval_docs、grade_score、answer）和边。阿里淘天捆绑问的 RAG 分块、重叠、embedding 选型，可接在 retrieve_node 实现细节后讲。
-
-#### 💡 核心要点
-- retrieve → grade → 分支
-- 不够好 rewrite query 回 retrieve
-- cite_check 再环
-
-#### 📝 代码/配置示例
-
-```python
-builder.add_node("retrieve", retrieve_node)
-builder.add_node("grade", grade_node)
-builder.add_node("rewrite", rewrite_query_node)
-builder.add_node("generate", generate_node)
-
-builder.add_edge("retrieve", "grade")
-builder.add_conditional_edges("grade", lambda s: "rewrite" if s["grade_score"] < 0.7 else "generate", {
-    "rewrite": "rewrite", "generate": "generate"
-})
-builder.add_edge("rewrite", "retrieve")  # 回边形成环
-builder.add_edge("generate", END)
-```
-
-#### 🔁 追问怎么接
-
-- **CRAG/Self-RAG 怎么画**：CRAG 加 web_search 补检索；Self-RAG 生成带自评 token 回流
-- **科研问答怎么讲**：意图路由 + grade/rewrite 环 + cite_check 环，画 state 和边
-- **加分项**：对比线性 Chain 优势、每节点可单测、阿里淘天 RAG 分块可接 retrieve 细节
 </div>
 </details>
 
@@ -576,13 +302,9 @@ builder.add_edge("generate", END)
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：CRAG、Self-RAG、Adaptive RAG 不是三个框架，而是三种「图拓扑」——区别只在于节点和条件边怎么连，论文算法 = 图上的 node + edge。
-
-**打个比方**：三种 RAG 像三种导航策略——CRAG 是「本地地图不够就上网查」；Self-RAG 是「到了目的地自己评价路线对不对」；Adaptive 是「出发前先决定开车、地铁还是步行」。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 这三种高级 RAG 变体在 LangGraph 里的实现差异，本质上是「图拓扑不同」——论文里的算法 = 图上的节点和条件边。面试讲清楚这一点，比背论文公式更有说服力。
 
@@ -593,33 +315,6 @@ Self-RAG：generate 节点输出 answer 的同时输出自评 token（is_support
 Adaptive RAG：入口多一个 router 节点，根据问题类型（事实问答/推理/闲聊/结构化查询）选择不同 RAG 策略——vector RAG 路径、GraphRAG 路径、直答（不用 RAG）、SQL 查询路径。每种策略是图上的一个分支，router 是入口条件边。适合问题类型差异大的综合问答系统。
 
 三种模式可以组合：Adaptive 选策略 → CRAG 质量门控 → Self-RAG 生成自评。
-
-#### 💡 核心要点
-- 每种是不同条件边拓扑
-- Self-RAG 多 generate+critique 环
-- Adaptive 多一路由节点
-
-#### 📝 代码/配置示例
-
-```python
-# CRAG：grade 低分走 web_search 补检索
-builder.add_conditional_edges("grade", lambda s: "web" if s["score"] < 0.5 else "generate", {
-    "web": "web_search", "generate": "generate"
-})
-builder.add_edge("web_search", "merge_context")
-builder.add_edge("merge_context", "generate")
-
-# Adaptive：入口 router 选策略
-builder.add_conditional_edges("router", lambda s: s["strategy"], {
-    "vector_rag": "retrieve", "direct": "generate", "sql": "sql_query"
-})
-```
-
-#### 🔁 追问怎么接
-
-- **和科研问答 grade_retrieval 关系**：就是 CRAG 思想——grade 不够好就改写/补充再检索
-- **加分项**：「论文算法 = 图上的 node + edge」；三种模式可组合
-- **区分点**：CRAG 补外部资料、Self-RAG 生成后自评、Adaptive 入口选策略
 </div>
 </details>
 
@@ -642,13 +337,9 @@ builder.add_conditional_edges("router", lambda s: s["strategy"], {
 
 **优先级**：P1 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：上下文压缩在 LangGraph 里是显式节点——进 LLM 前检查 token 是否超标，超标就把旧对话摘要、只留最近几轮，像给聊天记录做「精简版」。
-
-**打个比方**：开会记录太长，秘书出一份「会议纪要」代替原始逐字稿，但保留最近几轮原话——LLM 看摘要+最近对话，而不是从头读到尾。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 某大厂和字节面经都考「上下文压缩方式及优劣」，在 LangGraph 里压缩是显式节点而非隐式 hack，这是关键差异。
 
@@ -657,32 +348,6 @@ builder.add_conditional_edges("router", lambda s: s["strategy"], {
 字节追问的「三层压缩」答法：第一层，工具输出摘要——tool_node 返回的大段 JSON/日志在写入 messages 前先经 summarize_tool_output 节点压缩，因为工具输出信息密度低、冗余多；第二层，对话滚动摘要——多轮对话后 before_llm 节点把旧 messages 压缩成 summary，保留最近 k 轮；第三层，长期记忆——跨会话的用户偏好和历史不在 messages 里，存在外置向量库，需要时 retrieve 回填。三层触发条件和保留策略不同，因为信息密度不同。
 
 压缩过度的发现方式：离线评测集 answer 质量指标下降（尤其需要长上下文记忆的问题）；线上用户追问「你忘了刚才说的」；监控 summary 中关键实体（人名、订单号）丢失数量。压缩策略需要可配置——k 值、阈值、summary 模型选型都可以 A/B 测试。
-
-#### 💡 核心要点
-- 独立 compression 节点
-- 保留 system+最近 k 轮+摘要
-- 压缩触发条件写 state token 估计
-
-#### 📝 代码/配置示例
-
-```python
-def compress_node(state: AgentState) -> dict:
-    tokens = estimate_tokens(state["messages"])
-    if tokens < 4000:
-        return {}  # 不压缩
-    summary = summarize(state["messages"][:-6])  # 摘要旧消息
-    trimmed = [state["messages"][0]] + state["messages"][-6:]  # system + 最近6条
-    return {"messages": trimmed, "conversation_summary": summary}
-
-builder.add_node("compress", compress_node)
-builder.add_edge("compress", "agent")  # 进 LLM 前压缩
-```
-
-#### 🔁 追问怎么接
-
-- **压缩过度怎么发现**：评测集质量跌、用户说「你忘了」、监控 summary 丢实体
-- **字节三层压缩**：工具输出摘要 / 对话滚动摘要 / 长期记忆检索，各层触发条件不同
-- **加分项**：压缩是显式节点可单测、策略可 A/B、不是隐式 hack
 </div>
 </details>
 
@@ -705,13 +370,9 @@ builder.add_edge("compress", "agent")  # 进 LLM 前压缩
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：LangSmith 和 LangGraph 是亲兄弟——开个环境变量，每次运行自动记录每个节点、每次 LLM 调用、每个工具的输入输出和耗时，像给 Agent 装了行车记录仪。
-
-**打个比方**：LangSmith 是「飞行黑匣子」——出问题时回放完整轨迹，看走了哪条路、哪一步慢了、哪一步错了。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 LangSmith 与 LangGraph 同属 LangChain 生态，集成成本极低但价值很大——是生产级 Agent 可观测性的默认方案。
 
@@ -722,35 +383,6 @@ LangSmith 与 LangGraph 同属 LangChain 生态，集成成本极低但价值很
 不用 LangSmith 的自建方案：OpenTelemetry 标准——节点入口/出口打 span，属性带 thread_id、node_name、duration_ms；LLM callback 记录 token；导出到 Jaeger/Grafana/Prometheus。成本更高但无 vendor lock-in。
 
 百度面经强调评测闭环：LangSmith 的核心价值是把在线 trace 沉淀成离线评测集的桥梁——线上 bad case → 一键入库 → 离线回归 → prompt 改进 → 上线验证。
-
-#### 💡 核心要点
-- 自动记录 node/LLM/tool span
-- dataset 回归评测
-- 反馈 bad run 到数据集
-
-#### 📝 代码/配置示例
-
-```python
-# LangSmith 零代码集成
-# export LANGCHAIN_TRACING_V2=true
-# export LANGCHAIN_API_KEY=ls-...
-# export LANGCHAIN_PROJECT=my-agent-prod
-
-# 自研 OpenTelemetry 方案
-from opentelemetry import trace
-tracer = trace.get_tracer("langgraph")
-
-def traced_node(state, config):
-    with tracer.start_as_current_span("intent_node") as span:
-        span.set_attribute("thread_id", config["configurable"]["thread_id"])
-        return intent_logic(state)
-```
-
-#### 🔁 追问怎么接
-
-- **不用 LangSmith 自建**：OpenTelemetry span per node，导出 Jaeger/Prometheus
-- **成本数据从哪来**：LLM callback 聚合 token，按 node/用户/时间段统计
-- **加分项**：评测闭环（在线 trace → 离线 dataset → 回归 → 改进）
 </div>
 </details>
 
@@ -773,13 +405,9 @@ def traced_node(state, config):
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：生产级 Agent = demo 能跑通 + 崩溃能恢复 + 操作有幂等 + 全程可监控 + bad case 能回流改进。缺任何一条都是玩具。
-
-**打个比方**：demo 是「实验室里跑通一次实验」；生产级是「工厂 24 小时运转——机器坏了能修、次品能检出、工艺能迭代」。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 GitHub Production Guide 和多家面经（百度、阿里、编程导航）共同指向的生产级 checklist，按优先级排列：
 
@@ -794,38 +422,6 @@ GitHub Production Guide 和多家面经（百度、阿里、编程导航）共�
 GitMMQ 生产指南核心观点：LangGraph 价值是把黑盒循环变成可审计状态机。推荐路径：先用简单 Workflow/Chain 验证业务需求，遇到状态管理/循环/审批痛点再迁 LangGraph——不要为了炫技提前上图编排。
 
 和 demo 的最大差别：demo 是 invoke 能跑通；生产级考虑了崩溃恢复、幂等、监控、bad case 闭环、schema 版本化。面试按「可恢复 > 可观测 > 可评测 > 安全韧性」顺序讲，体现工程优先级感。
-
-#### 💡 核心要点
-- 可恢复 > 可观测 > 可评测
-- 幂等和 HITL 缺一不可
-- 别跳过 Workflow 验证阶段
-
-#### 📝 代码/配置示例
-
-```python
-# 生产级 checklist 骨架
-# 1. 启动时 compile + Postgres checkpointer
-app.state.graph = builder.compile(
-    checkpointer=PostgresSaver(DB_URL),
-    interrupt_before=["execute_action"],
-)
-
-# 2. 请求带 thread_id + trace
-config = {
-    "configurable": {"thread_id": req.thread_id},
-    "recursion_limit": 25,
-}
-
-# 3. 流式 + 监控
-async for event in app.state.graph.astream(input, config):
-    yield event  # LangSmith 自动 trace
-```
-
-#### 🔁 追问怎么接
-
-- **和生产 demo 最大差别**：demo 能跑通；生产级有恢复、幂等、监控、评测闭环
-- **第一优先级做什么**：可恢复（Postgres checkpoint + thread 隔离 + fallback）
-- **加分项**：GitMMQ 推荐路径「先 Workflow 验证再迁 LangGraph」、按优先级排序
 </div>
 </details>
 

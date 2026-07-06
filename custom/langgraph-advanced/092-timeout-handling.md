@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：超时处理分两层——节点级用 asyncio.wait_for 限时，超时走 fallback；图级 API 设总 SLA，超时 cancel 任务。
-
-**打个比方**：像外卖配送——每道工序有截止时间（节点级），整个订单有总时限（图级 SLA），超时不取消订单而是告知用户「还在做，可继续等或换简餐」。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 超时处理是**用户体验的关键**，考察节点级和图级两层超时设计。
 
@@ -58,25 +54,3 @@ async def llm_node(state):
 
 **监控**：超时率按节点统计，P99 延迟超 SLA 比例进 alert。
 
-#### 💡 核心要点
-- 节点级超时
-- 图级 SLA watchdog
-- 超时后 checkpoint 可恢复
-
-#### 📝 代码/配置示例
-
-```python
-async def llm_node(state):
-    try:
-        result = await asyncio.wait_for(llm.ainvoke(state["messages"]), timeout=30)
-        return {"messages": [result]}
-    except asyncio.TimeoutError:
-        return {"llm_timeout": True}
-
-def route_after_llm(state):
-    return "fallback" if state.get("llm_timeout") else "next"
-```
-
-#### 🔁 追问怎么接
-
-- **「cancel 后 checkpoint 状态？」** → 被取消的 step 不写入 checkpoint；checkpoint 保留 cancel 前最后成功的 state；resume 从那个 state 继续，被取消的 step 重跑；不会丢数据也不会重复执行已完成的 step。

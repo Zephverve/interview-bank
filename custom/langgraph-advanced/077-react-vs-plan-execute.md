@@ -17,13 +17,9 @@ source: Agent 架构 15 问
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：任务步骤能预先列清单 → Plan-and-Execute；得边做边想、工具调用不确定 → ReAct；实际常混合用。
-
-**打个比方**：Plan-and-Execute 像按菜谱做菜（先列步骤再执行）；ReAct 像侦探破案（推理→行动→观察→再推理，下一步取决于上一步结果）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。
 
@@ -42,25 +38,3 @@ Agent 架构模式选型题，考察**能否根据任务结构选模式**，而�
 
 **面试技巧**：画两张拓扑图——Plan 是 DAG+replanner 回边；ReAct 是 agent↔tool 环——比背定义强十倍。
 
-#### 💡 核心要点
-- Plan 适合报告生成、流程固定
-- ReAct 适合探索、工具链不确定
-- 混合：plan 粗粒度 react 细执行
-
-#### 📝 代码/配置示例
-
-```python
-# Plan-and-Execute 骨架
-def planner_node(state):
-    steps = llm.invoke(f"为任务 '{state['goal']}' 列出步骤")
-    return {"plan": steps, "current_step": 0}
-
-def executor_node(state):
-    step = state["plan"][state["current_step"]]
-    result = execute_step(step)
-    return {"results": [result], "current_step": state["current_step"] + 1}
-```
-
-#### 🔁 追问怎么接
-
-- **「能画两种拓扑吗？」** → Plan：planner → executor → (条件边) replanner/下一步/END；ReAct：agent ↔ tool 环 + should_continue 条件边；混合：plan 出 milestones，每个 milestone 是 ReAct 子图。

@@ -17,13 +17,9 @@ source: GitHub + 编程导航面经
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：子图就是「图里套图」——把一整段复杂流程（比如 RAG 检索链）单独做成一张小图，compile 后塞进大图当一个节点，像函数调用一样模块化。
-
-**打个比方**：大工厂流水线里，「质检车间」本身也是一条独立流水线——原料进去、检测、分拣、出库，对外只暴露「进料口」和「出料口」。
-
-#### 📖 面试展开（详细版）
+多 Agent 编排我最常见的是 Supervisor 模式，复杂场景再拆子图。
 
 子图（Subgraph）是 LangGraph 模块化大工作流的核心手段。做法是：先为子流程（如 RAG 检索链、代码审查环、审批流）单独建一张 StateGraph，定义自己的 State schema 和节点，compile 得到子图 app；然后在父图的某个节点函数里 invoke 这个子图，并做父子 state 字段映射。
 
@@ -33,30 +29,3 @@ source: GitHub + 编程导航面经
 
 编程导航面经场景设计题「内部提效系统 AI 改造」很适合套子图——大工作流按功能拆：意图识别子图、RAG 子图、工具调用子图、人工审批子图。嵌套层级建议不超过 2-3 层，超过后 trace 链路太长、state 传递损耗大、出问题难定位。每层子图必须有清晰的输入输出契约文档。
 
-#### 💡 核心要点
-- 子图独立测试部署
-- 父图通过节点包装 invoke 子图
-- 适合 RAG 子流程、审批子流程
-
-#### 📝 代码/配置示例
-
-```python
-# 子图：RAG 流水线
-rag_builder = StateGraph(RagState)
-rag_builder.add_node("retrieve", retrieve_node)
-rag_builder.add_node("grade", grade_node)
-rag_app = rag_builder.compile()
-
-# 父图：包装子图
-def rag_wrapper(state: ParentState) -> dict:
-    sub_result = rag_app.invoke({"query": state["user_query"]})
-    return {"retrieval_result": sub_result["docs"]}
-
-parent_builder.add_node("rag", rag_wrapper)
-```
-
-#### 🔁 追问怎么接
-
-- **父子 state 映射**：父节点函数里做字段转换，子图只暴露最小输入输出
-- **嵌套层级**：建议 2-3 层，超过后 trace 太长、debug 困难
-- **加分项**：提到子图可独立单测、独立版本发布、团队分工维护

@@ -17,11 +17,9 @@ source: 牛客 · 百度
 
 **优先级**：P0 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-thread_id 是 LangGraph 的「会话槽」，传在 invoke config 里，同一 thread_id 会加载历史 checkpoint 实现多轮延续。百度面经建议它和业务主键分开：thread_id 给框架编排用，订单号/任务 id 放 state 字段。恢复时用业务键检查外部副作用是否已执行。多租户可在 thread_id 加 tenant 前缀，一个用户也可以有多个 thread 对应不同任务。
-
-#### 📖 面试展开（详细版）
+我会从 checkpoint 解决什么问题讲起。
 
 **是什么**：thread_id 是 checkpointer 用来隔离不同会话的标识符，传在 config.configurable.thread_id 里。同一 thread_id 的多次 invoke 会加载/追加同一串 checkpoint。
 
@@ -37,36 +35,3 @@ thread_id 是 LangGraph 的「会话槽」，传在 invoke config 里，同一 t
 
 **踩坑**：用订单号当 thread_id 导致会话无法「新建对话」；多租户 thread_id 碰撞；恢复只看 thread_id 不查业务状态导致重复副作用。
 
-#### 💡 核心要点
-- config.configurable.thread_id
-- 编排 id ≠ 领域 id
-- 恢复时业务幂等键独立管理
-
-#### 📝 代码/配置示例
-
-```python
-config = {
-    "configurable": {
-        "thread_id": f"{tenant_id}:{user_id}:{session_uuid}",
-    }
-}
-
-# state 里放业务主键
-def start_node(state):
-    return {
-        "order_id": state.get("order_id") or generate_order_id(),
-        "task_status": "started",
-    }
-
-# 恢复时双重检查
-def execute_payment(state):
-    if payment_already_done(state["order_id"]):
-        return {"payment_status": "already_done"}
-    return charge(state["order_id"])
-```
-
-#### 🔁 追问怎么接
-
-**「多租户怎么隔离？」**——thread_id 加 tenant 前缀 + checkpointer 表分区 + 访问鉴权。绝不跨租户共享 thread。
-
-**「一个用户多个 thread？」**——完全可以，每个独立任务一个 thread。举例「写报告」和「查订单」分开。

@@ -17,11 +17,9 @@ source: 牛客 · 百度
 
 **优先级**：P0 · 2+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-百度面经深挖题。interrupt 恢复时要交代清楚：checkpoint 里哪些 channel 已写入、哪些外部副作用已发生、resume 时 pending 边会不会重跑节点。涉及发邮件、下单、扣款的工具必须配幂等键，恢复前先查是否已成功。state 里可维护 executed_actions 列表。thread_id 恢复是编排层，业务主键恢复是领域层——两层都要答才完整。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **核心问题**：interrupt 恢复后，框架可能重跑 pending 边的节点。如果该节点有外部副作用（发邮件、扣款、写数据库），重跑就会导致重复执行。
 
@@ -35,32 +33,3 @@ source: 牛客 · 百度
 
 **踩坑**：假设 resume 不会重跑节点导致重复扣款；只用 thread_id 不做业务层检查；executed_actions 没持久化到 checkpoint。
 
-#### 💡 核心要点
-- 外部操作配 idempotency_key
-- 记录 executed_actions 进 state
-- resume 前查业务主键状态
-
-#### 📝 代码/配置示例
-
-```python
-def send_email_node(state):
-    action_id = f"email:{state['order_id']}:confirmation"
-    if action_id in state.get("executed_actions", []):
-        return {"email_status": "already_sent"}
-    if external_email_sent(state["order_id"]):
-        return {
-            "email_status": "already_sent",
-            "executed_actions": [action_id],
-        }
-    send_email(idempotency_key=action_id, to=state["email"])
-    return {
-        "email_status": "sent",
-        "executed_actions": [action_id],
-    }
-```
-
-#### 🔁 追问怎么接
-
-**「pending 边会不会重跑？」**——可能会，工程上假设会重跑，所有副作用节点做幂等。具体行为取决于 interrupt 位置。
-
-**「thread 恢复和业务恢复区别？」**——thread 是编排层加载 checkpoint；业务是用 order_id 查外部系统。两层正交都要答。

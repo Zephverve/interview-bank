@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：configurable 是「本次运行的配置」——模型名、温度、租户 ID——通过 invoke 传入，节点从 config 参数读取，不进 checkpoint。
-
-**打个比方**：state 是病人的病历（要存档），configurable 是今天用哪个科室的医生（临时指定，不需要写进病历）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 configurable 是 LangGraph **运行时配置的标准机制**，考察对 state vs config 划界的理解。
 
@@ -58,24 +54,3 @@ def llm_node(state, config):
 
 **最佳实践**：configurable 放「运行环境参数」，state 放「业务数据」；不要把 model_name 写进 state，否则 checkpoint 会污染历史。
 
-#### 💡 核心要点
-- 不进 checkpoint 的运行配置
-- 节点 (state, config) 签名
-- 适合模型路由和特性开关
-
-#### 📝 代码/配置示例
-
-```python
-def llm_node(state, config):
-    cfg = config.get("configurable", {})
-    model = cfg.get("model", "gpt-4o-mini")
-    llm = ChatOpenAI(model=model, temperature=cfg.get("temperature", 0))
-    return {"messages": [llm.invoke(state["messages"])]}
-
-# 调用
-graph.invoke(state, config={"configurable": {"model": "gpt-4o", "tenant": "acme"}})
-```
-
-#### 🔁 追问怎么接
-
-- **「和 state 区别？」** → state 是业务数据、跨 step 持久化、进 checkpoint；configurable 是运行参数、单次 invoke、不进 checkpoint；model_name/tenant_id 放 configurable，query/docs 放 state。

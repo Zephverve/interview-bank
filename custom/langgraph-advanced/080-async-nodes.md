@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：节点可以是 async def，图用 ainvoke 调用；但别在 async 节点里写阻塞代码（如 requests.get），会堵死 event loop。
-
-**打个比方**：async 节点像异步电话——可以同时打多个电话等回复；但在异步电话里用对讲机（阻塞 IO）会卡住所有线路。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 异步节点是 LangGraph **高并发场景的基础**，考察对 Python async 的理解。
 
@@ -43,31 +39,3 @@ source: GitHub 100 Questions
 
 **和线程池关系**：`asyncio.to_thread` 把阻塞调用放到线程池，不阻塞 event loop；适合必须用的同步库（如某些 DB driver）。
 
-#### 💡 核心要点
-- async 节点 + ainvoke 配对
-- 阻塞调用用 asyncio.to_thread
-- FastAPI 原生 async
-
-#### 📝 代码/配置示例
-
-```python
-# 正确：async 节点 + async HTTP
-async def search_node(state):
-    async with httpx.AsyncClient() as client:
-        resp = await client.get(f"https://api.example.com/search?q={state['query']}")
-    return {"search_results": resp.json()}
-
-# 错误：async 节点里阻塞 IO
-async def bad_node(state):
-    resp = requests.get(...)  # 阻塞 event loop！
-    return {"results": resp.json()}
-
-# FastAPI 集成
-@app.post("/chat")
-async def chat(req):
-    result = await graph.ainvoke(input, config)  # 不堵 worker
-```
-
-#### 🔁 追问怎么接
-
-- **「和线程池关系？」** → asyncio.to_thread 把阻塞调用（如同步 DB driver）放到线程池执行，不阻塞 event loop；适合不得不用同步库的场景；但首选原生 async 库（httpx、aiohttp、asyncpg）。

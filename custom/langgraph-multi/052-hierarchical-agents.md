@@ -17,13 +17,9 @@ source: GitHub 100 Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：层级 Agent 像公司组织架构——CEO 分大任务给部门经理，经理再分给员工，每层用子图表达，state 逐级汇总。
-
-**打个比方**：不是一个大项目经理直接管 20 个工程师，而是 CEO → 部门总监 → 组长 → 执行者，每层只关注自己的层级，降低顶层决策复杂度。
-
-#### 📖 面试展开（详细版）
+多 Agent 编排我最常见的是 Supervisor 模式，复杂场景再拆子图。
 
 层级多 Agent（Hierarchical）模式适合「任务自然分层」的大型协作场景，与扁平 Supervisor 形成对比。典型三层结构：顶层 supervisor（CEO/总控）拆战略任务给中层 supervisor（部门组长/专业组），中层再路由给底层 worker（研究员/工程师/执行者）。
 
@@ -35,28 +31,3 @@ state 逐级汇总：顶层 state 只保留 task_brief 和各部门汇总结果�
 
 嵌套建议不超过 2-3 层，每层子图有清晰 IO 契约。通信开销通过 context_summary 而非全量 messages 传递来控制。
 
-#### 💡 核心要点
-- 三层：总控→组长→执行者
-- 每层是子图
-- state 逐级汇总
-
-#### 📝 代码/配置示例
-
-```python
-# 中层：部门子图
-dept_builder = StateGraph(DeptState)
-dept_builder.add_node("dept_supervisor", dept_supervisor)
-dept_builder.add_node("worker", worker_node)
-dept_app = dept_builder.compile()
-
-# 顶层：CEO 调度部门
-def dept_wrapper(state: TopState) -> dict:
-    sub = dept_app.invoke({"task": state["sub_tasks"][state["current_dept"]]})
-    return {"dept_results": state["dept_results"] + [sub["output"]]}
-```
-
-#### 🔁 追问怎么接
-
-- **和扁平 Supervisor 取舍**：层级适合大组织仿真/多层级决策；扁平适合三人小团队
-- **通信开销**：用 summary 传递、控制嵌套层数、每层子图 IO 契约清晰
-- **加分项**：提到 state 逐级汇总、顶层 prompt 复杂度降低、嵌套不超过 2-3 层

@@ -17,13 +17,9 @@ source: 编程导航面经
 
 **优先级**：P1 · 1 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：不熟悉具体系统没关系——先拆功能点，每个点说 AI 怎么辅助，再用 LangGraph 套审批流和工具编排，面试官看的是思路不是业务细节。
-
-**打个比方**：像给陌生公司做 IT 咨询——不需要用过他们的 ERP，但要能问清「谁填什么表单、谁审批、数据从哪来」，然后画一张改造蓝图。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 编程导航二面经典场景题，考察**系统设计思路**而非特定业务知识。
 
@@ -37,30 +33,3 @@ source: 编程导航面经
 
 **不熟悉系统的模板答法**：「我会先问三个问题——核心用户是谁、最高频的三个操作是什么、有没有审批节点——然后按上面的框架套，具体 tool schema 接入时再对齐。」
 
-#### 💡 核心要点
-- 先拆功能点再谈模型
-- HITL 审批写方案类操作
-- 模板化应对不熟悉系统
-
-#### 📝 代码/配置示例
-
-```python
-class TaskState(TypedDict):
-    task_type: str
-    draft: str
-    approval_status: str  # pending | approved | rejected
-
-builder.add_node("draft", generate_draft)
-builder.add_node("publish", publish_to_internal_api)
-builder.add_edge("draft", "publish")  # interrupt_before=["publish"]
-
-graph = builder.compile(
-    checkpointer=PostgresSaver(...),
-    interrupt_before=["publish"],
-)
-```
-
-#### 🔁 追问怎么接
-
-- **「不熟悉业务系统怎么办？」** → 主动问三个问题（用户/高频操作/审批节点），用通用模板套；强调 tool 层 adapter 隔离业务细节，图编排层不依赖具体系统。
-- **「如何分期落地？」** → Phase 1 Workflow MVP 验证价值 → Phase 2 LangGraph 加 HITL/回溯 → Phase 3 评测闭环；每阶段有明确退出指标（成功率/人工介入率）。

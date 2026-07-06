@@ -17,13 +17,9 @@ source: CSDN 工程实践
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：compile 图就像「编译代码」——启动时做一次，请求时只「运行」已编译好的实例。每请求 compile 等于每次访问网站都重新 npm build 一遍。
-
-**打个比方**：compile 是「把菜谱定稿并培训厨师」，invoke 是「按定稿菜谱做菜」。不会每个客人点菜都重新写菜谱、重新培训厨师。
-
-#### 📖 面试展开（详细版）
+上线 Agent 图时，我会把可观测性和失败路径放在和主流程同一优先级。
 
 这是 CSDN 工程实践类面经的常考题，考察对 LangGraph 生命周期的理解。compile() 不是轻量操作——它做这些事：图结构验证（孤立节点检查、边完整性）；绑定 checkpointer 和 interrupt 配置；构建内部执行计划和节点调度表；创建 CompiledGraph 对象。整体开销从毫秒到秒级，取决于图复杂度。
 
@@ -33,30 +29,3 @@ source: CSDN 工程实践
 
 热更新和多版本：加载 graph_v2 实例与 v1 并存，按 request header、tenant_id 或 thread 创建时间路由到对应版本。旧 thread 用旧图 finish，新 thread 用新图。灰度期间新旧并行，全量切换后下线旧实例。
 
-#### 💡 核心要点
-- compile 在 startup 事件
-- 请求路径零 compile
-- 版本变更灰度新 graph 实例
-
-#### 📝 代码/配置示例
-
-```python
-# 错误：每请求 compile
-@app.post("/chat")
-async def chat_bad(req):
-    app = builder.compile()  # 每次都 compile！
-    return await app.ainvoke(...)
-
-# 正确：启动时 compile 一次
-app.state.graph = builder.compile(checkpointer=pg_saver)
-
-@app.post("/chat")
-async def chat_good(req):
-    return await app.state.graph.ainvoke(...)
-```
-
-#### 🔁 追问怎么接
-
-- **热更新图**：加载新 graph 实例，按 header/tenant 路由，旧 thread 用旧图 finish
-- **多版本共存**：graph_v1 和 graph_v2 并存，灰度期间新旧并行
-- **加分项**：量化 compile 开销（毫秒到秒级）、serverless 冷启动场景

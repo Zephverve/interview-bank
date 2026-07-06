@@ -17,11 +17,9 @@ source: GitHub + 官方文档
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-用 app.stream(input, config, stream_mode=...) 可以流式拿到执行过程。stream_mode="updates" 看每节点 state 更新；"messages" 推 LLM token 级输出；"values" 看每步完整 state 适合调试。生产环境用 FastAPI 包 SSE 或 WebSocket 推给前端，让用户看到「正在检索」「正在生成」比干等体验好很多。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **是什么**：LangGraph 的 stream API 在执行图时逐步 yield 事件，而不是等全部跑完才返回。支持同步 stream() 和异步 astream()。
 
@@ -35,32 +33,3 @@ source: GitHub + 官方文档
 
 **踩坑**：stream 没处理异常导致前端一直等；混用多种 stream_mode 不清楚各自用途；生产没用 SSE 缓冲导致事件丢失。
 
-#### 💡 核心要点
-- stream_mode 选 values 看完整 state
-- messages 模式推 token
-- 生产用 WebSocket/SSE
-
-#### 📝 代码/配置示例
-
-```python
-from fastapi.responses import StreamingResponse
-
-async def stream_agent(query: str, thread_id: str):
-    config = {"configurable": {"thread_id": thread_id}}
-    async for event in app.astream(
-        {"messages": [HumanMessage(query)]},
-        config,
-        stream_mode=["updates", "messages"],
-    ):
-        yield f"data: {json.dumps(event, default=str)}\n\n"
-
-@app.get("/chat/stream")
-async def chat_stream(q: str, thread_id: str):
-    return StreamingResponse(stream_agent(q, thread_id), media_type="text/event-stream")
-```
-
-#### 🔁 追问怎么接
-
-**「多 thread 并发 stream？」**——各 stream 独立 config/thread_id，checkpointer 后端注意并发性能。
-
-**「和 LangChain callback 关系？」**——messages 模式走 LC callback；updates 是 LangGraph 图级事件。两者可组合。

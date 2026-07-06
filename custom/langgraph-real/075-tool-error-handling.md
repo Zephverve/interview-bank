@@ -17,13 +17,9 @@ source: GitHub Premium Questions
 
 **优先级**：P1 · 2 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：tool 出错不能崩图——捕获异常写成结构化 error 进 state，让 agent 节点决定重试、换参数还是走 fallback。
-
-**打个比方**：像快递配送——包裹破损（tool 失败）不能整个物流系统停摆，而是记录问题、换一家快递重发或通知用户自取（fallback）。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 工具错误处理是**生产级 Agent 的刚需**，考察你有没有线上思维。
 
@@ -44,33 +40,3 @@ source: GitHub Premium Questions
 
 **fallback 设计**：连续 tool 失败 N 次 → 路由到 fallback 节点 → 返回「暂时无法查询，请稍后重试」+ 人工入口。
 
-#### 💡 核心要点
-- 结构化 ToolMessage error
-- 可重试错误分类
-- 敏感错误信息脱敏
-
-#### 📝 代码/配置示例
-
-```python
-def tool_node(state):
-    try:
-        result = execute_tool(state["tool_call"])
-        return {"messages": [ToolMessage(content=result, tool_call_id=...)]}
-    except TimeoutError:
-        return {"messages": [ToolMessage(content='{"error":"timeout"}', status="error")]}
-    except AuthError:
-        return {"tool_fatal_error": True}  # 条件边 → fallback
-
-def route_after_tool(state):
-    if state.get("tool_fatal_error"):
-        return "fallback"
-    last = state["messages"][-1]
-    if last.status == "error":
-        return "agent"  # 让 LLM 决定下一步
-    return "agent"
-```
-
-#### 🔁 追问怎么接
-
-- **「超时和限流区别？」** → 超时是请求没返回（retry 同样请求）；限流是 429（等 retry_after 再试或换 endpoint）；处理策略不同，限流需要 backoff。
-- **「错误信息给 LLM 看什么？」** → 结构化 JSON（error type + tool name + retry_after），脱敏（无 stack trace/内部 URL）；LLM 需要知道「什么错了」来决定下一步，但不需要调试信息。

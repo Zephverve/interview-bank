@@ -17,11 +17,9 @@ source: GitHub Interview Questions
 
 **优先级**：P2 · 1 篇
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-动态断点用节点内 interrupt(payload) 实现——比如金额超过阈值才 interrupt，小额直接过。比 compile 时写死 interrupt_before 列表灵活得多，审批 UI 还能拿到 payload 里的详情（金额、收款人等）。静态列表适合「这几个节点永远要审」；动态适合「视 state 内容决定要不要人看」。1.0 后 interrupt/Command 是一等公民，面试提到说明跟过新版本。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 **是什么**：Dynamic Breakpoints 指在节点执行过程中，根据运行时 state 条件动态决定是否 interrupt 挂起，而非编译时固定 interrupt 列表。
 
@@ -37,37 +35,3 @@ source: GitHub Interview Questions
 
 **踩坑**：interrupt 条件写错导致该审的不审；payload 信息不足审批人无法判断；动态和静态 interrupt 混用逻辑混乱。
 
-#### 💡 核心要点
-- interrupt() 带上下文给审批 UI
-- 条件满足才暂停
-- LangGraph 1.0 推荐方式
-
-#### 📝 代码/配置示例
-
-```python
-from langgraph.types import interrupt
-
-def transfer_node(state):
-    amount = state["amount"]
-    recipient = state["recipient"]
-
-    # 动态：仅大额需要审批
-    if amount > 10000:
-        approval = interrupt({
-            "action": "transfer",
-            "amount": amount,
-            "recipient": recipient,
-            "risk_score": calc_risk(state),
-        })
-        if not approval.get("approved"):
-            return {"status": "rejected"}
-        amount = approval.get("modified_amount", amount)
-
-    return execute_transfer(amount, recipient)
-```
-
-#### 🔁 追问怎么接
-
-**「和静态 interrupt 列表取舍？」**——静态适合固定合规（永远要审的节点）；动态适合条件触发（金额阈值、风险评分）。可以组合使用。
-
-**补充**：提到 1.0 interrupt/Command 替代旧 breakpoint，说明跟进新版本。

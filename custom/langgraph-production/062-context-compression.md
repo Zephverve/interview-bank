@@ -17,13 +17,9 @@ source: 牛客 · 某大厂/字节
 
 **优先级**：P1 · 3+ 篇面经
 
-#### 🗣️ 先用大白话说
+**🗣️ 标准口语答案**
 
-**一句话**：上下文压缩在 LangGraph 里是显式节点——进 LLM 前检查 token 是否超标，超标就把旧对话摘要、只留最近几轮，像给聊天记录做「精简版」。
-
-**打个比方**：开会记录太长，秘书出一份「会议纪要」代替原始逐字稿，但保留最近几轮原话——LLM 看摘要+最近对话，而不是从头读到尾。
-
-#### 📖 面试展开（详细版）
+这道题我会这样回答面试官：
 
 某大厂和字节面经都考「上下文压缩方式及优劣」，在 LangGraph 里压缩是显式节点而非隐式 hack，这是关键差异。
 
@@ -33,28 +29,3 @@ source: 牛客 · 某大厂/字节
 
 压缩过度的发现方式：离线评测集 answer 质量指标下降（尤其需要长上下文记忆的问题）；线上用户追问「你忘了刚才说的」；监控 summary 中关键实体（人名、订单号）丢失数量。压缩策略需要可配置——k 值、阈值、summary 模型选型都可以 A/B 测试。
 
-#### 💡 核心要点
-- 独立 compression 节点
-- 保留 system+最近 k 轮+摘要
-- 压缩触发条件写 state token 估计
-
-#### 📝 代码/配置示例
-
-```python
-def compress_node(state: AgentState) -> dict:
-    tokens = estimate_tokens(state["messages"])
-    if tokens < 4000:
-        return {}  # 不压缩
-    summary = summarize(state["messages"][:-6])  # 摘要旧消息
-    trimmed = [state["messages"][0]] + state["messages"][-6:]  # system + 最近6条
-    return {"messages": trimmed, "conversation_summary": summary}
-
-builder.add_node("compress", compress_node)
-builder.add_edge("compress", "agent")  # 进 LLM 前压缩
-```
-
-#### 🔁 追问怎么接
-
-- **压缩过度怎么发现**：评测集质量跌、用户说「你忘了」、监控 summary 丢实体
-- **字节三层压缩**：工具输出摘要 / 对话滚动摘要 / 长期记忆检索，各层触发条件不同
-- **加分项**：压缩是显式节点可单测、策略可 A/B、不是隐式 hack
