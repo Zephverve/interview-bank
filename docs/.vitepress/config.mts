@@ -26,6 +26,7 @@ export default defineConfig({
     logo: '📚',
     nav: [
       { text: '首页', link: '/' },
+      { text: 'AI Agent 攻略', link: '/guides/ai-agent-interview-guide/' },
       { text: '学习笔记', link: '/notes/hermes-agent/' },
       { text: '我的题库', link: '/my' },
       { text: '添加题目', link: '/add' },

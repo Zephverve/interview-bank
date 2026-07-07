@@ -114,6 +114,26 @@ features:
 
 </div>
 
+<div class="home-parts guides-section">
+
+## 教程文档
+
+<p class="section-note">PDF 教程在线阅读，支持新窗口打开与下载</p>
+
+<div class="part-grid">
+
+
+<a class="part-card guide-part-card" href="/guides/ai-agent-interview-guide/" style="--card-accent: #f97316">
+  <span class="part-card-icon">🎓</span>
+  <h3>AI Agent 面试全攻略</h3>
+  <p>面向小白的 AI Agent 面试准备 · 200+ 八股 · 项目实战 · STAR 面试稿 · 16 章 · 全文 30 万+ 字</p>
+  <span class="part-card-round">完整教程</span>
+</a>
+
+</div>
+
+</div>
+
 <div class="home-parts custom-section">
 
 ## 文件题库

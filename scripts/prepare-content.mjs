@@ -60,6 +60,43 @@ const NOTE_ENTRIES = [
   },
 ]
 
+/** PDF 教程：Markdown 章节源文件在 guides/<slug>/，构建时发布到 docs/guides/ */
+const AI_AGENT_GUIDE_CHAPTERS = [
+  { slug: 'intro', sidebar: '00 · 从零到 Offer', file: 'intro.md' },
+  { slug: 'interview-toc', sidebar: '面试八股文 · 总目录', file: 'interview-toc.md' },
+  { slug: 'mod-01-basics', sidebar: '01 · Agent 基础概念', file: 'mod-01-basics.md' },
+  { slug: 'mod-02-frameworks', sidebar: '02 · 核心框架', file: 'mod-02-frameworks.md' },
+  { slug: 'mod-03-rag', sidebar: '03 · RAG 技术', file: 'mod-03-rag.md' },
+  { slug: 'mod-04-tools', sidebar: '04 · 工具调用', file: 'mod-04-tools.md' },
+  { slug: 'mod-05-memory', sidebar: '05 · 记忆系统', file: 'mod-05-memory.md' },
+  { slug: 'mod-06-multi-agent', sidebar: '06 · 多智能体', file: 'mod-06-multi-agent.md' },
+  { slug: 'mod-07-llm', sidebar: '07 · 大模型基础', file: 'mod-07-llm.md' },
+  { slug: 'mod-08-engineering', sidebar: '08 · 工程化实践', file: 'mod-08-engineering.md' },
+  { slug: 'mod-09-prompt', sidebar: '09 · Prompt 工程', file: 'mod-09-prompt.md' },
+  { slug: 'hiring-analysis', sidebar: '企业招聘需求分析', file: 'hiring-analysis.md' },
+  { slug: 'opensource-notes', sidebar: '开源项目学习笔记', file: 'opensource-notes.md' },
+  { slug: 'resume-guide', sidebar: '简历撰写指南', file: 'resume-guide.md' },
+  { slug: 'star-guide', sidebar: 'STAR 面试稿指南', file: 'star-guide.md' },
+  { slug: 'project-qa', sidebar: '项目面试问答集', file: 'project-qa.md' },
+]
+
+const GUIDE_ENTRIES = [
+  {
+    slug: 'ai-agent-interview-guide',
+    pdfFile: 'ai-agent-interview-guide-zh.pdf',
+    title: 'AI Agent 面试全攻略',
+    desc: '面向小白的 AI Agent 面试准备 · 200+ 八股 · 项目实战 · STAR 面试稿',
+    icon: '🎓',
+    color: '#f97316',
+    version: 'v1.0.2',
+    date: '2026-04-17',
+    pages: 405,
+    splitChapters: AI_AGENT_GUIDE_CHAPTERS,
+    sourceCandidates: [path.join(ROOT, 'guides', 'ai-agent-interview-guide')],
+    pdfSourceCandidates: [path.join(ROOT, 'guides', 'ai-agent-interview-guide-zh.pdf')],
+  },
+]
+
 const PART_META = [
   { slug: 'part-0', title: 'Part 0 · 开场准备', desc: '项目介绍 · 典型问题', round: '开场必背', color: '#6366f1', icon: '🎯' },
   { slug: 'part-1', title: 'Part 1 · RAG 深挖', desc: 'Embedding · 切片 · 混合检索 · 微调', round: '一面核心', color: '#0ea5e9', icon: '🔍' },
@@ -736,7 +773,7 @@ function buildCustomSidebarItems(categories) {
   }))
 }
 
-function buildSidebarItems(customCategories, notePages = []) {
+function buildSidebarItems(customCategories, notePages = [], guidePages = []) {
   const items = [
     { text: '🏠 首页', link: '/' },
     { text: '✏️ 我的题库', link: '/my' },
@@ -777,6 +814,30 @@ function buildSidebarItems(customCategories, notePages = []) {
     }
   }
 
+  if (guidePages.length) {
+    items.push({ text: '── 教程文档 ──', link: `/guides/${guidePages[0].slug}/` })
+    for (const guide of guidePages) {
+      if (guide.chapters?.length) {
+        items.push({
+          text: `${guide.icon || '📄'} ${guide.title}`,
+          collapsed: true,
+          items: [
+            { text: '📑 总览', link: `/guides/${guide.slug}/` },
+            ...guide.chapters.map((ch) => ({
+              text: ch.sidebar,
+              link: `/guides/${guide.slug}/${ch.slug}`,
+            })),
+          ],
+        })
+      } else {
+        items.push({
+          text: `${guide.icon || '📄'} ${guide.title}`,
+          link: `/guides/${guide.slug}`,
+        })
+      }
+    }
+  }
+
   items.push({ text: '── 文件题库 ──', link: customCategories.length ? `/custom/${customCategories[0].slug}` : '/guide#文件题库' })
 
   if (customCategories.length) {
@@ -805,7 +866,7 @@ function buildSidebarItems(customCategories, notePages = []) {
   return items
 }
 
-function buildHomePage(customCategories, notePages = []) {
+function buildHomePage(customCategories, notePages = [], guidePages = []) {
   const base = getBase()
   const builtInCards = PART_META.map(
     (p) => `
@@ -826,6 +887,20 @@ function buildHomePage(customCategories, notePages = []) {
   <h3>${n.title}</h3>
   <p>${n.desc || '学习笔记'}${n.chapters?.length ? ` · ${n.chapters.length} 章` : ' · 完整原文'}</p>
   <span class="part-card-round">学习笔记</span>
+</a>`
+        )
+        .join('\n')
+    : ''
+
+  const guideCards = guidePages.length
+    ? guidePages
+        .map(
+          (g) => `
+<a class="part-card guide-part-card" href="${base}guides/${g.slug}/" style="--card-accent: ${g.color || '#f97316'}">
+  <span class="part-card-icon">${g.icon || '📄'}</span>
+  <h3>${g.title}</h3>
+  <p>${g.desc || 'PDF 教程'} · ${g.chapters?.length || ''} 章 · 全文 ${g.charCount ? Math.round(g.charCount / 10000) + ' 万+ 字' : ''}</p>
+  <span class="part-card-round">完整教程</span>
 </a>`
         )
         .join('\n')
@@ -908,6 +983,20 @@ ${builtInCards}
 <div class="part-grid">
 
 ${noteCards || '<p class="section-note">暂无笔记，将 Markdown 放入 <code>notes/</code> 后运行 <code>npm run prepare</code></p>'}
+
+</div>
+
+</div>
+
+<div class="home-parts guides-section">
+
+## 教程文档
+
+<p class="section-note">PDF 教程在线阅读，支持新窗口打开与下载</p>
+
+<div class="part-grid">
+
+${guideCards || '<p class="section-note">暂无教程，将 PDF 放入 <code>guides/</code> 后运行 <code>npm run prepare</code></p>'}
 
 </div>
 
@@ -1313,28 +1402,119 @@ ${body}
   return published
 }
 
+function writeGuidePage(outPath, title, body) {
+  const page = `---
+title: ${title}
+pageClass: guides-doc
+outline: [2, 3]
+aside: true
+---
+
+${body.trim()}
+`
+  fs.writeFileSync(outPath, page, 'utf-8')
+}
+
+function publishSplitGuide(guide, srcDir) {
+  const outDir = path.join(DOCS, 'guides', guide.slug)
+  const legacyFile = path.join(DOCS, 'guides', `${guide.slug}.md`)
+  if (fs.existsSync(legacyFile)) fs.unlinkSync(legacyFile)
+  fs.rmSync(outDir, { recursive: true, force: true })
+  fs.mkdirSync(outDir, { recursive: true })
+
+  const chapters = guide.splitChapters.map((ch) => {
+    const filePath = path.join(srcDir, ch.file)
+    const body = fs.readFileSync(filePath, 'utf-8')
+    return { ...ch, body, charCount: body.length }
+  })
+
+  const totalChars = chapters.reduce((n, c) => n + c.charCount, 0)
+  const nav = chapters.map((ch) => `- [${ch.sidebar}](./${ch.slug}.md)`).join('\n')
+
+  const indexBody = `${guide.desc}（${guide.version || ''} · ${guide.date || ''} · 共 ${chapters.length} 章 · 约 ${totalChars.toLocaleString('zh-CN')} 字 · PDF 原文件约 ${guide.pages || '?'} 页）
+
+> 以下内容为 PDF **全文转换**，16 章完整收录，不省略。左栏可逐章阅读；需要离线时可下载原版 PDF。
+
+## 章节目录
+
+${nav}
+
+<p class="section-note">建议路径：总览 → 模块 01–09 八股 → 招聘分析 / 开源笔记 → 简历 & STAR → 项目问答集（92 题）。</p>
+
+## 下载原版 PDF
+
+<PdfViewer
+  pdf="/guides/${guide.pdfFile}"
+  title="${guide.title}"
+  version="${guide.version || ''}"
+  date="${guide.date || ''}"
+  :pages="${guide.pages || 0}"
+/>
+`
+
+  writeGuidePage(path.join(outDir, 'index.md'), guide.title, indexBody)
+
+  for (const ch of chapters) {
+    writeGuidePage(path.join(outDir, `${ch.slug}.md`), `${guide.title} · ${ch.sidebar}`, ch.body)
+  }
+
+  const pdfSrc = guide.pdfSourceCandidates?.find((p) => fs.existsSync(p))
+  if (pdfSrc && guide.pdfFile) {
+    const publicDir = path.join(DOCS, 'public', 'guides')
+    fs.mkdirSync(publicDir, { recursive: true })
+    fs.copyFileSync(pdfSrc, path.join(publicDir, guide.pdfFile))
+  }
+
+  console.log(`✓ guides/${guide.slug}/（${chapters.length} 章，${totalChars.toLocaleString('zh-CN')} 字）`)
+
+  return {
+    ...guide,
+    charCount: totalChars,
+    chapters: chapters.map(({ slug, sidebar, charCount }) => ({ slug, sidebar, charCount })),
+  }
+}
+
+function processGuides() {
+  fs.mkdirSync(path.join(DOCS, 'guides'), { recursive: true })
+  const published = []
+
+  for (const guide of GUIDE_ENTRIES) {
+    const srcDir = guide.sourceCandidates.find((p) => fs.existsSync(p) && fs.statSync(p).isDirectory())
+    if (srcDir && guide.splitChapters?.length) {
+      published.push(publishSplitGuide(guide, srcDir))
+      continue
+    }
+
+    console.warn(`⚠ 教程源不存在或未分章，跳过: ${guide.slug}`)
+  }
+
+  return published
+}
+
 function main() {
   fs.mkdirSync(CUSTOM, { recursive: true })
   fs.mkdirSync(NOTES, { recursive: true })
 
   const customCategories = mergeCustomCategories(scanCustomCategories())
   const notePages = processNotes()
+  const guidePages = processGuides()
 
   processBuiltinParts()
   processCustomCategories(customCategories)
 
-  fs.writeFileSync(path.join(DOCS, 'index.md'), buildHomePage(customCategories, notePages), 'utf-8')
+  fs.writeFileSync(path.join(DOCS, 'index.md'), buildHomePage(customCategories, notePages, guidePages), 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'guide.md'), buildGuidePage(customCategories), 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'add.md'), '---\ntitle: 添加题目\nsidebar: false\n---\n\n<QuestionForm />\n', 'utf-8')
   fs.writeFileSync(path.join(DOCS, 'my.md'), '---\ntitle: 我的题库\nsidebar: false\n---\n\n<MyQuestionBank />\n', 'utf-8')
   fs.writeFileSync(
     path.join(DOCS, '.vitepress', 'sidebar.json'),
-    JSON.stringify(buildSidebarItems(customCategories, notePages), null, 2),
+    JSON.stringify(buildSidebarItems(customCategories, notePages, guidePages), null, 2),
     'utf-8'
   )
 
   const noteInfo = notePages.length ? `，笔记 ${notePages.length} 篇` : ''
-  console.log(`\n✅ Content prepared. 自定义分类: ${customCategories.length} 个，共 ${customCategories.reduce((n, c) => n + c.questions.length, 0)} 题${noteInfo}`)
+  const guideInfo = guidePages.length ? `，教程 ${guidePages.length} 篇` : ''
+  console.log(`\n✅ Content prepared. 自定义分类: ${customCategories.length} 个，共 ${customCategories.reduce((n, c) => n + c.questions.length, 0)} 题${noteInfo}${guideInfo}`)
 }
 
 main()

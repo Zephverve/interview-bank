@@ -10,6 +10,7 @@
     "import-kamacoder": "node scripts/import-kamacoder.mjs",
     "import-agent100": "node scripts/import-agent-interview-100.mjs",
     "import-langgraph": "node scripts/import-langgraph-intel.mjs",
+    "convert-ai-agent-guide": "python3 scripts/convert-ai-agent-guide.py",
     "new-question": "node scripts/new-question.mjs",
     "dev": "npm run prepare && vitepress dev docs",
     "build": "npm run prepare && vitepress build docs",

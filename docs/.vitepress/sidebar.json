@@ -134,6 +134,84 @@
     ]
   },
   {
+    "text": "── 教程文档 ──",
+    "link": "/guides/ai-agent-interview-guide/"
+  },
+  {
+    "text": "🎓 AI Agent 面试全攻略",
+    "collapsed": true,
+    "items": [
+      {
+        "text": "📑 总览",
+        "link": "/guides/ai-agent-interview-guide/"
+      },
+      {
+        "text": "00 · 从零到 Offer",
+        "link": "/guides/ai-agent-interview-guide/intro"
+      },
+      {
+        "text": "面试八股文 · 总目录",
+        "link": "/guides/ai-agent-interview-guide/interview-toc"
+      },
+      {
+        "text": "01 · Agent 基础概念",
+        "link": "/guides/ai-agent-interview-guide/mod-01-basics"
+      },
+      {
+        "text": "02 · 核心框架",
+        "link": "/guides/ai-agent-interview-guide/mod-02-frameworks"
+      },
+      {
+        "text": "03 · RAG 技术",
+        "link": "/guides/ai-agent-interview-guide/mod-03-rag"
+      },
+      {
+        "text": "04 · 工具调用",
+        "link": "/guides/ai-agent-interview-guide/mod-04-tools"
+      },
+      {
+        "text": "05 · 记忆系统",
+        "link": "/guides/ai-agent-interview-guide/mod-05-memory"
+      },
+      {
+        "text": "06 · 多智能体",
+        "link": "/guides/ai-agent-interview-guide/mod-06-multi-agent"
+      },
+      {
+        "text": "07 · 大模型基础",
+        "link": "/guides/ai-agent-interview-guide/mod-07-llm"
+      },
+      {
+        "text": "08 · 工程化实践",
+        "link": "/guides/ai-agent-interview-guide/mod-08-engineering"
+      },
+      {
+        "text": "09 · Prompt 工程",
+        "link": "/guides/ai-agent-interview-guide/mod-09-prompt"
+      },
+      {
+        "text": "企业招聘需求分析",
+        "link": "/guides/ai-agent-interview-guide/hiring-analysis"
+      },
+      {
+        "text": "开源项目学习笔记",
+        "link": "/guides/ai-agent-interview-guide/opensource-notes"
+      },
+      {
+        "text": "简历撰写指南",
+        "link": "/guides/ai-agent-interview-guide/resume-guide"
+      },
+      {
+        "text": "STAR 面试稿指南",
+        "link": "/guides/ai-agent-interview-guide/star-guide"
+      },
+      {
+        "text": "项目面试问答集",
+        "link": "/guides/ai-agent-interview-guide/project-qa"
+      }
+    ]
+  },
+  {
     "text": "── 文件题库 ──",
     "link": "/custom/today-interview"
   },

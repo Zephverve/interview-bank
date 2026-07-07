@@ -232,6 +232,22 @@
     max-width: 920px !important;
   }
 
+  /* 教程长文：同笔记样式，右侧章节目录 */
+  .VPDoc.guides-doc .aside,
+  .VPDoc.guides-doc.has-aside .aside-container {
+    display: block !important;
+  }
+
+  .VPDoc.guides-doc.has-aside .content-container {
+    display: flex !important;
+    gap: 24px;
+  }
+
+  .VPDoc.guides-doc.has-aside .content {
+    flex: 1 1 auto !important;
+    max-width: 920px !important;
+  }
+
   .VPDoc.has-sidebar .container,
   .VPDoc .container {
     display: block !important;
@@ -1266,4 +1282,66 @@ details.answer-reveal summary:hover {
   100% {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
+}
+
+/* ===== PDF 下载区（教程总览页底部） ===== */
+.pdf-viewer {
+  margin-top: 24px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--vp-c-bg-soft);
+}
+
+.pdf-viewer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.pdf-viewer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pdf-viewer-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--vp-c-text-2);
+}
+
+.pdf-viewer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.pdf-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--vp-c-divider);
+  font-size: 13px;
+  color: var(--vp-c-text-1);
+  text-decoration: none;
+}
+
+.pdf-btn.primary {
+  background: var(--vp-c-brand-1);
+  border-color: var(--vp-c-brand-1);
+  color: #fff;
+}
+
+.pdf-frame {
+  width: 100%;
+  height: min(70vh, 720px);
+  border: 0;
+  background: #fff;
 }
