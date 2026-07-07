@@ -1515,3 +1515,119 @@ details.answer-reveal summary:hover {
 .dark .guide-chapter-badge {
   color: #fdba74;
 }
+
+.guide-qa {
+  margin: 1.15rem 0 1.35rem;
+  padding: 14px 16px 12px;
+  border-radius: 12px;
+  background: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-divider);
+}
+
+.guide-question {
+  margin: 0 0 10px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.guide-q-label {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  vertical-align: 0.08em;
+}
+
+.guide-answer {
+  margin: 0;
+  padding: 8px 0 2px 12px;
+  border-left: 3px solid rgba(99, 102, 241, 0.35);
+}
+
+.guide-answer p,
+.guide-star-line {
+  margin: 0 0 8px !important;
+  font-size: 0.92rem !important;
+  font-weight: 400 !important;
+  line-height: 1.75 !important;
+  color: var(--vp-c-text-2) !important;
+}
+
+.guide-answer p:last-child,
+.guide-star-line:last-child {
+  margin-bottom: 0 !important;
+}
+
+.guide-a-step {
+  margin: 8px 0 4px !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  line-height: 1.6 !important;
+  color: var(--vp-c-text-2) !important;
+}
+
+.guide-a-step strong {
+  font-weight: 600 !important;
+}
+
+.guide-star-tag {
+  display: inline-block;
+  min-width: 76px;
+  margin-right: 4px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: #ea580c;
+}
+
+.dark .guide-star-tag {
+  color: #fdba74;
+}
+
+.guide-followup {
+  margin: 10px 0 4px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem !important;
+  line-height: 1.65;
+  color: var(--vp-c-text-2);
+  background: rgba(99, 102, 241, 0.06);
+}
+
+.guide-followup-a {
+  margin-top: 0;
+  margin-bottom: 12px;
+  background: rgba(16, 185, 129, 0.06);
+}
+
+.guide-followup-label {
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.guide-followup-a .guide-followup-label {
+  color: #10b981;
+}
+
+.VPDoc.guides-doc .vp-doc h4 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+}
+
+.VPDoc.guides-doc .vp-doc .guide-qa + h3,
+.VPDoc.guides-doc .vp-doc .guide-qa + h4 {
+  margin-top: 1.5rem;
+}

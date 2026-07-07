@@ -1437,6 +1437,208 @@ function stripDuplicateTocHeadings(text) {
   return lines.slice(i).join('\n').trim()
 }
 
+function escapeGuideHtml(text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+function isMajorSectionH2(line, rest) {
+  for (const l of rest) {
+    if (!l.trim()) continue
+    return l.startsWith('### ')
+  }
+  return false
+}
+
+function parseGuideQuestion(line) {
+  const t = line.trim()
+  let m = t.match(/^\*\*Q(\d+)[：:]\s*(.*?)\*\*$/)
+  if (m) return { num: m[1], text: m[2] }
+  m = t.match(/^\*\*Q(\d+)[：:]\s*(.*)$/)
+  if (m) return { num: m[1], text: m[2].replace(/\*\*$/, '') }
+  m = t.match(/^Q(\d+)[：:]\s*(.+)$/)
+  if (m) return { num: m[1], text: m[2] }
+  return null
+}
+
+/** 修正 Q/A 层级，降级答案里误识别的 ## 标题 */
+function postProcessGuideContent(text) {
+  const lines = text.split('\n')
+  const out = []
+  let inCode = false
+  let inAnswer = false
+  let qaOpen = false
+  let answerLines = []
+
+  function closeAnswerBlock() {
+    if (!answerLines.length) return
+    out.push('<div class="guide-answer">')
+    out.push(...answerLines)
+    out.push('</div>')
+    answerLines = []
+  }
+
+  function closeQaBlock() {
+    closeAnswerBlock()
+    if (qaOpen) {
+      out.push('</div>')
+      out.push('')
+      qaOpen = false
+    }
+    inAnswer = false
+  }
+
+  function pushAnswerLine(html) {
+    answerLines.push(html)
+  }
+
+  function pushAnswerText(text) {
+    const t = text.trim()
+    if (!t) return
+    pushAnswerLine(`<p>${escapeGuideHtml(t)}</p>`)
+  }
+
+  function mergeAnswerParagraph(text) {
+    const t = text.trim()
+    if (!t) return
+    const last = answerLines[answerLines.length - 1]
+    if (last?.startsWith('<p') && last.endsWith('</p>') && !last.includes('guide-a-step')) {
+      answerLines[answerLines.length - 1] = last.replace(/<\/p>$/, escapeGuideHtml(t) + '</p>')
+      return
+    }
+    pushAnswerText(t)
+  }
+
+  function isSectionHeading(trimmed) {
+    if (trimmed.startsWith('#### ')) return false
+    return trimmed.startsWith('## ') || trimmed.startsWith('### ')
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i]
+    let trimmed = line.trim()
+
+    if (trimmed.startsWith('```')) {
+      closeQaBlock()
+      inCode = !inCode
+      out.push(line)
+      continue
+    }
+    if (inCode) {
+      out.push(line)
+      continue
+    }
+
+    if (trimmed.startsWith('<p class="guide-') || trimmed.startsWith('<div class="guide-')) {
+      closeQaBlock()
+      out.push(line)
+      continue
+    }
+
+    if (line.startsWith('## ') && !isMajorSectionH2(line, lines.slice(i + 1))) {
+      line = `#### ${line.slice(3)}`
+    }
+    trimmed = line.trim()
+
+    const q = parseGuideQuestion(trimmed)
+    if (q) {
+      closeQaBlock()
+      out.push('<div class="guide-qa">')
+      qaOpen = true
+      out.push(
+        `<p class="guide-question"><span class="guide-q-label">Q${q.num}</span>${escapeGuideHtml(q.text)}</p>`
+      )
+      inAnswer = true
+      continue
+    }
+
+    const aInline = trimmed.match(/^\*\*A[:：]?\*\*[:：]?\s*(.*)$/)
+    if (aInline) {
+      if (aInline[1].trim()) pushAnswerText(aInline[1])
+      inAnswer = true
+      continue
+    }
+
+    const resultStar = trimmed.match(/^Result[：:]\s*(.*)$/i)
+    if (resultStar && (inAnswer || qaOpen)) {
+      if (!qaOpen) {
+        out.push('<div class="guide-qa">')
+        qaOpen = true
+        inAnswer = true
+      }
+      const tail = resultStar[1] ? escapeGuideHtml(resultStar[1]) : ''
+      pushAnswerLine(
+        `<p class="guide-star-line"><span class="guide-star-tag">Result</span>${tail ? `：${tail}` : '：'}</p>`
+      )
+      continue
+    }
+
+    const star = trimmed.match(/^(Situation|Task|Action)[：:]\s*(.*)$/i)
+    if (star && (inAnswer || qaOpen)) {
+      if (!qaOpen) {
+        out.push('<div class="guide-qa">')
+        qaOpen = true
+        inAnswer = true
+      }
+      const tail = star[2] ? escapeGuideHtml(star[2]) : ''
+      pushAnswerLine(
+        `<p class="guide-star-line"><span class="guide-star-tag">${star[1]}</span>${tail ? `：${tail}` : '：'}</p>`
+      )
+      continue
+    }
+
+    if (/^追问[：:]/.test(trimmed)) {
+      closeQaBlock()
+      out.push(
+        `<p class="guide-followup"><span class="guide-followup-label">追问</span>${escapeGuideHtml(trimmed.replace(/^追问[：:]\s*/, ''))}</p>`
+      )
+      continue
+    }
+    if (/^应对[：:]/.test(trimmed)) {
+      out.push(
+        `<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>${escapeGuideHtml(trimmed.replace(/^应对[：:]\s*/, ''))}</p>`
+      )
+      continue
+    }
+
+    if (out.length && trimmed && !trimmed.startsWith('<') && !parseGuideQuestion(trimmed)) {
+      const last = out[out.length - 1]
+      if (last?.includes('guide-followup') && !isSectionHeading(trimmed) && !trimmed.startsWith('#### ')) {
+        out[out.length - 1] = last.replace(/<\/p>$/, escapeGuideHtml(trimmed) + '</p>')
+        continue
+      }
+    }
+
+    if (inAnswer) {
+      if (!trimmed) continue
+      if (isSectionHeading(trimmed)) {
+        closeQaBlock()
+        out.push(line)
+        continue
+      }
+      if (trimmed.startsWith('#### ')) {
+        pushAnswerLine(`<p class="guide-a-step"><strong>${escapeGuideHtml(trimmed.replace(/^#### /, ''))}</strong></p>`)
+        continue
+      }
+      if (trimmed.startsWith('**Q')) {
+        i -= 1
+        closeQaBlock()
+        continue
+      }
+      mergeAnswerParagraph(trimmed)
+      continue
+    }
+
+    if (isSectionHeading(trimmed) || trimmed.startsWith('#### ')) {
+      closeQaBlock()
+    }
+
+    out.push(line)
+  }
+
+  closeQaBlock()
+  return out.join('\n')
+}
+
 /** 去掉正文重复大标题，提取导语 */
 function normalizeGuideChapterBody(body, sidebar) {
   let lines = body.trim().split('\n')
@@ -1469,7 +1671,7 @@ function normalizeGuideChapterBody(body, sidebar) {
   if (lead.length) {
     result += `<p class="guide-lead">${lead.join(' ')}</p>\n\n`
   }
-  result += lines.join('\n')
+  result += postProcessGuideContent(lines.join('\n'))
   return result.trim()
 }
 

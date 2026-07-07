@@ -19,10 +19,10 @@ RAG（检索增强生成）指：在让大语言模型（LLM）生成答案 之�
 据库、网页等）中 检索 与用户问题相关的片段，再把这些片段作为 上下文 一并输入模型，从而
 约束 模型的输出依据。
 原理详解
-## 1. 离线阶段：把原始文档解析、清洗、分块 → 用 Embedding 模型转成向量 → 存入向量索引
+#### 1. 离线阶段：把原始文档解析、清洗、分块 → 用 Embedding 模型转成向量 → 存入向量索引
 
    （或配合关键词索引）。
-## 2. 在线阶段：用户提问 →（可选）查询改写 → 检索 Top-K 相关块 →（可选）重排序 → 将块拼
+#### 2. 在线阶段：用户提问 →（可选）查询改写 → 检索 Top-K 相关块 →（可选）重排序 → 将块拼
 
    进 Prompt → LLM 基于「问题 + 检索上下文」生成答案。
 核心思想：把「记忆」从模型参数里搬到「可更新的外部存储」，生成时按需取用。
@@ -199,13 +199,13 @@ OCR（光学字符识别）把 图像中的文字 变成可检索文本，用于
    表格：结构化信息密集，拆成纯文本易丢行列关系。
    图片：含流程图、架构图时，纯 OCR 往往不够，需要 多模态模型 生成描述。
 策略
-## 1. 表格：保留为 Markdown/HTML 表格字符串；或转为 JSON 行记录 存两份索引（自然语言版
+#### 1. 表格：保留为 Markdown/HTML 表格字符串；或转为 JSON 行记录 存两份索引（自然语言版
 
    + 结构化版）。
-## 2. 图片：用 Caption 模型（如 BLIP、多模态大模型）生成描述文本再入库；或对关键图做 人工
+#### 2. 图片：用 Caption 模型（如 BLIP、多模态大模型）生成描述文本再入库；或对关键图做 人工
 
    标注。
-## 3. 图文混排：按阅读顺序拼接「图注 + OCR/Caption + 相邻段落」为一个块或父子块。
+#### 3. 图文混排：按阅读顺序拼接「图注 + OCR/Caption + 相邻段落」为一个块或父子块。
 
 面试 Q7：表格为什么难做 RAG？
 标准答案 A： 表格语义依赖 行列关系 与 表头；固定长度切分易切断行列。应用 表头感知分块、
@@ -405,11 +405,11 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 4.3 Embedding 模型选型标准
 
-## 1. 语言与领域：中文优先中文强化模型；医疗/法律可看领域微调版。
+#### 1. 语言与领域：中文优先中文强化模型；医疗/法律可看领域微调版。
 
-## 2. 序列长度：长文档需更长上下文 embedding 或先分段再聚合。
+#### 2. 序列长度：长文档需更长上下文 embedding 或先分段再聚合。
 
-## 3. 许可证与部署：云端 API vs 私有化。
+#### 3. 许可证与部署：云端 API vs 私有化。
 
 ## 4. 与重排/生成模型一致性：有时同一厂商链路更省心（非必须）。
 
@@ -474,13 +474,13 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 5.4 索引选择策略
 
-## 1. 数据量小、要简单：HNSW + 精确参数调优。
+#### 1. 数据量小、要简单：HNSW + 精确参数调优。
 
-## 2. 数据量大、内存紧：IVF + PQ 组合（如 IVF_PQ）。
+#### 2. 数据量大、内存紧：IVF + PQ 组合（如 IVF_PQ）。
 
-## 3. 要磁盘级大规模：DiskANN 类方案（视产品支持）。
+#### 3. 要磁盘级大规模：DiskANN 类方案（视产品支持）。
 
-## 4. 强过滤：选对 元数据索引友好 的实现（Qdrant、Milvus 过滤能力强）。
+#### 4. 强过滤：选对 元数据索引友好 的实现（Qdrant、Milvus 过滤能力强）。
 
 代码示例：FAISS + sentence-transformers（最小示例）
 ```python
@@ -798,11 +798,11 @@ precision/recall），自动化评估 RAG 管道。
 
 ### 9.3 评估数据集构建
 
-## 1. 从真实日志 脱敏 抽样问题
+#### 1. 从真实日志 脱敏 抽样问题
 
-## 2. 标注 标准答案 或 支持文档 ID
+#### 2. 标注 标准答案 或 支持文档 ID
 
-## 3. 覆盖 简单事实、多跳、拒答、无答案 等类型
+#### 3. 覆盖 简单事实、多跳、拒答、无答案 等类型
 
 面试 Q15：为什么说「只看最终答案对错」不够？
 标准答案 A： 可能 猜对 或 上下文不相关仍生成；需同时评 检索质量 与 忠实度，定位瓶颈在检
@@ -867,63 +867,177 @@ precision/recall），自动化评估 RAG 管道。
 面试 Q16：多租户下最常见的安全事故是什么？
 标准答案 A： 检索 未带租户过滤 导致 跨租户数据泄露；必须在数据库层与查询层 双重校验。
 
-## 11. 综合面试题库（20+ 题）
+#### 11. 综合面试题库（20+ 题）
 
  下列每题均可作为「概念 + 落地」题；追问应对 见各节括号提示。
-**Q1：简述 RAG 两步流水线（离线与在线）。**
-**A：** 离线：解析→清洗→分块→嵌入→建索引；在线：Query（可选改写）→检索→（可选重排）
-→拼 Prompt→生成。追问：增量更新怎么做？（见 10.3）
-**Q2：RAG 与微调如何配合？**
-**A：** 微调改善 格式与领域表达，RAG 提供 可更新事实；事实类优先 RAG。追问：何时单独微
-调？（数据稳定且任务行为化）
-**Q3：为什么需要 chunk_overlap？**
-**A：** 防止关键句被切断在两块边界，检索时丢上下文；代价是存储增加。
-**Q4：RecursiveCharacterTextSplitter 的分隔符顺序为什么重要？**
-**A：** 优先在更大语义单元（段落）断开，再退到句子、空格，减少碎片化。
-**Q5：语义分块比递归分块更好吗？**
-**A：** 不一定；语义分块成本高、阈值敏感。应用数据 A/B 测试。
-**Q6：父子文档如何存储？**
-**A：** 子块带 parent_id ，检索子块→映射父块文本再生成。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q1</span>简述 RAG 两步流水线（离线与在线）。</p>
+<div class="guide-answer">
+<p>离线：解析→清洗→分块→嵌入→建索引；在线：Query（可选改写）→检索→（可选重排）→拼 Prompt→生成。追问：增量更新怎么做？（见 10.3）</p>
+</div>
+</div>
 
-**Q7：Embedding 是否需要归一化？**
-**A：** 若用 内积/余弦 且框架假设归一化向量，应归一化以稳定相似度。
-**Q8：FAISS IndexFlatIP 与 IndexHNSW 区别？**
-**A：** Flat 精确但慢；HNSW 近似快，适合大规模。
-**Q9：混合检索权重 alpha 怎么定？**
-**A：** 验证集网格搜索；或 RRF 避免调权。
-**Q10：RRF 为什么鲁棒？**
-**A：** 只用排名融合，规避不同路分数尺度问题。
-**Q11：HyDE 的风险如何缓解？**
-**A：** 重排序、引用约束、拒答、对比多条检索结果。
-**Q12：BM25 在中文要不要分词？**
-**A：** 依赖引擎；中文常需 分词或 n-gram，否则粒度不当影响效果。
-**Q13：Cross-Encoder 为何不能替代向量索引？**
-**A：** 需对 每个 doc 与 query 运行，复杂度高，无法对百万级全库实时扫描。
-**Q14：MMR 的 lambda 参数含义？**
-**A：** 调节 相关性 vs 多样性；lambda 大更偏相关。
-**Q15：GraphRAG 解决普通 RAG 的什么痛点？**
-**A：** 多跳关系与部分 全局聚合类 问题。
-**Q16：Agentic RAG 与一次性 RAG 差异？**
-**A：** 多步工具决策与再检索，更灵活更高成本。
-**Q17：Self-RAG 核心思想？**
-**A：** 生成中 自我评估 是否需要检索与证据是否充分。
-**Q18：Corrective RAG 触发条件？**
-**A：** 检索置信度低或证据矛盾时 改查或换源。
-**Q19：RAGAS 的局限？**
-**A：** 依赖裁判模型，可能有 偏好与盲区。
-**Q20：如何做低成本在线评估？**
-**A：** 采样 + 用户反馈（点赞/纠错）+ 弱监督信号（是否点击引用）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q2</span>RAG 与微调如何配合？</p>
+<div class="guide-answer">
+<p>微调改善 格式与领域表达，RAG 提供 可更新事实；事实类优先 RAG。追问：何时单独微调？（数据稳定且任务行为化）</p>
+</div>
+</div>
 
-**Q21：索引频繁更新如何保持一致性？**
-**A：** 版本号、双写切换、后台重建与灰度；读写分离。
-**Q22：如何防止 Prompt 注入污染 RAG？**
-**A：** 文档清洗、权限隔离、输出引用限制、检测异常指令模式。
-**Q23：长上下文模型出现后 RAG 会消失吗？**
-**A：** 不会；私域数据规模与成本、检索聚焦证据、合规审计仍需要 RAG 范式。
-**Q24：多模态 RAG 要点？**
-**A：** 图像/表格编码、跨模态对齐、与文本混合索引与路由。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q3</span>为什么需要 chunk_overlap？</p>
+<div class="guide-answer">
+<p>防止关键句被切断在两块边界，检索时丢上下文；代价是存储增加。</p>
+</div>
+</div>
 
-附录：LangChain 向量存储检索（LCEL 示意）
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q4</span>RecursiveCharacterTextSplitter 的分隔符顺序为什么重要？</p>
+<div class="guide-answer">
+<p>优先在更大语义单元（段落）断开，再退到句子、空格，减少碎片化。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q5</span>语义分块比递归分块更好吗？</p>
+<div class="guide-answer">
+<p>不一定；语义分块成本高、阈值敏感。应用数据 A/B 测试。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q6</span>父子文档如何存储？</p>
+<div class="guide-answer">
+<p>子块带 parent_id ，检索子块→映射父块文本再生成。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q7</span>Embedding 是否需要归一化？</p>
+<div class="guide-answer">
+<p>若用 内积/余弦 且框架假设归一化向量，应归一化以稳定相似度。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q8</span>FAISS IndexFlatIP 与 IndexHNSW 区别？</p>
+<div class="guide-answer">
+<p>Flat 精确但慢；HNSW 近似快，适合大规模。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q9</span>混合检索权重 alpha 怎么定？</p>
+<div class="guide-answer">
+<p>验证集网格搜索；或 RRF 避免调权。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q10</span>RRF 为什么鲁棒？</p>
+<div class="guide-answer">
+<p>只用排名融合，规避不同路分数尺度问题。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q11</span>HyDE 的风险如何缓解？</p>
+<div class="guide-answer">
+<p>重排序、引用约束、拒答、对比多条检索结果。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q12</span>BM25 在中文要不要分词？</p>
+<div class="guide-answer">
+<p>依赖引擎；中文常需 分词或 n-gram，否则粒度不当影响效果。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q13</span>Cross-Encoder 为何不能替代向量索引？</p>
+<div class="guide-answer">
+<p>需对 每个 doc 与 query 运行，复杂度高，无法对百万级全库实时扫描。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q14</span>MMR 的 lambda 参数含义？</p>
+<div class="guide-answer">
+<p>调节 相关性 vs 多样性；lambda 大更偏相关。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q15</span>GraphRAG 解决普通 RAG 的什么痛点？</p>
+<div class="guide-answer">
+<p>多跳关系与部分 全局聚合类 问题。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q16</span>Agentic RAG 与一次性 RAG 差异？</p>
+<div class="guide-answer">
+<p>多步工具决策与再检索，更灵活更高成本。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q17</span>Self-RAG 核心思想？</p>
+<div class="guide-answer">
+<p>生成中 自我评估 是否需要检索与证据是否充分。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q18</span>Corrective RAG 触发条件？</p>
+<div class="guide-answer">
+<p>检索置信度低或证据矛盾时 改查或换源。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q19</span>RAGAS 的局限？</p>
+<div class="guide-answer">
+<p>依赖裁判模型，可能有 偏好与盲区。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q20</span>如何做低成本在线评估？</p>
+<div class="guide-answer">
+<p>采样 + 用户反馈（点赞/纠错）+ 弱监督信号（是否点击引用）。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q21</span>索引频繁更新如何保持一致性？</p>
+<div class="guide-answer">
+<p>版本号、双写切换、后台重建与灰度；读写分离。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q22</span>如何防止 Prompt 注入污染 RAG？</p>
+<div class="guide-answer">
+<p>文档清洗、权限隔离、输出引用限制、检测异常指令模式。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q23</span>长上下文模型出现后 RAG 会消失吗？</p>
+<div class="guide-answer">
+<p>不会；私域数据规模与成本、检索聚焦证据、合规审计仍需要 RAG 范式。</p>
+</div>
+</div>
+
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q24</span>多模态 RAG 要点？</p>
+<div class="guide-answer">
+<p>图像/表格编码、跨模态对齐、与文本混合索引与路由。附录：LangChain 向量存储检索（LCEL 示意）</p>
+</div>
+</div>
+
 ```python
  # pip install langchain langchain-openai langchain-community faiss-cpu
  from langchain_community.vectorstores import FAISS

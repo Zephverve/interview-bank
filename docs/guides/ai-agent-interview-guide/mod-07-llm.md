@@ -83,19 +83,16 @@ Pre-Norm 通常更稳定、更易训练深层网络；Post-Norm 在理论上与�
 ### 1.3 面试问题（Q）与标准答案（A）
 
 Q：Transformer 和 RNN 相比，核心优势是什么？
-**A：** 自注意力在单步内连接任意两位置，并行计算好、长距离依赖路径短（常数层数内）；RNN 顺
-序计算且长序列梯度路径长。代价是 (O(n^2)) 注意力内存与时间（相对序列长度）。
-Q：Decoder 里的 Masked Self-Attention 为什么要 mask？
-**A：** 训练时一次看到整句，若不 mask，位置 (i) 会看到「未来」token，造成信息泄漏；mask 保
-证训练和推理（自回归）一致。
+<div class="guide-answer">
+<p>自注意力在单步内连接任意两位置，并行计算好、长距离依赖路径短（常数层数内）；RNN 顺序计算且长序列梯度路径长。代价是 (O(n^2)) 注意力内存与时间（相对序列长度）。Q：Decoder 里的 Masked Self-Attention 为什么要 mask？</p>
+<p>训练时一次看到整句，若不 mask，位置 (i) 会看到「未来」token，造成信息泄漏；mask 保证训练和推理（自回归）一致。</p>
+</div>
 ### 1.4 追问应对
 
-  追问：为什么大模型多是 Decoder-only？
-  应对： 生成式预训练目标（下一词预测）与架构一致；工程上堆叠简单、扩展性好；Encoder-
-  only（如 BERT）更偏理解，需另做生成适配。
-  追问：Pre-Norm 和 Post-Norm 训练稳定性差异原因？
-  应对： Pre-Norm 让子层输入分布更稳定，梯度在残差路径上更平滑；可提一嘴深层
-  Transformer 实践中 Pre-Norm 更常见。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>为什么大模型多是 Decoder-only？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>生成式预训练目标（下一词预测）与架构一致；工程上堆叠简单、扩展性好；Encoder-only（如 BERT）更偏理解，需另做生成适配。</p>
+<p class="guide-followup"><span class="guide-followup-label">追问</span>Pre-Norm 和 Post-Norm 训练稳定性差异原因？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>Pre-Norm 让子层输入分布更稳定，梯度在残差路径上更平滑；可提一嘴深层Transformer 实践中 Pre-Norm 更常见。</p>
 ### 1.5 代码示例：缩放点积注意力（PyTorch 风格伪代码）
 
 ```python
@@ -156,16 +153,14 @@ Flash Attention 利用 GPU SRAM 快、HBM 慢 的层次结构，把 Q、K、V �
 ### 2.3 面试问题（Q）与标准答案（A）
 
 Q：简述 Flash Attention 为什么能快和省显存？
-**A：** 通过分块在片上完成注意力计算，减少对慢速全局显存的读写；避免存储完整大注意力矩阵
-（或显著降低峰值），并融合算子提高吞吐。
-Q：GQA 相对 MHA 推理上主要省在哪里？
-**A：** KV Cache 随层缓存的 K、V 体积减小（多组 Query 共享 KV），内存带宽与显存占用下降，
-decode 阶段受益明显。
+<div class="guide-answer">
+<p>通过分块在片上完成注意力计算，减少对慢速全局显存的读写；避免存储完整大注意力矩阵（或显著降低峰值），并融合算子提高吞吐。Q：GQA 相对 MHA 推理上主要省在哪里？</p>
+<p>KV Cache 随层缓存的 K、V 体积减小（多组 Query 共享 KV），内存带宽与显存占用下降，decode 阶段受益明显。</p>
+</div>
 ### 2.4 追问应对
 
-  追问：不用 softmax 可以吗？
-  应对： 注意力需非负且归一的权重；softmax 是最常见选择，也有线性注意力、核方法等变体
-  用于线性复杂度，但各有近似与实现代价。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>不用 softmax 可以吗？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>注意力需非负且归一的权重；softmax 是最常见选择，也有线性注意力、核方法等变体用于线性复杂度，但各有近似与实现代价。</p>
 ### 2.5 代码示例：多头形状演示
 
 ```python
@@ -213,14 +208,14 @@ embedding 变为向量。切分方式直接影响序列长度、OOV 处理、多
 ### 3.3 面试问题（Q）与标准答案（A）
 
 Q：BPE 和 WordPiece 主要区别？
-**A：** 都是子词合并思路；BPE 常用高频合并，WordPiece 更强调似然提升；具体实现因库而异，
-面试答「合并准则不同」即可。
-Q：为什么 LLM 常用子词而不是纯词？
-**A：** 控制词表规模、处理 OOV、开放集词汇；纯词级词表巨大且稀疏。
+<div class="guide-answer">
+<p>都是子词合并思路；BPE 常用高频合并，WordPiece 更强调似然提升；具体实现因库而异，面试答「合并准则不同」即可。Q：为什么 LLM 常用子词而不是纯词？</p>
+<p>控制词表规模、处理 OOV、开放集词汇；纯词级词表巨大且稀疏。</p>
+</div>
 ### 3.4 追问应对
 
-  追问：字节级 BPE 优缺点？
-  应对： 词表小、任意字符可表示；缺点是同样文本 token 变长，算力与上下文窗口压力增大。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>字节级 BPE 优缺点？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>词表小、任意字符可表示；缺点是同样文本 token 变长，算力与上下文窗口压力增大。</p>
 
 ## 4. 大模型推理
 
@@ -261,16 +256,14 @@ Decode（逐个生成新 token）。
 ### 4.3 面试问题（Q）与标准答案（A）
 
 Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
-**A：** Prefill 并行度高，计算密集；Decode 每步批量小，常内存带宽受限（读大权重与 KV
-Cache）。实际与 batch、实现有关。
-
-Q：KV Cache 为什么能加速？
-**A：** 避免对历史 token 重复计算各层 K、V，以空间换时间。
+<div class="guide-answer">
+<p>Prefill 并行度高，计算密集；Decode 每步批量小，常内存带宽受限（读大权重与 KVCache）。实际与 batch、实现有关。Q：KV Cache 为什么能加速？</p>
+<p>避免对历史 token 重复计算各层 K、V，以空间换时间。</p>
+</div>
 ### 4.4 追问应对
 
-  追问：KV Cache 显存如何估算？
-  应对： 与层数、头数、每头维度、batch、序列长度、精度（FP16/BF16/INT8）成正比；可答
-  「每层每 token 存 K、V 两份向量，总显存随长度线性增」。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>KV Cache 显存如何估算？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>与层数、头数、每头维度、batch、序列长度、精度（FP16/BF16/INT8）成正比；可答「每层每 token 存 K、V 两份向量，总显存随长度线性增」。</p>
 ### 4.5 代码示例：简单 Greedy + 温度（概念）
 
 ```python
@@ -322,27 +315,27 @@ BA) 或保持分开。
 将 prompt tokens 扩展到每一层的可学习前缀，而不仅是输入层，提升小模型与难任务表现。
 ### 5.2.7 SFT（Supervised Fine-Tuning）流程（典型）
 
-## 1. 数据：高质量指令–回答对（可含思维链、拒答、工具格式）。
+#### 1. 数据：高质量指令–回答对（可含思维链、拒答、工具格式）。
 
-## 2. 格式：Chat 模板（system/user/assistant）与 tokenizer 对齐。
+#### 2. 格式：Chat 模板（system/user/assistant）与 tokenizer 对齐。
 
-## 3. 训练：交叉熵损失，通常只监督 assistant 段 token。
+#### 3. 训练：交叉熵损失，通常只监督 assistant 段 token。
 
-## 4. 评估：验证集 loss、人工/模型裁判、任务基准。
+#### 4. 评估：验证集 loss、人工/模型裁判、任务基准。
 
 ## 5. 对齐：常与 DPO/RLHF 等衔接。
 
 ### 5.3 面试问题（Q）与标准答案（A）
 
 Q：LoRA 秩 r 怎么选？
-**A：** 经验值 8–64 常见；越大容量越大但易过拟合、显存略增；需验证集折中。
-Q：QLoRA 和 LoRA 主要差在哪？
-**A：** 基座权重 4-bit 量化 + LoRA；大幅降低显存，略有精度损失风险，需配合 NF4 与调参。
+<div class="guide-answer">
+<p>经验值 8–64 常见；越大容量越大但易过拟合、显存略增；需验证集折中。Q：QLoRA 和 LoRA 主要差在哪？</p>
+<p>基座权重 4-bit 量化 + LoRA；大幅降低显存，略有精度损失风险，需配合 NF4 与调参。</p>
+</div>
 ### 5.4 追问应对
 
- 追问：LoRA 一般接在哪些层？
- 应对： 常对 Attention 的 q,v（及有时 k,o）和/或 FFN 注入；实践有默认配置（如 r、
- alpha、target_modules）。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>LoRA 一般接在哪些层？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>常对 Attention 的 q,v（及有时 k,o）和/或 FFN 注入；实践有默认配置（如 r、alpha、target_modules）。</p>
 ### 5.5 代码示例：LoRA 形式（数学）
 
                                                           text
@@ -359,11 +352,11 @@ DPO 等直接用偏好数据优化策略，无需显式奖励模型与 RL 循环
 
 ### 6.2.1 RLHF 完整流程（经典三阶段）
 
-## 1. SFT：监督微调，学会基本指令跟随与格式。
+#### 1. SFT：监督微调，学会基本指令跟随与格式。
 
-## 2. 奖励模型（RM）：对人类标注的「好坏排序」数据，训练 (r(x,y)) 给回答打分。
+#### 2. 奖励模型（RM）：对人类标注的「好坏排序」数据，训练 (r(x,y)) 给回答打分。
 
-## 3. 强化学习：以 RM 为奖励信号，用 PPO 等算法更新策略 (\pi_\theta)，并常加 KL 惩罚 约束
+#### 3. 强化学习：以 RM 为奖励信号，用 PPO 等算法更新策略 (\pi_\theta)，并常加 KL 惩罚 约束
 
    与参考模型 (\pi_{\text{ref}})（常为 SFT 模型）不要偏离太远。
 ### 6.2.2 PPO 在 RLHF 中的应用
@@ -396,15 +389,14 @@ DeepSeek 等工作中强调：对同一 prompt 一组输出内做相对奖励归
 ### 6.3 面试问题（Q）与标准答案（A）
 
 Q：RLHF 为什么要 KL 惩罚？
-**A：** 防止策略为刷高 RM 分数而产生分布外投机行为（reward hacking），保持语言质量与多样
-性。
-Q：DPO 相对 RLHF 的主要工程优势？
-**A：** 无需单独训练 RM 与 RL 采样循环，静态数据上直接优化，pipeline 更简单。
+<div class="guide-answer">
+<p>防止策略为刷高 RM 分数而产生分布外投机行为（reward hacking），保持语言质量与多样性。Q：DPO 相对 RLHF 的主要工程优势？</p>
+<p>无需单独训练 RM 与 RL 采样循环，静态数据上直接优化，pipeline 更简单。</p>
+</div>
 ### 6.4 追问应对
 
-  追问：偏好数据噪声大怎么办？
-  应对： 数据清洗、多裁判一致性、对比学习过滤、鲁棒损失与正则；工业界常强调标注指南与
-  质检。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>偏好数据噪声大怎么办？</p>
+<p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>数据清洗、多裁判一致性、对比学习过滤、鲁棒损失与正则；工业界常强调标注指南与质检。</p>
 
 ## 7. 模型量化
 
@@ -439,10 +431,10 @@ Q：DPO 相对 RLHF 的主要工程优势？
 ### 7.3 面试问题（Q）与标准答案（A）
 
 Q：INT4 比 INT8 主要风险是什么？
-**A：** 表示粒度更粗，误差更大；需 group-wise 缩放、混合精度或与更高比特关键层结合。
-Q：GPTQ 大致在优化什么？
-**A：** 给定量化约束，最小化权重重构误差（常利用二阶近似信息），逐块贪心求解。
-
+<div class="guide-answer">
+<p>表示粒度更粗，误差更大；需 group-wise 缩放、混合精度或与更高比特关键层结合。Q：GPTQ 大致在优化什么？</p>
+<p>给定量化约束，最小化权重重构误差（常利用二阶近似信息），逐块贪心求解。</p>
+</div>
 ## 8. 推理优化
 
 ### 8.1 概念解释
@@ -476,10 +468,10 @@ token 延迟（理想情况），需 draft 与 target 兼容。
 ### 8.3 面试问题（Q）与标准答案（A）
 
 Q：vLLM 的 PagedAttention 解决什么问题？
-**A：** KV Cache 显存碎片化与浪费（变长序列），通过分页块管理与复用提高吞吐。
-Q：MoE 为什么「参数多算力少」？
-**A：** 每 token 只激活部分专家，计算量随激活专家数增长，而总参数量包含所有专家。
-
+<div class="guide-answer">
+<p>KV Cache 显存碎片化与浪费（变长序列），通过分页块管理与复用提高吞吐。Q：MoE 为什么「参数多算力少」？</p>
+<p>每 token 只激活部分专家，计算量随激活专家数增长，而总参数量包含所有专家。</p>
+</div>
 ## 9. 前沿模型与选型
 
 ### 9.1 概念解释
@@ -509,108 +501,203 @@ Q：MoE 为什么「参数多算力少」？
 ### 9.3 面试问题（Q）与标准答案（A）
 
 Q：选开源 70B 还是闭源 API？
-**A：** 看隐私、延迟、成本、定制需求与团队运维能力；高合规本地优先，快速验证可用 API。
+<div class="guide-answer">
+<p>看隐私、延迟、成本、定制需求与团队运维能力；高合规本地优先，快速验证可用 API。</p>
+<p class="guide-a-step"><strong>10. 综合面试题库（20+ 题）</strong></p>
+<p>下列题目均附标准答案要点，可与前文章节交叉复习。</p>
+</div>
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q1</span>写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。</p>
+<div class="guide-answer">
+<p>(\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免softmax 饱和与梯度问题。</p>
+</div>
+</div>
 
-## 10. 综合面试题库（20+ 题）
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q2</span>多头注意力为什么比单头好？</p>
+<div class="guide-answer">
+<p>多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。</p>
+</div>
+</div>
 
-下列题目均附标准答案要点，可与前文章节交叉复习。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q3</span>Encoder 和 Decoder 的自注意力有何不同？</p>
+<div class="guide-answer">
+<p>Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有Cross-Attention 读 Encoder。</p>
+</div>
+</div>
 
-**Q1：写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。**
-**A：** (\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免
-softmax 饱和与梯度问题。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q4</span>RoPE 与正弦绝对位置编码各有什么特点？</p>
+<div class="guide-answer">
+<p>RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论较多但现代架构更常选 RoPE/ALiBi。</p>
+</div>
+</div>
 
-**Q2：多头注意力为什么比单头好？**
-**A：** 多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q5</span>Pre-Norm 和 Post-Norm 区别？</p>
+<div class="guide-answer">
+<p>Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。</p>
+</div>
+</div>
 
-**Q3：Encoder 和 Decoder 的自注意力有何不同？**
-**A：** Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有
-Cross-Attention 读 Encoder。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q6</span>解释 MQA 与 GQA 的动机。</p>
+<div class="guide-answer">
+<p>减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。</p>
+</div>
+</div>
 
-**Q4：RoPE 与正弦绝对位置编码各有什么特点？**
-**A：** RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论
-较多但现代架构更常选 RoPE/ALiBi。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q7</span>Flash Attention 核心优化思想？</p>
+<div class="guide-answer">
+<p>分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。</p>
+</div>
+</div>
 
-**Q5：Pre-Norm 和 Post-Norm 区别？**
-**A：** Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q8</span>BPE 如何构建词表？</p>
+<div class="guide-answer">
+<p>从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。</p>
+</div>
+</div>
 
-**Q6：解释 MQA 与 GQA 的动机。**
-**A：** 减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q9</span>SentencePiece 适合中文的原因？</p>
+<div class="guide-answer">
+<p>不依赖空格分词，可学习子词；适合无空格语言与多语言统一。</p>
+</div>
+</div>
 
-**Q7：Flash Attention 核心优化思想？**
-**A：** 分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q10</span>Tokenizer 不一致会导致什么问题？</p>
+<div class="guide-answer">
+<p>id 错位、性能异常；微调与推理必须与基座一致。</p>
+</div>
+</div>
 
-**Q8：BPE 如何构建词表？**
-**A：** 从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q11</span>Prefill 和 Decode 阶段特点？</p>
+<div class="guide-answer">
+<p>Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。</p>
+</div>
+</div>
 
-**Q9：SentencePiece 适合中文的原因？**
-**A：** 不依赖空格分词，可学习子词；适合无空格语言与多语言统一。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q12</span>KV Cache 是什么？为什么能加速？</p>
+<div class="guide-answer">
+<p>缓存历史 K、V；避免重复计算过去 token 的注意力键值。</p>
+</div>
+</div>
 
-**Q10：Tokenizer 不一致会导致什么问题？**
-**A：** id 错位、性能异常；微调与推理必须与基座一致。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q13</span>Temperature、Top-k、Top-p 各影响什么？</p>
+<div class="guide-answer">
+<p>随机性/确定性；截断长尾候选；动态 nucleus 截断。</p>
+</div>
+</div>
 
-**Q11：Prefill 和 Decode 阶段特点？**
-**A：** Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q14</span>对话生成为什么少用 Beam Search？</p>
+<div class="guide-answer">
+<p>易重复、不自然；开放域更常用采样类方法。</p>
+</div>
+</div>
 
-**Q12：KV Cache 是什么？为什么能加速？**
-**A：** 缓存历史 K、V；避免重复计算过去 token 的注意力键值。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q15</span>LoRA 的低秩假设直觉？</p>
+<div class="guide-answer">
+<p>任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。</p>
+</div>
+</div>
 
-**Q13：Temperature、Top-k、Top-p 各影响什么？**
-**A：** 随机性/确定性；截断长尾候选；动态 nucleus 截断。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q16</span>QLoRA 为什么省显存？</p>
+<div class="guide-answer">
+<p>基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。</p>
+</div>
+</div>
 
-**Q14：对话生成为什么少用 Beam Search？**
-**A：** 易重复、不自然；开放域更常用采样类方法。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q17</span>SFT 损失通常怎么算？</p>
+<div class="guide-answer">
+<p>常对 assistant token 做交叉熵，忽略 user 与 mask。</p>
+</div>
+</div>
 
-**Q15：LoRA 的低秩假设直觉？**
-**A：** 任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q18</span>RLHF 三阶段是什么？</p>
+<div class="guide-answer">
+<p>SFT → 奖励模型 → PPO（带 KL）强化学习。</p>
+</div>
+</div>
 
-**Q16：QLoRA 为什么省显存？**
-**A：** 基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q19</span>DPO 相对 RLHF 最大简化是什么？</p>
+<div class="guide-answer">
+<p>不显式训练奖励模型与 RL 循环，用偏好直接优化策略。</p>
+</div>
+</div>
 
-**Q17：SFT 损失通常怎么算？**
-**A：** 常对 assistant token 做交叉熵，忽略 user 与 mask。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q20</span>PPO 中 KL 惩罚目的？</p>
+<div class="guide-answer">
+<p>限制偏离参考策略，减轻 reward hacking 与模式崩塌。</p>
+</div>
+</div>
 
-**Q18：RLHF 三阶段是什么？**
-**A：** SFT → 奖励模型 → PPO（带 KL）强化学习。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q21</span>INT4 量化主要风险？</p>
+<div class="guide-answer">
+<p>精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。</p>
+</div>
+</div>
 
-**Q19：DPO 相对 RLHF 最大简化是什么？**
-**A：** 不显式训练奖励模型与 RL 循环，用偏好直接优化策略。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q22</span>GPTQ 大致做什么？</p>
+<div class="guide-answer">
+<p>训练后量化权重，按层/块最小化误差，常用 Hessian 近似。</p>
+</div>
+</div>
 
-**Q20：PPO 中 KL 惩罚目的？**
-**A：** 限制偏离参考策略，减轻 reward hacking 与模式崩塌。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q23</span>张量并行与流水线并行区别？</p>
+<div class="guide-answer">
+<p>TP 切分单层张量；PP 切分不同层到不同设备。</p>
+</div>
+</div>
 
-**Q21：INT4 量化主要风险？**
-**A：** 精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q24</span>PagedAttention 解决什么？</p>
+<div class="guide-answer">
+<p>KV Cache 变长导致的浪费与碎片化，提高批处理效率。</p>
+</div>
+</div>
 
-**Q22：GPTQ 大致做什么？**
-**A：** 训练后量化权重，按层/块最小化误差，常用 Hessian 近似。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q25</span>投机解码如何加速？</p>
+<div class="guide-answer">
+<p>小模型提议多 token，大模型并行验证，减少串行步数。</p>
+</div>
+</div>
 
-**Q23：张量并行与流水线并行区别？**
-**A：** TP 切分单层张量；PP 切分不同层到不同设备。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q26</span>MoE 训练难点？</p>
+<div class="guide-answer">
+<p>负载均衡、通信、路由稳定性；避免专家坍塌。</p>
+</div>
+</div>
 
-**Q24：PagedAttention 解决什么？**
-**A：** KV Cache 变长导致的浪费与碎片化，提高批处理效率。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q27</span>开源模型相对闭源 API 的核心优势场景？</p>
+<div class="guide-answer">
+<p>数据不出域、可深度定制、长期成本可控（有算力前提）。</p>
+</div>
+</div>
 
-**Q25：投机解码如何加速？**
-**A：** 小模型提议多 token，大模型并行验证，减少串行步数。
-
-**Q26：MoE 训练难点？**
-**A：** 负载均衡、通信、路由稳定性；避免专家坍塌。
-
-**Q27：开源模型相对闭源 API 的核心优势场景？**
-**A：** 数据不出域、可深度定制、长期成本可控（有算力前提）。
-
-**Q28：GRPO / KTO 你了解到什么程度？**
-**A：** 诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式
-损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。
-
-附录：速查公式与术语
-
-         符号/术语                      含义
- (d_{model})     模型隐藏维度
- (d_k)           每头 Key/Query 维度
- KV Cache        缓存每步 K、V 以加速自回归
- PEFT            参数高效微调总称（LoRA、Adapter 等）
- PTQ             训练后量化
- TP / PP         张量并行 / 流水线并行
-
-文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q28</span>GRPO / KTO 你了解到什么程度？</p>
+<div class="guide-answer">
+<p>诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。附录：速查公式与术语符号/术语                      含义(d_{model})     模型隐藏维度(d_k)           每头 Key/Query 维度KV Cache        缓存每步 K、V 以加速自回归PEFT            参数高效微调总称（LoRA、Adapter 等）PTQ             训练后量化TP / PP         张量并行 / 流水线并行文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。</p>
+</div>
+</div>

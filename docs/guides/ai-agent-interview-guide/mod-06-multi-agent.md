@@ -41,28 +41,26 @@ aside: true
   统一次失败全盘重来。
 ### 1.3 面试问题 Q1～Q3
 
-**Q1：单 Agent 和多 Agent 的本质区别是什么？什么时候该上多 Agent？**
-**A：**本质区别不在「调几次模型」，而在 是否显式建模角色、通信与治理。单 Agent 适合：任
-务边界清晰、工具少、强实时、成本极度敏感的场景。多 Agent 适合：任务可分解、需要不同专
-业视角、需要并行、需要权限隔离（例如代码执行与对外发布分离）、需要可观测的分阶段产出 的
-场景。
-**追问应对：**若问「多 Agent 会不会更贵？」——答：通常 Token 与调用次数上升，但若通过
-小模型子任务 + 大模型仲裁、并行缩短时间、减少无效重试，总成本未必更高，需要按业务度
-量。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q1</span>单 Agent 和多 Agent 的本质区别是什么？什么时候该上多 Agent？</p>
+<div class="guide-answer">
+<p>本质区别不在「调几次模型」，而在 是否显式建模角色、通信与治理。单 Agent 适合：任务边界清晰、工具少、强实时、成本极度敏感的场景。多 Agent 适合：任务可分解、需要不同专业视角、需要并行、需要权限隔离（例如代码执行与对外发布分离）、需要可观测的分阶段产出 的场景。**追问应对：**若问「多 Agent 会不会更贵？」——答：通常 Token 与调用次数上升，但若通过小模型子任务 + 大模型仲裁、并行缩短时间、减少无效重试，总成本未必更高，需要按业务度量。</p>
+</div>
+</div>
 
-**Q2：什么是「注意力漂移」？多 Agent 如何缓解？**
-**A：**注意力漂移指模型在长上下文或多目标提示下，对关键约束的关注度下降，导致输出偏离
-要求。多 Agent 缓解方式包括：拆分子目标使每个子上下文更短；专职角色减少单提示中的目标
-数量；中间结果结构化（JSON/状态机）减少自然语言堆砌。
-**追问应对：**若问「不用多 Agent 怎么缓解？」——答：摘要、检索注入关键句、约束前置、
-链式调用 with 校验器 等。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q2</span>什么是「注意力漂移」？多 Agent 如何缓解？</p>
+<div class="guide-answer">
+<p>注意力漂移指模型在长上下文或多目标提示下，对关键约束的关注度下降，导致输出偏离要求。多 Agent 缓解方式包括：拆分子目标使每个子上下文更短；专职角色减少单提示中的目标数量；中间结果结构化（JSON/状态机）减少自然语言堆砌。**追问应对：**若问「不用多 Agent 怎么缓解？」——答：摘要、检索注入关键句、约束前置、链式调用 with 校验器 等。</p>
+</div>
+</div>
 
-**Q3：多 Agent 的「容错」具体怎么体现？**
-**A：**体现为 失败隔离 + 可替换性：例如审查 Agent 发现实现 Agent 的代码不合规，可打回重
-写而不污染主对话；执行 Agent 沙箱崩溃可只重启该步骤。工程上常配合 重试、指数退避、断路
-器、降级模板。
-**追问应对：**若问「会不会互相甩锅？」——答：会，所以需要 明确终止条件、主席/仲裁机
-制、可观测日志（见第 5、9 节）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q3</span>多 Agent 的「容错」具体怎么体现？</p>
+<div class="guide-answer">
+<p>体现为 失败隔离 + 可替换性：例如审查 Agent 发现实现 Agent 的代码不合规，可打回重写而不污染主对话；执行 Agent 沙箱崩溃可只重启该步骤。工程上常配合 重试、指数退避、断路器、降级模板。**追问应对：**若问「会不会互相甩锅？」——答：会，所以需要 明确终止条件、主席/仲裁机制、可观测日志（见第 5、9 节）。</p>
+</div>
+</div>
 
 ### 1.4 代码示例（Python）
 
@@ -140,17 +138,19 @@ aside: true
   风险：易 空转与重复；若无终止条件会 Token 爆炸；需要 投票/仲裁（见第 5 节）。
 ### 2.3 面试问题 Q4～Q5
 
-**Q4：Boss-Worker 和 Pipeline 有什么本质差异？**
-**A：**Pipeline 强调 固定的阶段顺序与数据形态；Boss-Worker 强调 动态任务图——Boss 可
-按需增删子任务、并行派发。Pipeline 更像工厂流水线；Boss-Worker 更像项目经理排期。
-**追问应对：**若问「能混合吗？」——答：非常常见，例如 Boss 定阶段，阶段内 Pipeline，
-阶段间 讨论。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q4</span>Boss-Worker 和 Pipeline 有什么本质差异？</p>
+<div class="guide-answer">
+<p>Pipeline 强调 固定的阶段顺序与数据形态；Boss-Worker 强调 动态任务图——Boss 可按需增删子任务、并行派发。Pipeline 更像工厂流水线；Boss-Worker 更像项目经理排期。**追问应对：**若问「能混合吗？」——答：非常常见，例如 Boss 定阶段，阶段内 Pipeline，阶段间 讨论。</p>
+</div>
+</div>
 
-**Q5：民主讨论模式如何避免永远开不完会？**
-**A：**需要 硬终止条件：最大轮数、Token 预算、无新信息阈值（连续两轮无实质变更则停）、
-或 主席裁决；并配合 结构化发言（观点 + 证据 + 反对意见）减少废话。
-**追问应对：**若问「讨论适合生产吗？」——答：适合 低风险创意类 或 人类在环；纯自动高风
-险决策通常要 仲裁 + 规则引擎。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q5</span>民主讨论模式如何避免永远开不完会？</p>
+<div class="guide-answer">
+<p>需要 硬终止条件：最大轮数、Token 预算、无新信息阈值（连续两轮无实质变更则停）、或 主席裁决；并配合 结构化发言（观点 + 证据 + 反对意见）减少废话。**追问应对：**若问「讨论适合生产吗？」——答：适合 低风险创意类 或 人类在环；纯自动高风险决策通常要 仲裁 + 规则引擎。</p>
+</div>
+</div>
 
 ### 2.4 代码示例（Python）
 
@@ -227,12 +227,12 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
 本，更偏广播。
 ### 3.3 面试问题 Q6
 
-**Q6：黑板模式和消息队列有什么相似与不同？**
-**A：**相似：都 解耦发送方与接收方。不同：黑板通常是 共享状态容器（读最新快照），强调
-协作求解；队列是 事件/任务的管道，强调 可靠投递、顺序、削峰。黑板更像「会议室白板」；队
-列更像「工单系统」。
-**追问应对：**若问「能结合吗？」——答：可以，队列传事件，消费者更新黑板，兼顾可靠与共
-享状态。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q6</span>黑板模式和消息队列有什么相似与不同？</p>
+<div class="guide-answer">
+<p>相似：都 解耦发送方与接收方。不同：黑板通常是 共享状态容器（读最新快照），强调协作求解；队列是 事件/任务的管道，强调 可靠投递、顺序、削峰。黑板更像「会议室白板」；队列更像「工单系统」。**追问应对：**若问「能结合吗？」——答：可以，队列传事件，消费者更新黑板，兼顾可靠与共享状态。</p>
+</div>
+</div>
 
 ### 3.4 代码示例（Python）
 
@@ -311,12 +311,12 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
  竞标，Boss 选标。适合 异构资源 与 多候选执行者。
 ### 4.3 面试问题 Q7
 
-**Q7：动态任务分配和固定 Pipeline 各适合什么场景？**
-**A：**固定 Pipeline 适合 SOP 稳定、输入输出契约清晰（如审核流水线）。动态分配适合 探索
-性任务（研究、故障排查），中间可能发现新子问题。工程上常 混合：主干 Pipeline + 动态插入
-节点。
-**追问应对：**若问「动态会不会不可控？」——答：需要 预算、最大深度、允许的工具白名单
-与 人类在环。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q7</span>动态任务分配和固定 Pipeline 各适合什么场景？</p>
+<div class="guide-answer">
+<p>固定 Pipeline 适合 SOP 稳定、输入输出契约清晰（如审核流水线）。动态分配适合 探索性任务（研究、故障排查），中间可能发现新子问题。工程上常 混合：主干 Pipeline + 动态插入节点。**追问应对：**若问「动态会不会不可控？」——答：需要 预算、最大深度、允许的工具白名单与 人类在环。</p>
+</div>
+</div>
 
 ### 4.4 代码示例（Python）
 
@@ -375,11 +375,12 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
 （Red Team）。
 ### 5.3 面试问题 Q8
 
-**Q8：为什么光有投票不够？**
-**A：**因为 LLM Agent 的「独立意见」往往 不独立（相似训练分布、相似 system 提示），且
-缺少 真实世界证据 时，投票可能强化错误。更稳妥的是 证据门槛 + 优先级规则 + 人类在环。
-**追问应对：**若问「Red Team 怎么用？」——答：专门 Agent 负责挑错、攻击假设、构造反
-例，输出 必须回应的质疑清单。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q8</span>为什么光有投票不够？</p>
+<div class="guide-answer">
+<p>因为 LLM Agent 的「独立意见」往往 不独立（相似训练分布、相似 system 提示），且缺少 真实世界证据 时，投票可能强化错误。更稳妥的是 证据门槛 + 优先级规则 + 人类在环。**追问应对：**若问「Red Team 怎么用？」——答：专门 Agent 负责挑错、攻击假设、构造反例，输出 必须回应的质疑清单。</p>
+</div>
+</div>
 
 ### 5.4 代码示例（Python）
 
@@ -426,11 +427,12 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
  而非轮询黑板。
 ### 6.3 面试问题 Q9
 
-**Q9：多 Agent 系统为什么推荐状态机而不是纯自然语言传递一切？**
-**A：**自然语言灵活但 难校验、难回放、难测试。状态机提供 可验证迁移、清晰终止、可观测
-指标（卡在何阶段多久）。自然语言可作为 附件说明，不应是唯一真相来源。
-**追问应对：**若问「状态存在哪？」——答：进程内只适合 demo；生产用 Redis/DB 并加 乐
-观锁。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q9</span>多 Agent 系统为什么推荐状态机而不是纯自然语言传递一切？</p>
+<div class="guide-answer">
+<p>自然语言灵活但 难校验、难回放、难测试。状态机提供 可验证迁移、清晰终止、可观测指标（卡在何阶段多久）。自然语言可作为 附件说明，不应是唯一真相来源。**追问应对：**若问「状态存在哪？」——答：进程内只适合 demo；生产用 Redis/DB 并加 乐观锁。</p>
+</div>
+</div>
 
 ### 6.4 代码示例（Python）
 
@@ -488,25 +490,26 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
 定、可观测性、学习曲线。
 ### 7.3 面试问题 Q10～Q12
 
-**Q10：AutoGen 和 LangGraph 多 Agent 有什么气质差异？**
-**A：**AutoGen 偏 对话与多角色交互 的快速组合；LangGraph 偏 显式图状态机 与 检查点/分
-支。若强调 生产可恢复与审计，LangGraph 往往更易 形式化；若强调 探索式对话与人机混合，
-AutoGen 叙事更自然。
-**追问应对：**若问「能混用吗？」——答：可以，例如 LangGraph 节点内嵌 AutoGen 会话，
-但要 统一 trace id 与成本核算。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q10</span>AutoGen 和 LangGraph 多 Agent 有什么气质差异？</p>
+<div class="guide-answer">
+<p>AutoGen 偏 对话与多角色交互 的快速组合；LangGraph 偏 显式图状态机 与 检查点/分支。若强调 生产可恢复与审计，LangGraph 往往更易 形式化；若强调 探索式对话与人机混合，AutoGen 叙事更自然。**追问应对：**若问「能混用吗？」——答：可以，例如 LangGraph 节点内嵌 AutoGen 会话，但要 统一 trace id 与成本核算。</p>
+</div>
+</div>
 
-**Q11：CrewAI 的「Crew」抽象解决什么问题？**
-**A：**把 角色分工 + 任务依赖 + 执行顺序 从 prompt 工程里抽成一等公民，降低「写一大坨
-system prompt」的心智负担，让 协作结构 可见、可复用。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q11</span>CrewAI 的「Crew」抽象解决什么问题？</p>
+<div class="guide-answer">
+<p>把 角色分工 + 任务依赖 + 执行顺序 从 prompt 工程里抽成一等公民，降低「写一大坨system prompt」的心智负担，让 协作结构 可见、可复用。**追问应对：**若问缺点？——答：抽象与真实权限/数据边界 仍需自己把控；复杂分支可能要下沉到代码。</p>
+</div>
+</div>
 
-**追问应对：**若问缺点？——答：抽象与真实权限/数据边界 仍需自己把控；复杂分支可能要
-下沉到代码。
-
-**Q12：MetaGPT 适合直接上生产吗？**
-**A：**视场景而定：它擅长 结构化软件过程与多角色产出 的演示与研究；生产需补 强测试、强
-权限、强监控、成本与延迟控制，框架本身不替你完成这些。
-**追问应对：**若问「和 CrewAI 选哪个？」——答：先看团队熟悉度与 是否需要强图编排/检查
-点（偏 LangGraph）或 快速角色任务叙事（偏 CrewAI）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q12</span>MetaGPT 适合直接上生产吗？</p>
+<div class="guide-answer">
+<p>视场景而定：它擅长 结构化软件过程与多角色产出 的演示与研究；生产需补 强测试、强权限、强监控、成本与延迟控制，框架本身不替你完成这些。**追问应对：**若问「和 CrewAI 选哪个？」——答：先看团队熟悉度与 是否需要强图编排/检查点（偏 LangGraph）或 快速角色任务叙事（偏 CrewAI）。</p>
+</div>
+</div>
 
 ### 7.4 代码示例（Python）
 
@@ -563,13 +566,12 @@ system prompt」的心智负担，让 协作结构 可见、可复用。
 
 ### 8.3 面试问题 Q13
 
-**Q13：企业里多 Agent 与「传统工作流引擎（BPM）」关系是什么？**
-
-**A：**BPM 管 确定性流程与人工节点；多 Agent 管 需要语言推理与开放工具调用的步骤。常
-见架构：BPM 编排确定性 + LLM Agent 作为某一人工/自动活动；或 Agent 产出结构化决策，
-由 BPM 落账。
-**追问应对：**若问「谁主谁辅？」——答：强合规流程 BPM 主；强探索任务 Agent 主，但要
-有 护栏。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q13</span>企业里多 Agent 与「传统工作流引擎（BPM）」关系是什么？</p>
+<div class="guide-answer">
+<p>BPM 管 确定性流程与人工节点；多 Agent 管 需要语言推理与开放工具调用的步骤。常见架构：BPM 编排确定性 + LLM Agent 作为某一人工/自动活动；或 Agent 产出结构化决策，由 BPM 落账。**追问应对：**若问「谁主谁辅？」——答：强合规流程 BPM 主；强探索任务 Agent 主，但要有 护栏。</p>
+</div>
+</div>
 
 ### 8.4 代码示例（Python）
 
@@ -608,16 +610,19 @@ system prompt」的心智负担，让 协作结构 可见、可复用。
 
 ### 9.3 面试问题 Q14～Q15
 
-**Q14：如何检测多 Agent 系统的「死循环」？**
-**A：**组合策略：（1）全局步数上限；（2）状态哈希去重（若连续重复同一计划/同一工具入参
-则停）；（3）无进展检测（关键指标多轮不变，如 bug 数未降）；（4）预算熔断（Token/费用/时
-间）。
-**追问应对：**若问「误杀怎么办？」——答：提高 进展定义粒度、允许 人类确认继续。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q14</span>如何检测多 Agent 系统的「死循环」？</p>
+<div class="guide-answer">
+<p>组合策略：（1）全局步数上限；（2）状态哈希去重（若连续重复同一计划/同一工具入参则停）；（3）无进展检测（关键指标多轮不变，如 bug 数未降）；（4）预算熔断（Token/费用/时间）。**追问应对：**若问「误杀怎么办？」——答：提高 进展定义粒度、允许 人类确认继续。</p>
+</div>
+</div>
 
-**Q15：错误隔离在多 Agent 里如何实现？**
-**A：**（1）沙箱执行 与 最小权限工具；（2）校验 Agent 作为门禁；（3）检查点：通过后持久化，失
-败从检查点重试；（4）不把未经校验的自然语言当 API 参数。
-**追问应对：**若问「工具返回很大怎么办？」——答：存对象存储，传 句柄/摘要 进上下文。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q15</span>错误隔离在多 Agent 里如何实现？</p>
+<div class="guide-answer">
+<p>（1）沙箱执行 与 最小权限工具；（2）校验 Agent 作为门禁；（3）检查点：通过后持久化，失败从检查点重试；（4）不把未经校验的自然语言当 API 参数。**追问应对：**若问「工具返回很大怎么办？」——答：存对象存储，传 句柄/摘要 进上下文。</p>
+</div>
+</div>
 
 ### 9.4 代码示例（Python）
 
@@ -644,34 +649,37 @@ system prompt」的心智负担，让 协作结构 可见、可复用。
 答
 ```
 
-**Q16：多 Agent 会不会降低「一致性」（同一产品前后端接口对不上）？**
-**A：**会，所以需要 单一契约源（OpenAPI/JSON Schema）+ 契约测试 Agent 或静态检查 +
-状态机门禁。
-**Q17：如何做跨 Agent 的权限隔离？**
-**A：**工具 分账户/分密钥；Agent 最小权限；敏感操作走 审批工作流；审计日志 不可篡改存
-储。
-**Q18：多 Agent 的评估怎么做？**
-**A：**分层：单元（单 Agent I/O）、集成（两两交互）、端到端（任务成功率）；辅以 LLM-as-
-judge 需防偏，最好配 黄金集与人审。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q16</span>多 Agent 会不会降低「一致性」（同一产品前后端接口对不上）？</p>
+<div class="guide-answer">
+<p>会，所以需要 单一契约源（OpenAPI/JSON Schema）+ 契约测试 Agent 或静态检查 +状态机门禁。</p>
+</div>
+</div>
 
-**Q19：为什么需要「人机在环」？**
-**A：**高风险决策、未知法规、或 模型置信度低 时，人类是 最后防线；同时可 收集真实反馈
-迭代提示与工具。
-**Q20：多 Agent 与「单 Agent + 多个工具」取舍？**
-**A：**若只需 统一策略 调不同 API，单 Agent + 工具即可；若需要 角色隔离、并行、对抗评
-审、组织流程，多 Agent 更合适。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q17</span>如何做跨 Agent 的权限隔离？</p>
+<div class="guide-answer">
+<p>工具 分账户/分密钥；Agent 最小权限；敏感操作走 审批工作流；审计日志 不可篡改存储。</p>
+</div>
+</div>
 
-本篇小结（背调清单）
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q18</span>多 Agent 的评估怎么做？</p>
+<div class="guide-answer">
+<p>分层：单元（单 Agent I/O）、集成（两两交互）、端到端（任务成功率）；辅以 LLM-as-judge 需防偏，最好配 黄金集与人审。</p>
+</div>
+</div>
 
- 为何多 Agent：拆上下文、专业化、并行、隔离失败；单 Agent 有注意力与能力边界问题。
- 三种协作：Boss-Worker、Pipeline、Joint Discussion —— 各有瓶颈（Boss 单点、Pipeline
- 难回溯、讨论易空转）。
- 通信：直连、黑板、Pub-Sub、队列 —— 解耦度与复杂度不同。
- 分配：能力/负载/动态/竞拍 —— 匹配度与治理成本之间的权衡。
- 冲突：投票、优先级、主席、证据 —— 防「假独立」与集体偏误。
- 状态：全局真相 + 状态机 + 事件驱动。
- 框架：AutoGen、CrewAI、MetaGPT、ChatDev、LangGraph —— 理解抽象差异与工程补齐
- 点。
- 生产：钱、慢、死循环、错、看不清 —— 都要有 硬约束与可观测。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q19</span>为什么需要「人机在环」？</p>
+<div class="guide-answer">
+<p>高风险决策、未知法规、或 模型置信度低 时，人类是 最后防线；同时可 收集真实反馈迭代提示与工具。</p>
+</div>
+</div>
 
-文档版本：面向入门系统梳理；框架 API 以官方文档为准。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q20</span>多 Agent 与「单 Agent + 多个工具」取舍？</p>
+<div class="guide-answer">
+<p>若只需 统一策略 调不同 API，单 Agent + 工具即可；若需要 角色隔离、并行、对抗评审、组织流程，多 Agent 更合适。本篇小结（背调清单）为何多 Agent：拆上下文、专业化、并行、隔离失败；单 Agent 有注意力与能力边界问题。三种协作：Boss-Worker、Pipeline、Joint Discussion —— 各有瓶颈（Boss 单点、Pipeline难回溯、讨论易空转）。通信：直连、黑板、Pub-Sub、队列 —— 解耦度与复杂度不同。分配：能力/负载/动态/竞拍 —— 匹配度与治理成本之间的权衡。冲突：投票、优先级、主席、证据 —— 防「假独立」与集体偏误。状态：全局真相 + 状态机 + 事件驱动。框架：AutoGen、CrewAI、MetaGPT、ChatDev、LangGraph —— 理解抽象差异与工程补齐点。生产：钱、慢、死循环、错、看不清 —— 都要有 硬约束与可观测。文档版本：面向入门系统梳理；框架 API 以官方文档为准。</p>
+</div>
+</div>

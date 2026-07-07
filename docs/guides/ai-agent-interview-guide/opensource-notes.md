@@ -124,29 +124,29 @@ stopHooks.ts ）
  其中表格列出了从 00_overview.md 到 13_rust_codebase.md 共 15 个文件、各自篇幅与
  主题（总覆盖约 990KB 量级说明文字）。
  阅读顺序建议：
-## 1. 00_overview.md ：总览、仓库结构、数据流、权限与设置分层。
+#### 1. 00_overview.md ：总览、仓库结构、数据流、权限与设置分层。
 
-## 2. 01_core_entry_query.md ：入口、 query 、QueryEngine、历史、费用、token 预算。
+#### 2. 01_core_entry_query.md ：入口、 query 、QueryEngine、历史、费用、token 预算。
 
-## 3. 02_commands.md ：斜杠命令全集。
+#### 3. 02_commands.md ：斜杠命令全集。
 
-## 4. 03_tools.md ：工具框架与各工具契约。
+#### 4. 03_tools.md ：工具框架与各工具契约。
 
-## 5. 04_components_core_messages.md /
+#### 5. 04_components_core_messages.md /
 
     05_components_agents_permissions_design.md ：UI 与权限交互。
 
-## 6. 06_services_context_state.md ：服务、上下文、状态。
+#### 6. 06_services_context_state.md ：服务、上下文、状态。
 
-## 7. 07_hooks.md ：React hooks 行为（与 TS 前端同源概念）。
+#### 7. 07_hooks.md ：React hooks 行为（与 TS 前端同源概念）。
 
-## 8. 08_ink_terminal.md ：终端渲染与布局。
+#### 8. 08_ink_terminal.md ：终端渲染与布局。
 
-## 9. 09_bridge_cli_remote.md ：Bridge、JWT、SSE/WebSocket、远程会话。
+#### 9. 09_bridge_cli_remote.md ：Bridge、JWT、SSE/WebSocket、远程会话。
 
-## 10. 10_utils.md ~ 12_constants_types.md ：工具函数与常量类型。
+#### 10. 10_utils.md ~ 12_constants_types.md ：工具函数与常量类型。
 
-## 11. 13_rust_codebase.md ：Rust 重写侧 的 crate、工具列表、query 循环、TUI、Bridge 等
+#### 11. 13_rust_codebase.md ：Rust 重写侧 的 crate、工具列表、query 循环、TUI、Bridge 等
 
     映射。
 ### 2.3 Rust 工作区架构 src-rust/
@@ -308,38 +308,38 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
  —— 说明其已超越 Demo，进入 领域建模 + 持久化 + 运营 阶段。
 ### 5.3 核心能力分析（概念架构）
 
-## 1. 多路检索引擎
+#### 1. 多路检索引擎
 
     意图定向通道：按识别出的意图缩小检索范围，减少噪声。
     全局向量通道：广域召回，防止漏检。
     二者融合时常用 重排序（rerank） 或 加权融合，需在工程上定义 可追溯的检索决策日志。
-## 2. 意图识别体系
+#### 2. 意图识别体系
 
     树形分类：由粗到细，便于与业务流程、权限域对齐。
     置信度 + 澄清引导：低置信度时不强行回答，而是 追问槽位 或 列出候选意图，与企业客
     服/工单系统一致。
-## 3. 问题重写与拆分
+#### 3. 问题重写与拆分
 
     重写：将口语化问题改为检索友好查询。
     拆分：多跳任务拆成子问题，分别检索与综合，降低单次上下文压力。
-## 4. 会话记忆
+#### 4. 会话记忆
 
     滑动窗口：近期消息全保留。
     摘要压缩：窗口前的历史压成摘要，控制 token 与成本；需处理 摘要与事实一致性（与本
     工作区 SessionMemory 、 compact 主题同源）。
-## 5. 模型路由与容错
+#### 5. 模型路由与容错
 
     三态熔断器：关闭 / 半开 / 打开，避免拖垮整条链路。
     自动降级：主模型失败时切换备用模型或缩小任务（例如仅做检索不做生成）。
-## 6. MCP 工具调用
+#### 6. MCP 工具调用
 
     与 Claude Code 系中的 MCP 工具（本仓库 tools/MCPTool 、 services/mcp ）概念对
     齐：统一工具协议有利于 多端复用（IDE、RAG 平台、CLI）。
-## 7. 文档入库 ETL
+#### 7. 文档入库 ETL
 
     清洗、分块、元数据、版本、增量更新；企业知识库是否「越用越准」很大程度取决于 ETL
     与 溯源（provenance）。
-## 8. 全链路追踪
+#### 8. 全链路追踪
 
     TraceId 贯穿网关 → 检索 → LLM → 工具；对排障与 SLA 归因 必备。
 ### 5.4 与本工作区 Demo/源码项目的区别
@@ -377,7 +377,7 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
                       │   持久化：会话 · 文档块 · 向量索引 · 审计 │
                       └─────────────────────────────────────┘
 
-## 6. 阿里商旅 Agent（业务向参考）
+#### 6. 阿里商旅 Agent（业务向参考）
 
   以下为 行业公开分享与典型商旅场景 的归纳，便于与技术指标对照；非某单一开源仓库导
   读。
@@ -387,13 +387,13 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
  特点：强 规则（差标、职级）、强 时效（余票、价格）、强 协同（审批流、企业支付）。
 ### 6.2 Agent 设计思路（抽象）
 
-## 1. 任务型对话 + 工具/API 编排：自然语言落到 结构化意图（订酒店、改签、补审批），再调用
+#### 1. 任务型对话 + 工具/API 编排：自然语言落到 结构化意图（订酒店、改签、补审批），再调用
 
    供应链/中台 API。
-## 2. 状态机与槽位填充：目的地、日期、人数、差标结果等以 槽位 管理，避免模型幻觉覆盖业务规
+#### 2. 状态机与槽位填充：目的地、日期、人数、差标结果等以 槽位 管理，避免模型幻觉覆盖业务规
 
    则。
-## 3. 人在回路：超标、无票、政策冲突等必须 显式确认 或 转人工，与 Claude Code 的 权限对话
+#### 3. 人在回路：超标、无票、政策冲突等必须 显式确认 或 转人工，与 Claude Code 的 权限对话
 
    框 同理，只是业务域不同。
 ### 6.3 企业级落地的关键挑战与解决方案（通用归纳）
@@ -407,27 +407,27 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
 
 第三部分：架构模式总结
 
-## 7. 从这些项目中提炼的通用 Agent 架构模式
+#### 7. 从这些项目中提炼的通用 Agent 架构模式
 
-## 1. 分层：接入（CLI/API）→ 编排（Query/Coordinator）→ 工具与外部系统 → 持久化与观
+#### 1. 分层：接入（CLI/API）→ 编排（Query/Coordinator）→ 工具与外部系统 → 持久化与观
 
    测。
      本工作区映射： main / cli → query.ts / query/ crate → tools/ →
       services/ + DB/文件。
 
-## 2. 契约优先：工具入参 schema、权限结果、消息类型在类型系统中集中定义（TS： types/ ；
+#### 2. 契约优先：工具入参 schema、权限结果、消息类型在类型系统中集中定义（TS： types/ ；
 
    Rust： spec/12_constants_types.md ）。
-## 3. 扩展点显式化：Feature Flag、Hook、Plugin/MCP，避免无限 if-else。
+#### 3. 扩展点显式化：Feature Flag、Hook、Plugin/MCP，避免无限 if-else。
 
-## 8. 工具系统设计模式
+#### 8. 工具系统设计模式
 
  统一基类 + 按工具分包： Tool.ts + tools/&lt;Name>Tool/ 。
  权限外置： CanUseToolFn 、审批 UI 与工具执行解耦。
  横向能力复用：Bash 的路径/只读/沙箱校验拆成多个模块文件，而不是堆在单一
  execute() 。
 
-## 9. 记忆管理模式
+#### 9. 记忆管理模式
 
  工作记忆：当前会话消息列表 + token 预算（ tokenBudget.ts 、 compact ）。
  长期记忆：SessionMemory、团队记忆同步（ services/SessionMemory 、
@@ -435,14 +435,14 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
                          。
  压缩策略：自动 compact、微压缩边界消息（见 query.ts 中消息构造与
  services/compact ）。
-## 10. 错误处理模式
+#### 10. 错误处理模式
 
  API 层： FallbackTriggeredError 、 withRetry （见 query.ts import 与
   services/api/ ）
                 。
  用户可见 vs 调试日志： logError 、 logForDebugging 分流。
  可恢复：重试、降级模型、跳过非关键工具（需在业务上定义 SLA）。
-## 11. 可扩展性设计
+#### 11. 可扩展性设计
 
  Bridge：新客户端只需实现协议，不 fork 核心循环。
  MCP：新工具提供方独立进程，降低核心崩溃面。
@@ -450,25 +450,25 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
 
 第四部分：对我们项目的启发
 
-## 12. 企业级项目应借鉴的设计
+#### 12. 企业级项目应借鉴的设计
 
-## 1. 先写「架构地图」再写模块：参考 claude-code-rust/spec/INDEX.md ，为团队提供 唯一索
+#### 1. 先写「架构地图」再写模块：参考 claude-code-rust/spec/INDEX.md ，为团队提供 唯一索
 
    引，避免新人从任意文件切入导致误解。
-## 2. Query 与 Tool 的边界写死：工具只做 单职责动作，编排（多步、重试、合并上下文）放在
+#### 2. Query 与 Tool 的边界写死：工具只做 单职责动作，编排（多步、重试、合并上下文）放在
 
    Query/Coordinator；与本仓库 query.ts + Tool.ts 分工一致。
-## 3. 权限与审计一等公民：不仅「能不能调 API」，还要 谁在何时批准了什么（对照
+#### 3. 权限与审计一等公民：不仅「能不能调 API」，还要 谁在何时批准了什么（对照
 
     types/permissions.ts 与 HitCC 的 TUI 审批文档）
                                            。
-## 4. 可观测性：Analytics、内部日志、TraceId；企业交付常因缺观测而被拒收。
+#### 4. 可观测性：Analytics、内部日志、TraceId；企业交付常因缺观测而被拒收。
 
-## 5. 多语言/多运行时并存时：维护 parity_audit 式对照表（见 claude-
+#### 5. 多语言/多运行时并存时：维护 parity_audit 式对照表（见 claude-
 
    code/src/parity_audit.py ）
                             ，避免语义漂移。
-## 13. 具体架构决策建议
+#### 13. 具体架构决策建议
 
  决策点             建议                               理由
  工具协      优先 MCP 或类 MCP        与本仓库 MCP 工具链一致，利于接第三方
@@ -483,7 +483,7 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
  风险功      Feature Flag / 编译    对齐 bun:bundle 的 feature() 思路，在 Java
  能        裁剪                   可用配置中心 + 模块化 jar
 
-## 14. 后续学习动作（可选）
+#### 14. 后续学习动作（可选）
 
  精读 {ROOT}/claude-code-rust/spec/01_core_entry_query.md 与 {ROOT}/claude-
  code-main/src/query.ts 的 同一概念（入口、历史、预算）          。

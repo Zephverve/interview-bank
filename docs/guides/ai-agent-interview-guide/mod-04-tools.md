@@ -36,16 +36,16 @@ Function Calling（函数调用）指：大语言模型在生成回复时，不�
 你的代码解析后执行本地函数，再以 role=tool 的消息把结果追加到对话里，再次请求模型生
 成面向用户的自然语言答案。
 原理详解
-## 1. 首轮： system + user + tools → 模型可能返回 assistant + tool_calls 。
+#### 1. 首轮： system + user + tools → 模型可能返回 assistant + tool_calls 。
 
-## 2. 执行：应用根据 name 路由到 Python 函数， arguments 反序列化后调用。
+#### 2. 执行：应用根据 name 路由到 Python 函数， arguments 反序列化后调用。
 
-## 3. 次轮：把每条工具结果作为 tool 消息（带 tool_call_id ）写回，再请求 → 模型综合工
+#### 3. 次轮：把每条工具结果作为 tool 消息（带 tool_call_id ）写回，再请求 → 模型综合工
 
    具输出作答。
-## 4. 并行：若模型一次返回多个 tool_calls ，可并行执行（注意线程安全与副作用）。
+#### 4. 并行：若模型一次返回多个 tool_calls ，可并行执行（注意线程安全与副作用）。
 
-## 5. 流式：流式响应里 tool_calls 可能分片到达，需要增量拼接 arguments 。
+#### 5. 流式：流式响应里 tool_calls 可能分片到达，需要增量拼接 arguments 。
 
 面试 Q1：OpenAI 的 Function Calling 大致流程是什么？
 标准答案（A）：客户端把工具定义（名称、描述、参数 JSON Schema）随对话发给 API；模型在
@@ -75,14 +75,9 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
    复杂结构可用 object 、 array 、 enum 、 oneOf 等；但过于复杂的 Schema 可能增加模
    型填错概率，可适当拆分多个小函数。
 面试 Q2：为什么用 JSON Schema 描述参数？
-**A：**三方面——（1）跨语言标准，各 SDK 统一；（2）可自动校验，避免脏参数进业务；（3）作为
-模型「字段说明」，减少胡编参数名。缺点是 Schema 过长会占 token，需要精简描述或工具路
-由。
-追问应对
-   问：必填字段怎么表示？
-   答：在 JSON Schema 里用 required: ["a","b"] ，同时 properties 里声明各字段
-    type 。OpenAI 工具格式与 JSON Schema Draft 兼容（具体以厂商文档为准）。
-
+<div class="guide-answer">
+<p>三方面——（1）跨语言标准，各 SDK 统一；（2）可自动校验，避免脏参数进业务；（3）作为模型「字段说明」，减少胡编参数名。缺点是 Schema 过长会占 token，需要精简描述或工具路由。追问应对问：必填字段怎么表示？答：在 JSON Schema 里用 required: ["a","b"] ，同时 properties 里声明各字段type 。OpenAI 工具格式与 JSON Schema Draft 兼容（具体以厂商文档为准）。</p>
+</div>
 ### 1.4 模型如何决定调用哪个函数
 
 概念解释
@@ -95,10 +90,9 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
   系统提示可约束：「涉及计算必须用 calculate 」。
   部分实现会做两阶段：先小模型/分类器选工具，再大模型填参（见「工具路由」）。
 面试 Q3：模型选错工具怎么办？
-**A：**工程上（1）优化 description 与示例边界；（2）工具路由缩小候选集；（3）执行前做规则
-校验或二次确认；（4）对高风险操作要求人类确认；（5）记录 bad case 做 prompt 迭代。不能
-假设模型 100% 正确。
-
+<div class="guide-answer">
+<p>工程上（1）优化 description 与示例边界；（2）工具路由缩小候选集；（3）执行前做规则校验或二次确认；（4）对高风险操作要求人类确认；（5）记录 bad case 做 prompt 迭代。不能假设模型 100% 正确。</p>
+</div>
 ### 1.5 参数提取与验证
 
 概念解释
@@ -111,9 +105,9 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
    对数字、日期做规范化（时区）。
    失败策略：返回错误信息给模型「请重试」或降级为只读工具。
 面试 Q4：如何做参数校验？
-**A：**分层——语法层 json.loads ；结构层 jsonschema.validate ；语义层业务函数（如用户
-ID 是否存在）；安全层鉴权与输入清洗（见第 6 节）。
-
+<div class="guide-answer">
+<p>分层——语法层 json.loads ；结构层 jsonschema.validate ；语义层业务函数（如用户ID 是否存在）；安全层鉴权与输入清洗（见第 6 节）。</p>
+</div>
 ### 1.6 完整代码示例（OpenAI API 调用）
 
 下面示例使用 OpenAI 官方 Python SDK 风格（需安装 openai ，并设置环境变量
@@ -228,9 +222,9 @@ e:
   与纯 Function Calling 映射：把同一套元数据转成各厂商 API 需要的 tools 格式（适配
   层）。
 面试 Q5：Tool 与业务里的普通 Python 函数有何不同？
-**A：**Tool 多了面向模型的元数据（描述、Schema）和统一执行接口（记录日志、超时、权限）。
-业务函数关注领域逻辑；Tool 是 Agent 可调度的「外壳」。
-
+<div class="guide-answer">
+<p>Tool 多了面向模型的元数据（描述、Schema）和统一执行接口（记录日志、超时、权限）。业务函数关注领域逻辑；Tool 是 Agent 可调度的「外壳」。</p>
+</div>
 ### 2.2 工具描述的最佳实践
 
 概念解释
@@ -264,9 +258,9 @@ description
  超大结果需摘要或分页（再提供 fetch_more 工具），避免撑爆上下文。
   二进制内容应转为文本描述或 URL，不要直接塞原始字节。
 面试 Q6：工具返回 10MB 日志怎么办？
-**A：**不应直接返回。应（1）截断 + 摘要；（2）写入对象存储返回链接；（3）提供 grep_in_log
-等缩小工具；（4）向量索引仅检索相关片段。
-
+<div class="guide-answer">
+<p>不应直接返回。应（1）截断 + 摘要；（2）写入对象存储返回链接；（3）提供 grep_in_log等缩小工具；（4）向量索引仅检索相关片段。</p>
+</div>
 ### 2.5 错误处理与重试
 
 概念解释
@@ -336,10 +330,9 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
   Client 负责能力协商、把 Server 工具映射为模型可用的工具列表（与 Function Calling 衔
   接）。
 面试 Q7：MCP 里 Client 和你在 OpenAI 里写的「执行工具的 Python 代码」是什么关系？
-**A：**OpenAI 场景下你手写 run_tool ；MCP 下 Client 把远端/子进程 Server 的工具列表拉平，
-调用时按协议发 RPC，结果再转成 tool 消息。你仍要写 Host 逻辑，但工具实现可独立进程、
-独立语言。
-
+<div class="guide-answer">
+<p>OpenAI 场景下你手写 run_tool ；MCP 下 Client 把远端/子进程 Server 的工具列表拉平，调用时按协议发 RPC，结果再转成 tool 消息。你仍要写 Host 逻辑，但工具实现可独立进程、独立语言。</p>
+</div>
 ### 3.3 MCP vs Function Calling 的区别
 
   维度              Function Calling                 MCP
@@ -401,9 +394,9 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
   安全边界：敏感系统只对内网 Server 开放，模型不直连数据库。
   合规：在 Server 侧落日志与审批，比散落在每个 Agent 代码里更可控。
 面试 Q8：企业为什么愿意接 MCP 而不是每个业务线自己写 Function？
-**A：**降低重复建设、统一安全与观测、加快试点（换模型不换工具链）、利于平台组与业务组分
-工。
-
+<div class="guide-answer">
+<p>降低重复建设、统一安全与观测、加快试点（换模型不换工具链）、利于平台组与业务组分工。</p>
+</div>
 ## 4. 工具路由（Tool Routing）
 
 ### 4.1 当工具数量多时如何高效选择
@@ -530,9 +523,9 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
 原理详解
   对长事务用 Saga 或幂等重试；对 AI 步骤用「检查点」持久化状态。
 面试 Q10：并行与串行如何取舍？
-**A：**读多且无依赖并行；有写冲突、强一致、或后一步参数必须来自上一步精确字段时串行；可并
-行读再串行写（Quorum 读/写视业务而定）。
-
+<div class="guide-answer">
+<p>读多且无依赖并行；有写冲突、强一致、或后一步参数必须来自上一步精确字段时串行；可并行读再串行写（Quorum 读/写视业务而定）。</p>
+</div>
 ### 5.6 代码示例（简单编排：先路由再并行）
 
 ```python
@@ -610,9 +603,9 @@ def orchestrate(user_email: str) -> str:
 概念解释
 记录：时间、用户、工具名、参数摘要、结果状态、模型请求 ID。用于合规与事后追溯。
 面试 Q11：如何防止模型通过工具泄露敏感数据？
-**A：**最小权限、结果脱敏（掩码）、行级权限、禁止把密钥放进工具返回值、敏感字段仅后端可见
-且不出现在模型上下文。
-
+<div class="guide-answer">
+<p>最小权限、结果脱敏（掩码）、行级权限、禁止把密钥放进工具返回值、敏感字段仅后端可见且不出现在模型上下文。</p>
+</div>
 ## 7. 常见工具实现
 
 ### 7.1 搜索工具（Web Search）
@@ -720,79 +713,115 @@ token。
 
 ```
 
-## 8. 综合面试题精选（≥15 题）
+#### 8. 综合面试题精选（≥15 题）
 
   下列题目覆盖前文各模块，便于系统复习。背诵时建议理解「为什么」，而非死记句子。
 
-**Q1：Function Calling 和「让模型输出 JSON」有什么本质区别？**
-**A：**Function Calling 是厂商提供的结构化工具调用通道（字段名、类型、与对话轮次绑定）；纯
-JSON 输出依赖 prompt 约束，解析脆弱、易混入闲聊文本。FC 更利于多轮 tool 消息与并行调用
-ID 对齐。实践中也可结合：FC 负责调度，JSON 负责业务负载。
-追问：若模型不支持 FC 怎么办？——可用 JSON mode / 约束解码 / 后处理抽取；或用小模型
-做「动作分类」。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q1</span>Function Calling 和「让模型输出 JSON」有什么本质区别？</p>
+<div class="guide-answer">
+<p>Function Calling 是厂商提供的结构化工具调用通道（字段名、类型、与对话轮次绑定）；纯JSON 输出依赖 prompt 约束，解析脆弱、易混入闲聊文本。FC 更利于多轮 tool 消息与并行调用ID 对齐。实践中也可结合：FC 负责调度，JSON 负责业务负载。</p>
+</div>
+</div>
 
-**Q2：描述 OpenAI 兼容接口里 tool_calls 与 tool 消息的对应关系。**
-**A：**每条 assistant.tool_calls[] 有唯一 id ；执行后每条结果作为一条 role=tool 消
-息，且必须带相同 tool_call_id ，保证多并行调用时不错配。
+<p class="guide-followup"><span class="guide-followup-label">追问</span>若模型不支持 FC 怎么办？——可用 JSON mode / 约束解码 / 后处理抽取；或用小模型做「动作分类」。</p>
 
-**Q3：为什么工具 description 比函数名更重要？**
-**A：**模型主要依据自然语言描述区分相似工具；函数名更多是给程序路由用。描述应写清边界与反
-例。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q2</span>描述 OpenAI 兼容接口里 tool_calls 与 tool 消息的对应关系。</p>
+<div class="guide-answer">
+<p>每条 assistant.tool_calls[] 有唯一 id ；执行后每条结果作为一条 role=tool 消息，且必须带相同 tool_call_id ，保证多并行调用时不错配。</p>
+</div>
+</div>
 
-**Q4：如何设计 JSON Schema 降低模型填错概率？**
-**A：**减少可选参数模糊性；用 enum ；在 description 给示例；避免深层嵌套；必要时分拆多
-个函数。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q3</span>为什么工具 description 比函数名更重要？</p>
+<div class="guide-answer">
+<p>模型主要依据自然语言描述区分相似工具；函数名更多是给程序路由用。描述应写清边界与反例。</p>
+</div>
+</div>
 
-**Q5：LangChain Tool 的 docstring 为什么要写「何时不要用」？**
-**A：**减少误触发（false positive），尤其在工具功能重叠时，这是线上质量关键。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q4</span>如何设计 JSON Schema 降低模型填错概率？</p>
+<div class="guide-answer">
+<p>减少可选参数模糊性；用 enum ；在 description 给示例；避免深层嵌套；必要时分拆多个函数。</p>
+</div>
+</div>
 
-**Q6：MCP 解决的主要痛点是什么？**
-**A：**工具集成碎片化、重复建设、难以跨产品复用；MCP 提供标准边界（Server）与传输，使工
-具像外设一样即插即用（在生态支持前提下）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q5</span>LangChain Tool 的 docstring 为什么要写「何时不要用」？</p>
+<div class="guide-answer">
+<p>减少误触发（false positive），尤其在工具功能重叠时，这是线上质量关键。</p>
+</div>
+</div>
 
-**Q7：MCP 与 Function Calling 是替代关系吗？**
-**A：**不是。FC 是模型侧表达；MCP 是工具侧集成。Host 常将 MCP 工具列表映射为 FC 的
- tools 。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q6</span>MCP 解决的主要痛点是什么？</p>
+<div class="guide-answer">
+<p>工具集成碎片化、重复建设、难以跨产品复用；MCP 提供标准边界（Server）与传输，使工具像外设一样即插即用（在生态支持前提下）。</p>
+</div>
+</div>
 
-**Q8：工具路由什么时候必须上？**
-**A：**当工具数量导致上下文膨胀、误选率上升或延迟/成本明显增加时；具体阈值依赖模型与描述
-长度，常见从几十起考虑。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q7</span>MCP 与 Function Calling 是替代关系吗？</p>
+<div class="guide-answer">
+<p>不是。FC 是模型侧表达；MCP 是工具侧集成。Host 常将 MCP 工具列表映射为 FC 的tools 。</p>
+</div>
+</div>
 
-**Q9：向量路由的缺陷与改进？**
-**A：**缺陷：描述不佳则 embedding 不准；OOV 专有名词弱。改进：混合检索、同义词表、用户域
-特征、日志驱动迭代描述、加轻量分类器。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q8</span>工具路由什么时候必须上？</p>
+<div class="guide-answer">
+<p>当工具数量导致上下文膨胀、误选率上升或延迟/成本明显增加时；具体阈值依赖模型与描述长度，常见从几十起考虑。</p>
+</div>
+</div>
 
-**Q10：并行工具调用要注意什么？**
-**A：**幂等性、后端并发限制、数据竞争（写操作）、结果合并顺序、部分失败重试策略。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q9</span>向量路由的缺陷与改进？</p>
+<div class="guide-answer">
+<p>缺陷：描述不佳则 embedding 不准；OOV 专有名词弱。改进：混合检索、同义词表、用户域特征、日志驱动迭代描述、加轻量分类器。</p>
+</div>
+</div>
 
-**Q11：什么是工具编排中的「依赖 DAG」？**
-**A：**把工具调用当节点，数据依赖当边；拓扑排序执行，避免环与竞态，便于失败重试与可视化监
-控。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q10</span>并行工具调用要注意什么？</p>
+<div class="guide-answer">
+<p>幂等性、后端并发限制、数据竞争（写操作）、结果合并顺序、部分失败重试策略。</p>
+</div>
+</div>
 
-**Q12：敏感操作为什么推荐「两阶段提交」式工具设计？**
-**A：**第一阶段生成草稿/待确认对象，第二阶段在用户确认后再真正执行，降低模型误触发损失。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q11</span>什么是工具编排中的「依赖 DAG」？</p>
+<div class="guide-answer">
+<p>把工具调用当节点，数据依赖当边；拓扑排序执行，避免环与竞态，便于失败重试与可视化监控。</p>
+</div>
+</div>
 
-**Q13：工具返回为什么要尽量结构化（JSON）？**
-**A：**便于模型解析下一步推理、便于程序校验与日志；纯自然语言易产生歧义。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q12</span>敏感操作为什么推荐「两阶段提交」式工具设计？</p>
+<div class="guide-answer">
+<p>第一阶段生成草稿/待确认对象，第二阶段在用户确认后再真正执行，降低模型误触发损失。</p>
+</div>
+</div>
 
-**Q14：如何做工具调用的权限控制？**
-**A：**会话绑定真实用户身份；服务端校验租户与角色；最小权限；敏感操作 HITL；不把长期密钥
-暴露给模型上下文。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q13</span>工具返回为什么要尽量结构化（JSON）？</p>
+<div class="guide-answer">
+<p>便于模型解析下一步推理、便于程序校验与日志；纯自然语言易产生歧义。</p>
+</div>
+</div>
 
-**Q15：代码执行工具如何做到基本安全？**
-**A：**沙箱隔离、资源与网络限制、禁用危险模块、超时、只读默认、审计；生产慎用。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q14</span>如何做工具调用的权限控制？</p>
+<div class="guide-answer">
+<p>会话绑定真实用户身份；服务端校验租户与角色；最小权限；敏感操作 HITL；不把长期密钥暴露给模型上下文。</p>
+</div>
+</div>
 
-Q16（加一）：审计日志至少记哪些字段？
-**A：**时间、trace/request id、用户/租户、工具名、参数摘要（脱敏）、结果状态、耗时、模型版
-本；合规场景保留策略与不可篡改存储视要求而定。
-
-Q17（加一）：Calculator 为什么禁止 eval ？
-**A：** eval 可执行任意 Python，等同于远程代码执行；应使用 AST 白名单或安全数学库。
-
-小结
- Function Calling：模型产出结构化调用意图，应用在本地执行并回传，是 Agent 的「手」。
- Tool 工程：描述、Schema、返回值与错误模式与路由同样重要。
- MCP：标准化工具与上下文连接，利于复用与治理。
- 路由与编排：解决规模与依赖问题；安全贯穿权限、输入、确认、限流与审计。
-建议结合自家业务画一张「用户请求 → 路由 → 工具 → 依赖 → 回传模型」的时序图，面试时能
-用白板讲清楚，比背诵定义更有说服力。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q15</span>代码执行工具如何做到基本安全？</p>
+<div class="guide-answer">
+<p>沙箱隔离、资源与网络限制、禁用危险模块、超时、只读默认、审计；生产慎用。Q16（加一）：审计日志至少记哪些字段？</p>
+<p>时间、trace/request id、用户/租户、工具名、参数摘要（脱敏）、结果状态、耗时、模型版本；合规场景保留策略与不可篡改存储视要求而定。Q17（加一）：Calculator 为什么禁止 eval ？</p>
+<p>eval 可执行任意 Python，等同于远程代码执行；应使用 AST 白名单或安全数学库。小结Function Calling：模型产出结构化调用意图，应用在本地执行并回传，是 Agent 的「手」。Tool 工程：描述、Schema、返回值与错误模式与路由同样重要。MCP：标准化工具与上下文连接，利于复用与治理。路由与编排：解决规模与依赖问题；安全贯穿权限、输入、确认、限流与审计。建议结合自家业务画一张「用户请求 → 路由 → 工具 → 依赖 → 回传模型」的时序图，面试时能用白板讲清楚，比背诵定义更有说服力。</p>
+</div>
+</div>

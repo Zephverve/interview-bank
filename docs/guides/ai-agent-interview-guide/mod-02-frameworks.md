@@ -113,14 +113,19 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 
 ### 1.3 面试问题（Q）+ 标准答案（A）
 
-**Q1：ReAct 和「普通 CoT 提示」有什么本质区别？**
-**A：** 普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与 可执行行动
-绑定，每一步行动后都有 真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q1</span>ReAct 和「普通 CoT 提示」有什么本质区别？</p>
+<div class="guide-answer">
+<p>普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与 可执行行动绑定，每一步行动后都有 真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。</p>
+</div>
+</div>
 
-**Q2：ReAct 为什么要显式写出 Thought？**
-**A：** 显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、
-学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定
-地选择 Action。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q2</span>ReAct 为什么要显式写出 Thought？</p>
+<div class="guide-answer">
+<p>显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定地选择 Action。</p>
+</div>
+</div>
 
 ### 1.4 追问及应对
 
@@ -310,13 +315,19 @@ Re-planning 做法：
 
 ### 2.3 面试问题（Q）+ 标准答案（A）
 
-**Q3：Plan-and-Execute 相比 ReAct 什么时候更占优？**
-**A：** 当任务 步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研
-提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长 动态工具交互、逐步探索。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q3</span>Plan-and-Execute 相比 ReAct 什么时候更占优？</p>
+<div class="guide-answer">
+<p>当任务 步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长 动态工具交互、逐步探索。</p>
+</div>
+</div>
 
-**Q4：Re-planning 会不会导致「计划抖动」？怎么缓解？**
-**A：** 会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、
-在 state 中保留已验证事实、对计划变更加 一致性检查（新旧计划差异说明）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q4</span>Re-planning 会不会导致「计划抖动」？怎么缓解？</p>
+<div class="guide-answer">
+<p>会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、在 state 中保留已验证事实、对计划变更加 一致性检查（新旧计划差异说明）。</p>
+</div>
+</div>
 
 ### 2.4 追问及应对
 
@@ -427,9 +438,12 @@ Reflexion 的核心是：做完不等于结束——还要 评估做得好不好
 
 ### 3.3 面试问题（Q）+ 标准答案（A）
 
-**Q5：Reflexion 和「让模型自己检查一遍」有什么不同？**
-**A：** 自检往往是一次性的；Reflexion 把评估与反思 显式化、结构化，并 跨尝试复用 反思文本，
-形成可累积的「策略记忆」。工程上更易控制与评测。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q5</span>Reflexion 和「让模型自己检查一遍」有什么不同？</p>
+<div class="guide-answer">
+<p>自检往往是一次性的；Reflexion 把评估与反思 显式化、结构化，并 跨尝试复用 反思文本，形成可累积的「策略记忆」。工程上更易控制与评测。</p>
+</div>
+</div>
 
 ### 3.4 追问及应对
 
@@ -498,9 +512,12 @@ LATS 把 Agent 的决策看成在 树 上搜索：每个节点是一种「状态
 
 ### 4.3 面试问题（Q）+ 标准答案（A）
 
-**Q6：LATS 相比单次 ReAct 多在哪里成本？换来什么收益？**
-**A：** 成本主要来自 多分支扩展 与 多次评估/模拟。收益是 更系统的探索，降低「一条路径走到
-黑」的局部最优风险，适合决策点多的任务。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q6</span>LATS 相比单次 ReAct 多在哪里成本？换来什么收益？</p>
+<div class="guide-answer">
+<p>成本主要来自 多分支扩展 与 多次评估/模拟。收益是 更系统的探索，降低「一条路径走到黑」的局部最优风险，适合决策点多的任务。</p>
+</div>
+</div>
 
 ### 4.4 追问及应对
 
@@ -566,25 +583,31 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 关键点：停止条件（达到最终答案）、解析错误处理、最大迭代次数。
 ### 5.2.3 自定义 Agent 的步骤（通用 checklist）
 
-## 1. 定义 Tools（清晰 description 与 schema）。
+#### 1. 定义 Tools（清晰 description 与 schema）。
 
-## 2. 选择 提示模板（ReAct JSON / OpenAI tool calling）。
+#### 2. 选择 提示模板（ReAct JSON / OpenAI tool calling）。
 
-## 3. 选择 模型 与 输出解析器（防止格式漂移）。
+#### 3. 选择 模型 与 输出解析器（防止格式漂移）。
 
-## 4. 组装 Agent + AgentExecutor（设置 max_iterations 、 handle_parsing_errors ）。
+#### 4. 组装 Agent + AgentExecutor（设置 max_iterations 、 handle_parsing_errors ）。
 
 ## 5. 评测与加固（日志、重试、工具超时）。
 
 ### 5.3 面试问题（Q）+ 标准答案（A）
 
-**Q7：LangChain 里 AgentExecutor 解决的核心问题是什么？**
-**A：** 把「模型决策 → 工具执行 → 结果回填 → 再决策」的 控制流 标准化，统一处理 迭代限制、
-错误处理、中间消息结构，让开发者专注工具与提示。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q7</span>LangChain 里 AgentExecutor 解决的核心问题是什么？</p>
+<div class="guide-answer">
+<p>把「模型决策 → 工具执行 → 结果回填 → 再决策」的 控制流 标准化，统一处理 迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。</p>
+</div>
+</div>
 
-**Q8：工具描述为什么重要？**
-**A：** Agent 依赖描述进行 工具选择；描述不清会导致错选工具或参数幻觉。应包含 用途、输入输
-出、边界条件、示例。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q8</span>工具描述为什么重要？</p>
+<div class="guide-answer">
+<p>Agent 依赖描述进行 工具选择；描述不清会导致错选工具或参数幻觉。应包含 用途、输入输出、边界条件、示例。</p>
+</div>
+</div>
 
 ### 5.4 追问及应对
 
@@ -663,13 +686,19 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 
 ### 6.3 面试问题（Q）+ 标准答案（A）
 
-**Q9：什么时候选 LangGraph 而不是 AgentExecutor？**
-**A：** 当流程不是「单一工具循环」，而是需要 多阶段流水线、条件路由、回环修复、人工审核节
-点、并行任务 时，用图编排更清晰可维护。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q9</span>什么时候选 LangGraph 而不是 AgentExecutor？</p>
+<div class="guide-answer">
+<p>当流程不是「单一工具循环」，而是需要 多阶段流水线、条件路由、回环修复、人工审核节点、并行任务 时，用图编排更清晰可维护。</p>
+</div>
+</div>
 
-**Q10：LangGraph 的状态更新为什么要谨慎设计？**
-**A：** 多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确
-每个节点的写入职责。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q10</span>LangGraph 的状态更新为什么要谨慎设计？</p>
+<div class="guide-answer">
+<p>多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确每个节点的写入职责。</p>
+</div>
+</div>
 
 ### 6.4 追问及应对
 
@@ -742,13 +771,19 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 
 ### 7.3 面试问题（Q）+ 标准答案（A）
 
-**Q11：多 Agent 一定比单 Agent 更强吗？**
-**A：** 不一定。更多 Agent 可能带来 协调成本、错误级联、对话冗长。当任务可清晰分工且有评估
-机制时收益大；否则单 Agent + 强工具可能更简单高效。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q11</span>多 Agent 一定比单 Agent 更强吗？</p>
+<div class="guide-answer">
+<p>不一定。更多 Agent 可能带来 协调成本、错误级联、对话冗长。当任务可清晰分工且有评估机制时收益大；否则单 Agent + 强工具可能更简单高效。</p>
+</div>
+</div>
 
-**Q12：如何避免多 Agent「互相附和」？**
-**A：** 引入 独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确 停止条件 与 异
-议处理流程。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q12</span>如何避免多 Agent「互相附和」？</p>
+<div class="guide-answer">
+<p>引入 独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确 停止条件 与 异议处理流程。</p>
+</div>
+</div>
 
 ### 7.4 追问及应对
 
@@ -774,69 +809,110 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 
 ```
 
-## 8. 模块综合：15+ 道高频面试题速查
+#### 8. 模块综合：15+ 道高频面试题速查
 
  下列题目覆盖全模块，可在复习时自问自答；每题后附 标准答法要点。
-**Q13：请用一句话解释 ReAct。**
-**A：** 让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接
-地到外部环境。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q13</span>请用一句话解释 ReAct。</p>
+<div class="guide-answer">
+<p>让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。</p>
+</div>
+</div>
 
-**Q14：ReAct 轨迹里，哪一部分必须由系统生成？为什么？**
-**A：** Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q14</span>ReAct 轨迹里，哪一部分必须由系统生成？为什么？</p>
+<div class="guide-answer">
+<p>Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。</p>
+</div>
+</div>
 
-**Q15：Plan-and-Execute 的最大风险是什么？如何缓解？**
-**A：** 风险是 错误计划污染全局；缓解是 可验证子步骤、重规划、强 Planner 约束输出 与 执行期
-监控。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q15</span>Plan-and-Execute 的最大风险是什么？如何缓解？</p>
+<div class="guide-answer">
+<p>风险是 错误计划污染全局；缓解是 可验证子步骤、重规划、强 Planner 约束输出 与 执行期监控。</p>
+</div>
+</div>
 
-**Q16：Reflexion 的关键产出是什么？它如何提升下一轮？**
-**A：** 关键是 高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q16</span>Reflexion 的关键产出是什么？它如何提升下一轮？</p>
+<div class="guide-answer">
+<p>关键是 高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。</p>
+</div>
+</div>
 
-**Q17：LATS 与 ReAct 在「探索能力」上如何对比？**
-**A：** ReAct 通常主路径贪心推进；LATS/MCTS 通过 多分支搜索与价值回传 更系统探索决策空间
-（成本更高）。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q17</span>LATS 与 ReAct 在「探索能力」上如何对比？</p>
+<div class="guide-answer">
+<p>ReAct 通常主路径贪心推进；LATS/MCTS 通过 多分支搜索与价值回传 更系统探索决策空间（成本更高）。</p>
+</div>
+</div>
 
-**Q18：LangChain AgentExecutor 中为什么要限制 max_iterations？**
-**A：** 防止工具循环、解析失败导致的 无限循环，并控制成本与延迟。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q18</span>LangChain AgentExecutor 中为什么要限制 max_iterations？</p>
+<div class="guide-answer">
+<p>防止工具循环、解析失败导致的 无限循环，并控制成本与延迟。</p>
+</div>
+</div>
 
-**Q19：描述 LangGraph 的条件边解决的业务问题。**
-**A：** 根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q19</span>描述 LangGraph 的条件边解决的业务问题。</p>
+<div class="guide-answer">
+<p>根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。</p>
+</div>
+</div>
 
-**Q20：什么时候更建议「单 Agent + 强工具」，而不是多 Agent？**
-**A：** 任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q20</span>什么时候更建议「单 Agent + 强工具」，而不是多 Agent？</p>
+<div class="guide-answer">
+<p>任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。</p>
+</div>
+</div>
 
-**Q21：多 Agent 系统的「评估器」可以有哪些实现？**
-**A：** 单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q21</span>多 Agent 系统的「评估器」可以有哪些实现？</p>
+<div class="guide-answer">
+<p>单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。</p>
+</div>
+</div>
 
-**Q22：ReAct Prompt 为什么要给 few-shot 示例？**
-**A：** 提升模型对 固定格式 的遵从度，降低解析失败率，稳定工具调用。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q22</span>ReAct Prompt 为什么要给 few-shot 示例？</p>
+<div class="guide-answer">
+<p>提升模型对 固定格式 的遵从度，降低解析失败率，稳定工具调用。</p>
+</div>
+</div>
 
-**Q23：Re-planning 与 Reflexion 都「改正错误」，区别是什么？**
-**A：** Re-planning 偏 计划结构 的调整（下一步怎么走）；Reflexion 偏 策略/经验 的语言化总结并
-跨轮复用。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q23</span>Re-planning 与 Reflexion 都「改正错误」，区别是什么？</p>
+<div class="guide-answer">
+<p>Re-planning 偏 计划结构 的调整（下一步怎么走）；Reflexion 偏 策略/经验 的语言化总结并跨轮复用。</p>
+</div>
+</div>
 
-**Q24：LangGraph 相比普通脚本编排的核心收益？**
-**A：** 把流程 显式化 为图，分支/回环/人机节点一等公民，更易维护与观测。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q24</span>LangGraph 相比普通脚本编排的核心收益？</p>
+<div class="guide-answer">
+<p>把流程 显式化 为图，分支/回环/人机节点一等公民，更易维护与观测。</p>
+</div>
+</div>
 
-**Q25：如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进？**
-**A：** 模型可能被噪声误导；改进包括 工具侧清洗/结构化输出、二次检索、在 Thought 里强制 引
-用证据片段、增加 校验工具。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q25</span>如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进？</p>
+<div class="guide-answer">
+<p>模型可能被噪声误导；改进包括 工具侧清洗/结构化输出、二次检索、在 Thought 里强制 引用证据片段、增加 校验工具。</p>
+</div>
+</div>
 
-**Q26：你如何为一个企业场景选择 ReAct vs Plan-and-Execute？**
-**A：** 看任务是否 强流程、是否需要 可审计计划书、是否允许 前期规划成本；需要强工具交互与动
-态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q26</span>你如何为一个企业场景选择 ReAct vs Plan-and-Execute？</p>
+<div class="guide-answer">
+<p>看任务是否 强流程、是否需要 可审计计划书、是否允许 前期规划成本；需要强工具交互与动态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。</p>
+</div>
+</div>
 
-**Q27：为什么说「工具描述」是 Agent 的接口设计？**
-**A：** LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。
-
-附录：对比速记表
-
-        框架/概念           关键词                          典型循环
- ReAct              推理+行动交替            Thought→Action→Observation
- Plan-and-Execute   先计划后执行             Plan→Execute→(Replan)
- Reflexion          反思记忆               Act→Eval→Reflect→Retry
- LATS               树搜索 / MCTS         Select→Expand→Evaluate→Backprop
- LangChain Agent    Executor 循环        decide→tool→observe
- LangGraph          图编排                node→conditional edge
- 多 Agent            角色协作               对话/流水线
-
-文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。
+<div class="guide-qa">
+<p class="guide-question"><span class="guide-q-label">Q27</span>为什么说「工具描述」是 Agent 的接口设计？</p>
+<div class="guide-answer">
+<p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→ObservationPlan-and-Execute   先计划后执行             Plan→Execute→(Replan)Reflexion          反思记忆               Act→Eval→Reflect→RetryLATS               树搜索 / MCTS         Select→Expand→Evaluate→BackpropLangChain Agent    Executor 循环        decide→tool→observeLangGraph          图编排                node→conditional edge多 Agent            角色协作               对话/流水线文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p>
+</div>
+</div>
