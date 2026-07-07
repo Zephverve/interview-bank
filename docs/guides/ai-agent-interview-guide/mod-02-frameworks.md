@@ -1,33 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 02 · 核心框架
+title: 02 · 核心框架
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 02 核心框架
+<p class="guide-chapter-badge">02 · 核心框架</p>
 
-02 核心框架（AI Agent 面试八股文 · 模块二）
-
-  面向零基础读者：本模块系统梳理主流 Agent「推理—行动—编排」框架。建议先理解
-  ReAct 的「一步想、一步做」，再对比 Plan-and-Execute 的「先想全局、再分步做」，最
-  后把 LangChain / LangGraph / 多 Agent 当作「工程落地方式」来记忆。
-
-## 1. ReAct 框架
-
-## 2. Plan-and-Execute 框架
-
-## 3. Reflexion 框架
-
-## 4. LATS（Language Agent Tree Search）
-
-## 5. LangChain Agent 实现
-
-## 6. LangGraph 状态机
-
-## 7. AutoGen / CrewAI 等多 Agent 框架
-
-## 8. 模块综合：15+ 道高频面试题速查
+<p class="guide-lead">面向零基础读者：本模块系统梳理主流 Agent「推理—行动—编排」框架。建议先理解 ReAct 的「一步想、一步做」，再对比 Plan-and-Execute 的「先想全局、再分步做」，最 后把 LangChain / LangGraph / 多 Agent 当作「工程落地方式」来记忆。</p>
 
 ## 1. ReAct 框架（重点中的重点）
 

@@ -1402,9 +1402,10 @@ ${body}
   return published
 }
 
-function writeGuidePage(outPath, title, body) {
+function writeGuidePage(outPath, title, body, options = {}) {
+  const hideTitle = options.hideTitle ? '\ntitleTemplate: false' : ''
   const page = `---
-title: ${title}
+title: ${title}${hideTitle}
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
@@ -1413,6 +1414,112 @@ aside: true
 ${body.trim()}
 `
   fs.writeFileSync(outPath, page, 'utf-8')
+}
+
+function stripDuplicateTocHeadings(text) {
+  const lines = text.split('\n')
+  let i = 0
+
+  while (i < lines.length) {
+    const line = lines[i]
+    if (!line.startsWith('## ')) break
+
+    let j = i + 1
+    while (j < lines.length && !lines[j].trim()) j++
+    if (j >= lines.length) break
+    if (lines[j].startsWith('## ')) {
+      i = j
+      continue
+    }
+    break
+  }
+
+  return lines.slice(i).join('\n').trim()
+}
+
+/** 去掉正文重复大标题，提取导语 */
+function normalizeGuideChapterBody(body, sidebar) {
+  let lines = body.trim().split('\n')
+
+  if (lines[0]?.startsWith('# ')) lines.shift()
+  while (lines.length && !lines[0].trim()) lines.shift()
+
+  if (lines[0] && !lines[0].trim().startsWith('#') && lines[0].trim().length < 100) {
+    const first = lines[0].trim()
+    const label = sidebar.replace(/^\d{2}\s*·\s*/, '')
+    if (first.includes(label.slice(0, 6)) || first.length < 60) lines.shift()
+  }
+  while (lines.length && !lines[0].trim()) lines.shift()
+
+  const lead = []
+  while (lines.length) {
+    const t = lines[0].trim()
+    if (!t) break
+    if (t.startsWith('#')) break
+    if (t.startsWith('**Q') || t.startsWith('Q1') || t.startsWith('Q2')) break
+    if (/^\d+\.\s/.test(t) && t.length < 80) break
+    lead.push(t)
+    lines.shift()
+  }
+  while (lines.length && !lines[0].trim()) lines.shift()
+
+  lines = stripDuplicateTocHeadings(lines.join('\n')).split('\n')
+
+  let result = `<p class="guide-chapter-badge">${sidebar}</p>\n\n`
+  if (lead.length) {
+    result += `<p class="guide-lead">${lead.join(' ')}</p>\n\n`
+  }
+  result += lines.join('\n')
+  return result.trim()
+}
+
+function formatChapterDesc(charCount) {
+  if (charCount >= 10000) return `约 ${Math.round(charCount / 1000)}k 字`
+  if (charCount >= 1000) return `约 ${(charCount / 1000).toFixed(1)}k 字`
+  return ''
+}
+
+function buildGuideIndexBody(guide, chapters, totalChars) {
+  const gridItems = chapters
+    .map((ch) => {
+      const desc = formatChapterDesc(ch.charCount)
+      return `    { slug: '${ch.slug}', title: '${ch.sidebar.replace(/'/g, "\\'")}', desc: '${desc}' }`
+    })
+    .join(',\n')
+
+  return `<GuideHero
+  title="${guide.title}"
+  subtitle="从零到 Offer · 面向小白的完整 AI Agent 面试准备"
+  version="${guide.version || ''}"
+  date="${guide.date || ''}"
+  :chapters="${chapters.length}"
+  words="${Math.round(totalChars / 10000)}万+"
+  :pages="${guide.pages || 0}"
+/>
+
+<p class="guide-note">PDF 全文转换，16 章完整收录不省略。点击卡片进入章节，左栏可快速跳转；需要离线阅读见文末 PDF 下载。</p>
+
+## 章节目录
+
+<GuideChapterGrid
+  base="/guides/${guide.slug}/"
+  :chapters="[
+${gridItems}
+  ]"
+/>
+
+<p class="section-note">建议路径：总览 → 模块 01–09 八股 → 招聘分析 / 开源笔记 → 简历 & STAR → 项目问答集（92 题）。</p>
+
+## 下载原版 PDF
+
+<PdfViewer
+  pdf="/guides/${guide.pdfFile}"
+  title="${guide.title}"
+  version="${guide.version || ''}"
+  date="${guide.date || ''}"
+  :pages="${guide.pages || 0}"
+/>
+`
 }
 
 function publishSplitGuide(guide, srcDir) {
@@ -1429,33 +1536,18 @@ function publishSplitGuide(guide, srcDir) {
   })
 
   const totalChars = chapters.reduce((n, c) => n + c.charCount, 0)
-  const nav = chapters.map((ch) => `- [${ch.sidebar}](./${ch.slug}.md)`).join('\n')
+  const indexBody = buildGuideIndexBody(guide, chapters, totalChars)
 
-  const indexBody = `${guide.desc}（${guide.version || ''} · ${guide.date || ''} · 共 ${chapters.length} 章 · 约 ${totalChars.toLocaleString('zh-CN')} 字 · PDF 原文件约 ${guide.pages || '?'} 页）
-
-> 以下内容为 PDF **全文转换**，16 章完整收录，不省略。左栏可逐章阅读；需要离线时可下载原版 PDF。
-
-## 章节目录
-
-${nav}
-
-<p class="section-note">建议路径：总览 → 模块 01–09 八股 → 招聘分析 / 开源笔记 → 简历 & STAR → 项目问答集（92 题）。</p>
-
-## 下载原版 PDF
-
-<PdfViewer
-  pdf="/guides/${guide.pdfFile}"
-  title="${guide.title}"
-  version="${guide.version || ''}"
-  date="${guide.date || ''}"
-  :pages="${guide.pages || 0}"
-/>
-`
-
-  writeGuidePage(path.join(outDir, 'index.md'), guide.title, indexBody)
+  writeGuidePage(path.join(outDir, 'index.md'), guide.title, indexBody, { hideTitle: true })
 
   for (const ch of chapters) {
-    writeGuidePage(path.join(outDir, `${ch.slug}.md`), `${guide.title} · ${ch.sidebar}`, ch.body)
+    const normalized = normalizeGuideChapterBody(ch.body, ch.sidebar)
+    writeGuidePage(
+      path.join(outDir, `${ch.slug}.md`),
+      ch.sidebar,
+      normalized,
+      { hideTitle: true }
+    )
   }
 
   const pdfSrc = guide.pdfSourceCandidates?.find((p) => fs.existsSync(p))

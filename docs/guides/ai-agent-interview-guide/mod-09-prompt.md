@@ -1,39 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 09 · Prompt 工程
+title: 09 · Prompt 工程
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 09 Prompt 工程
+<p class="guide-chapter-badge">09 · Prompt 工程</p>
 
-09 Prompt 工程（Prompt Engineering）
-
-   面向初学者的 AI Agent「Prompt 工程」面试八股文：从提示词结构、设计原则，到 Few-
-   shot、CoT、自我反思与结构化输出，再到 System Prompt、注入防御与 Agent 模板。
-   每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、实际 Prompt 示例。
-
-## 1. Prompt Engineering 基础
-
-## 2. Prompt 设计原则
-
-## 3. Few-shot Learning
-
-## 4. Chain-of-Thought（CoT）思维链
-
-## 5. 自我反思 Prompt
-
-## 6. 结构化输出
-
-## 7. System Prompt 设计
-
-## 8. Prompt 注入与防御
-
-## 9. Prompt 优化技巧
-
-## 10. Agent 中的核心 Prompt 模板
-
-## 11. 综合面试题精选（≥15 题）
+<p class="guide-lead">面向初学者的 AI Agent「Prompt 工程」面试八股文：从提示词结构、设计原则，到 Few- shot、CoT、自我反思与结构化输出，再到 System Prompt、注入防御与 Agent 模板。 每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、实际 Prompt 示例。</p>
 
 ## 1. Prompt Engineering 基础
 

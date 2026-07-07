@@ -1,32 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 01 · Agent 基础概念
+title: 01 · Agent 基础概念
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 01 AI Agent 基础概念
+<p class="guide-chapter-badge">01 · Agent 基础概念</p>
 
-01 AI Agent 基础概念（面试八股文）
-
-  面向零基础读者的系统梳理：每个知识点均包含「概念 + 原理 + 面试问答 + 追问 + 代码
-  （如适用）」。建议配合动手写一个小 Agent 循环加深理解。
-
-## 1. 什么是 AI Agent
-
-## 2. Agent vs LLM Chain vs ChatBot
-
-## 3. Agent 的核心组成
-
-## 4. Agent 的工作流程
-
-## 5. Agent 的分类
-
-## 6. Agent 的应用场景
-
-## 7. Agent 的挑战与局限
-
-## 8. 综合面试题库（15+ 题）
+<p class="guide-lead">面向零基础读者的系统梳理：每个知识点均包含「概念 + 原理 + 面试问答 + 追问 + 代码 （如适用）」。建议配合动手写一个小 Agent 循环加深理解。</p>
 
 ## 1. 什么是 AI Agent
 

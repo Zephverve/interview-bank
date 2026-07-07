@@ -1,39 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 03 · RAG 技术
+title: 03 · RAG 技术
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 03 RAG 技术
+<p class="guide-chapter-badge">03 · RAG 技术</p>
 
-03 RAG 技术（面试八股文 · 模块三）
-
-  面向初学者的系统梳理：每个主题尽量包含 概念、原理、面试问答、追问应对 与 Python
-  代码示例。
-  建议配合动手实验：同一批文档，对比「仅向量 / 混合检索 / +重排」的答案质量差异。
-
-## 1. RAG 基础
-
-## 2. 文档解析与预处理
-
-## 3. 文档分块策略（Chunking）
-
-## 4. 向量化（Embedding）
-
-## 5. 向量数据库
-
-## 6. 检索策略
-
-## 7. 重排序（Reranking）
-
-## 8. RAG 高级模式
-
-## 9. RAG 评估
-
-## 10. RAG 生产优化
-
-## 11. 综合面试题库（20+ 题）
+<p class="guide-lead">面向初学者的系统梳理：每个主题尽量包含 概念、原理、面试问答、追问应对 与 Python 代码示例。 建议配合动手实验：同一批文档，对比「仅向量 / 混合检索 / +重排」的答案质量差异。</p>
 
 ## 1. RAG 基础
 

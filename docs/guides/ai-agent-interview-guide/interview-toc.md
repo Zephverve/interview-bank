@@ -1,17 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 面试八股文 · 总目录
+title: 面试八股文 · 总目录
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# AI Agent 面试八股文 — 总目录
+<p class="guide-chapter-badge">面试八股文 · 总目录</p>
 
-AI Agent 面试八股文 -- 总目录
-
- 本目录包含 9 大模块的 AI Agent 面试八股文，覆盖从基础概念到工程实践的完整知识体
- 系。每个模块包含：概念解释、原理详解、面试问题、标准答案、追问应对、代码示例。合
- 计 200+ 道面试题。
+<p class="guide-lead">本目录包含 9 大模块的 AI Agent 面试八股文，覆盖从基础概念到工程实践的完整知识体 系。每个模块包含：概念解释、原理详解、面试问题、标准答案、追问应对、代码示例。合 计 200+ 道面试题。</p>
 
 模块导航
 

@@ -1,18 +1,16 @@
 ---
-title: AI Agent 面试全攻略 · 项目面试问答集
+title: 项目面试问答集
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 企业级 AI Agent 项目面试问答集
+<p class="guide-chapter-badge">项目面试问答集</p>
 
-企业级 AI Agent 项目面试问答集
+<p class="guide-lead">本文档包含企业级 AI Agent 项目可能被面试官问到的所有核心问题及 STAR 法回答。 全部 内容基于真实项目经验，可直接用于面试准备。</p>
 
-  本文档包含企业级 AI Agent 项目可能被面试官问到的所有核心问题及 STAR 法回答。 全部
-  内容基于真实项目经验，可直接用于面试准备。
-
- 第一类：架构设计类问题（18题）
+第一类：架构设计类问题（18题）
  第二类：技术实现类问题（18题）
  第三类：性能优化类问题（12题）
  第四类：故障处理类问题（12题）

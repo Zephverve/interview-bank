@@ -1,37 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 07 · 大模型基础
+title: 07 · 大模型基础
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 07 大模型基础
+<p class="guide-chapter-badge">07 · 大模型基础</p>
 
-07 大模型基础（面试八股文）
-
-  面向零基础读者的系统梳理：每个知识点尽量包含「概念解释、原理详解、面试问答、追问
-  应对、代码示例（如适用）」。本模块是 LLM / Agent 面试的高频核心，建议结合论文与开
-  源实现（如 Hugging Face Transformers、vLLM）对照理解。
-
-## 1. Transformer 架构
-
-## 2. 注意力机制详解
-
-## 3. Tokenization
-
-## 4. 大模型推理
-
-## 5. 模型微调
-
-## 6. 对齐技术
-
-## 7. 模型量化
-
-## 8. 推理优化
-
-## 9. 前沿模型与选型
-
-## 10. 综合面试题库（20+ 题）
+<p class="guide-lead">面向零基础读者的系统梳理：每个知识点尽量包含「概念解释、原理详解、面试问答、追问 应对、代码示例（如适用）」。本模块是 LLM / Agent 面试的高频核心，建议结合论文与开 源实现（如 Hugging Face Transformers、vLLM）对照理解。</p>
 
 ## 1. Transformer 架构
 

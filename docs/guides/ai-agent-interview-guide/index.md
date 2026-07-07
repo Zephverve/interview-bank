@@ -1,32 +1,46 @@
 ---
 title: AI Agent 面试全攻略
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-面向小白的 AI Agent 面试准备 · 200+ 八股 · 项目实战 · STAR 面试稿（v1.0.2 · 2026-04-17 · 共 16 章 · 约 301,090 字 · PDF 原文件约 405 页）
+<GuideHero
+  title="AI Agent 面试全攻略"
+  subtitle="从零到 Offer · 面向小白的完整 AI Agent 面试准备"
+  version="v1.0.2"
+  date="2026-04-17"
+  :chapters="16"
+  words="30万+"
+  :pages="405"
+/>
 
-> 以下内容为 PDF **全文转换**，16 章完整收录，不省略。左栏可逐章阅读；需要离线时可下载原版 PDF。
+<p class="guide-note">PDF 全文转换，16 章完整收录不省略。点击卡片进入章节，左栏可快速跳转；需要离线阅读见文末 PDF 下载。</p>
 
 ## 章节目录
 
-- [00 · 从零到 Offer](./intro.md)
-- [面试八股文 · 总目录](./interview-toc.md)
-- [01 · Agent 基础概念](./mod-01-basics.md)
-- [02 · 核心框架](./mod-02-frameworks.md)
-- [03 · RAG 技术](./mod-03-rag.md)
-- [04 · 工具调用](./mod-04-tools.md)
-- [05 · 记忆系统](./mod-05-memory.md)
-- [06 · 多智能体](./mod-06-multi-agent.md)
-- [07 · 大模型基础](./mod-07-llm.md)
-- [08 · 工程化实践](./mod-08-engineering.md)
-- [09 · Prompt 工程](./mod-09-prompt.md)
-- [企业招聘需求分析](./hiring-analysis.md)
-- [开源项目学习笔记](./opensource-notes.md)
-- [简历撰写指南](./resume-guide.md)
-- [STAR 面试稿指南](./star-guide.md)
-- [项目面试问答集](./project-qa.md)
+<GuideChapterGrid
+  base="/guides/ai-agent-interview-guide/"
+  :chapters="[
+    { slug: 'intro', title: '00 · 从零到 Offer', desc: '约 3.1k 字' },
+    { slug: 'interview-toc', title: '面试八股文 · 总目录', desc: '约 1.9k 字' },
+    { slug: 'mod-01-basics', title: '01 · Agent 基础概念', desc: '约 11k 字' },
+    { slug: 'mod-02-frameworks', title: '02 · 核心框架', desc: '约 23k 字' },
+    { slug: 'mod-03-rag', title: '03 · RAG 技术', desc: '约 24k 字' },
+    { slug: 'mod-04-tools', title: '04 · 工具调用', desc: '约 20k 字' },
+    { slug: 'mod-05-memory', title: '05 · 记忆系统', desc: '约 19k 字' },
+    { slug: 'mod-06-multi-agent', title: '06 · 多智能体', desc: '约 18k 字' },
+    { slug: 'mod-07-llm', title: '07 · 大模型基础', desc: '约 16k 字' },
+    { slug: 'mod-08-engineering', title: '08 · 工程化实践', desc: '约 20k 字' },
+    { slug: 'mod-09-prompt', title: '09 · Prompt 工程', desc: '约 20k 字' },
+    { slug: 'hiring-analysis', title: '企业招聘需求分析', desc: '约 9.5k 字' },
+    { slug: 'opensource-notes', title: '开源项目学习笔记', desc: '约 16k 字' },
+    { slug: 'resume-guide', title: '简历撰写指南', desc: '约 14k 字' },
+    { slug: 'star-guide', title: 'STAR 面试稿指南', desc: '约 13k 字' },
+    { slug: 'project-qa', title: '项目面试问答集', desc: '约 73k 字' }
+  ]"
+/>
 
 <p class="section-note">建议路径：总览 → 模块 01–09 八股 → 招聘分析 / 开源笔记 → 简历 & STAR → 项目问答集（92 题）。</p>
 

@@ -1,16 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · STAR 面试稿指南
+title: STAR 面试稿指南
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# STAR 面试稿准备指南
+<p class="guide-chapter-badge">STAR 面试稿指南</p>
 
-STAR 面试稿准备指南（小白版）
-面向第一次准备技术面试、尤其是 AI Agent / 大模型应用 相关项目面试的同学。本文把 STAR
-法讲透，并给出 可直接朗读、改写、录音练习 的话术正文。建议你：先通读方法论 → 用真实项
-目替换方括号 → 手机录音控制时长 → 请朋友追问三轮。
+<p class="guide-lead">面向第一次准备技术面试、尤其是 AI Agent / 大模型应用 相关项目面试的同学。本文把 STAR 法讲透，并给出 可直接朗读、改写、录音练习 的话术正文。建议你：先通读方法论 → 用真实项 目替换方括号 → 手机录音控制时长 → 请朋友追问三轮。</p>
 
 ## 1. STAR 面试法详解
 

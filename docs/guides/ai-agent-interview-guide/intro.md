@@ -1,16 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 00 · 从零到 Offer
+title: 00 · 从零到 Offer
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# AI Agent 面试全攻略 — 从零到 Offer
+<p class="guide-chapter-badge">00 · 从零到 Offer</p>
 
-AI Agent 面试全攻略 -- 从零到 Offer
-
- 面向小白的、最全最详细的 AI Agent 面试准备资料，包含面试八股文、企业级实战项目
- （Python/Java/Go 三版本）、简历模板、STAR 面试稿。
+<p class="guide-lead">面向小白的、最全最详细的 AI Agent 面试准备资料，包含面试八股文、企业级实战项目 （Python/Java/Go 三版本）、简历模板、STAR 面试稿。</p>
 
 项目亮点
  9 大模块面试八股文：覆盖 Agent 基础、ReAct/Plan-and-Execute 框架、RAG、工具调用、

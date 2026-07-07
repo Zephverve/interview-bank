@@ -1,20 +1,16 @@
 ---
-title: AI Agent 面试全攻略 · 开源项目学习笔记
+title: 开源项目学习笔记
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 开源项目学习笔记
+<p class="guide-chapter-badge">开源项目学习笔记</p>
 
-开源项目学习笔记
+<p class="guide-lead">本文档汇总本工作区内与 Claude Code 生态相关的源码与逆向资料，并补充网上代表性企 业级 Agent 项目的分析视角，用于系统化理解「工业级 Agent」的架构、模式与落地要 点。 工作区根目录下文记为 {ROOT} ，即： 你本地克隆路径 。</p>
 
-  本文档汇总本工作区内与 Claude Code 生态相关的源码与逆向资料，并补充网上代表性企
-  业级 Agent 项目的分析视角，用于系统化理解「工业级 Agent」的架构、模式与落地要
-  点。
-  工作区根目录下文记为 {ROOT} ，即： 你本地克隆路径 。
-
-  第一部分：工作区内四个项目分析
+第一部分：工作区内四个项目分析
   第二部分：网上优秀项目分析
   第三部分：架构模式总结
   第四部分：对我们项目的启发

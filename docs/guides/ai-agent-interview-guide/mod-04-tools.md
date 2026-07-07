@@ -1,33 +1,14 @@
 ---
-title: AI Agent 面试全攻略 · 04 · 工具调用
+title: 04 · 工具调用
+titleTemplate: false
 pageClass: guides-doc
 outline: [2, 3]
 aside: true
 ---
 
-# 04 工具调用
+<p class="guide-chapter-badge">04 · 工具调用</p>
 
-04 工具调用（Tool / Function Calling）
-
-  面向初学者的 AI Agent「工具调用」面试八股文：从 Function Calling、Tool 设计，到
-  MCP、路由与编排，再到安全与常见实现。
-  每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、Python 代码示例。
-
-## 1. Function Calling 基础
-
-## 2. Tool Use / Tool Calling
-
-## 3. MCP 协议（Model Context Protocol）
-
-## 4. 工具路由（Tool Routing）
-
-## 5. 工具编排（Tool Orchestration）
-
-## 6. 安全性
-
-## 7. 常见工具实现
-
-## 8. 综合面试题精选（≥15 题）
+<p class="guide-lead">面向初学者的 AI Agent「工具调用」面试八股文：从 Function Calling、Tool 设计，到 MCP、路由与编排，再到安全与常见实现。 每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、Python 代码示例。</p>
 
 ## 1. Function Calling 基础
 
