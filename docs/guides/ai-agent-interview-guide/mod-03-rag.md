@@ -8,11 +8,41 @@ aside: true
 
 <p class="guide-chapter-badge">03 · RAG 技术</p>
 
-<p class="guide-lead">面向初学者的系统梳理：每个主题尽量包含 概念、原理、面试问答、追问应对 与 Python 代码示例。 建议配合动手实验：同一批文档，对比「仅向量 / 混合检索 / +重排」的答案质量差异。</p>
+> RAG 是 Agent 的「外接硬盘」。核心链路：切文档 → 向量化 → 检索 →（可选）重排 → 拼进 Prompt。面试常问怎么降幻觉、怎么评测、Hybrid 检索为什么比纯向量稳。
+
+03 RAG 技术（面试八股文 · 模块三）
+
+  面向初学者的系统梳理：每个主题尽量包含 概念、原理、面试问答、追问应对 与 Python
+  代码示例。
+  建议配合动手实验：同一批文档，对比「仅向量 / 混合检索 / +重排」的答案质量差异。
+
+#### 1. RAG 基础
+
+#### 2. 文档解析与预处理
+
+#### 3. 文档分块策略（Chunking）
+
+#### 4. 向量化（Embedding）
+
+#### 5. 向量数据库
+
+#### 6. 检索策略
+
+#### 7. 重排序（Reranking）
+
+#### 8. RAG 高级模式
+
+#### 9. RAG 评估
+
+#### 10. RAG 生产优化
+
+#### 11. 综合面试题库（20+ 题）
 
 ## 1. RAG 基础
 
 ### 1.1 RAG（Retrieval-Augmented Generation）定义与原理
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「RAG定义与原理」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
 
 概念解释
 RAG（检索增强生成）指：在让大语言模型（LLM）生成答案 之前，先从 外部知识库（文档、数
@@ -36,6 +66,8 @@ RAG（检索增强生成）指：在让大语言模型（LLM）生成答案 之�
 
 ### 1.2 为什么需要 RAG（知识截止、幻觉、实时性）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「为什么需要 RAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
   知识截止（Knowledge Cutoff）：预训练/基座模型只在某个时间点之前的数据上学习，之后发
   生的事实它「天然不知道」。
@@ -54,6 +86,8 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
  束、评估与人工审核配合。
 
 ### 1.3 RAG vs 微调 vs 长上下文 的对比
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAG vs 微调 vs 长上下文 的对比」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 | 维度 | RAG | 微调（Fine-tuning） | 长上下文（LongContext） |
 | --- | --- | --- | --- |
@@ -76,6 +110,8 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 定且可标注，而不仅是「塞事实」；事实类仍建议 RAG 或可检索记忆。
 
 ### 1.4 Native RAG 完整流程图（文字描述）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Native RAG 完整流程图」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 可用以下 自上而下 的文字流程在面试中口述：
 
@@ -102,6 +138,8 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 新）；在线负责 理解用户意图、检索、融合、约束生成，并保证延迟与成本可控。
 
 ### 1.5 代码示例：最小 RAG 流水线（概念级）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 下面用 伪代码级 展示「嵌入 + 向量库 + 调用 LLM」的最小闭环（实际项目请替换为真实 API
 Key 与错误处理）。
@@ -146,6 +184,8 @@ Key 与错误处理）。
 
 ### 2.1 PDF、Word、HTML、Markdown 解析工具
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「PDF、Word、HTML、Markdown 解析工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 解析是把 二进制或标记格式 变成 可切分的纯文本（并尽量保留标题层级、表格位置等结构信
 息）。
@@ -183,6 +223,8 @@ PDF 本质是 排版指令，不是「自然段落」；同一页可能多栏、
 
 ### 2.2 OCR 处理
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「OCR 处理」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 OCR（光学字符识别）把 图像中的文字 变成可检索文本，用于扫描 PDF、拍照、截图。
 原理简述
@@ -196,6 +238,8 @@ OCR（光学字符识别）把 图像中的文字 变成可检索文本，用于
 需要在清洗阶段做规范化，并考虑 关键词 + 向量混合检索 提高鲁棒性。
 
 ### 2.3 表格和图片的处理策略
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「表格和图片的处理策略」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
    表格：结构化信息密集，拆成纯文本易丢行列关系。
@@ -214,6 +258,8 @@ OCR（光学字符识别）把 图像中的文字 变成可检索文本，用于
 SQL/结构化检索 或 专用表格问答模型 辅助。
 
 ### 2.4 数据清洗与标准化
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「数据清洗与标准化」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 要点清单
  统一编码（UTF-8）、去除不可见字符
@@ -261,12 +307,16 @@ SQL/结构化检索 或 专用表格问答模型 辅助。
 
 ### 3.1 固定长度分块（Fixed Size）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「固定长度分块」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 按字符数或 token 数切分，例如每 512 字符一块，简单高效。
 原理与缺陷
 实现简单，但常在 句子中间 切断，语义不完整；对代码、Markdown 结构不友好。
 
 ### 3.2 递归字符分割（RecursiveCharacterTextSplitter）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「递归字符分割」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n", " ", ""] ，尽量在段
@@ -277,6 +327,8 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 
 ### 3.3 语义分块（Semantic Chunking）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「语义分块」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 按 语义相似度变化 切分：相邻句子/段落嵌入向量，若相似度骤降则认为话题转换，在此处断
 开。
@@ -285,6 +337,8 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 
 ### 3.4 按文档结构分块（Markdown Header、HTML Section）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「按文档结构分块」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 利用 # 标题 或 HTML 的 &lt;section> / 标题标签，把 同一小节 作为块或父文档。
 原理
@@ -292,12 +346,16 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 
 ### 3.5 滑动窗口分块
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「滑动窗口分块」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 以窗口长度 (W) 和步长 (S)（(S &lt; W)）滑动切分，相邻窗口重叠 (W-S)。
 原理
 减少边界信息丢失；代价是 存储膨胀 与 冗余检索，常配合去重或 MMR。
 
 ### 3.6 chunk_size 与 chunk_overlap 选择策略
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「chunk_size 与 chunk_overlap 选择策略」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 经验法则（需实测）
  chunk_size：应覆盖 完整命题（一条规定、一个步骤），常见几百到一两千 token 量级；太小
@@ -309,6 +367,8 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 成、embedding 语义模糊、费用上升。
 
 ### 3.7 父子文档分块（Parent-Child Chunking）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「父子文档分块」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 子块（小，用于检索embedding）+ 父块（大，用于喂给 LLM），检索命中子块后取回其父块全
@@ -391,6 +451,8 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 
 ### 4.1 什么是文本嵌入（Embedding）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「什么是文本嵌入」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的文本在向量空间中 距离更近
 （常用余弦相似度或内积）。
@@ -399,6 +461,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 4.2 常用 Embedding 模型
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「常用 Embedding 模型」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
    系列                         代表                             备注
  OpenAI     text-embedding-3-small/large          生态成熟，需 API 费用
  BAAI       BGE（bge-large-zh-v1.5 等）              中文开源常用，可本地部署
@@ -406,6 +470,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
  Jina       jina-embeddings                       长文本、多语言场景有优势
 
 ### 4.3 Embedding 模型选型标准
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Embedding 模型选型标准」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 #### 1. 语言与领域：中文优先中文强化模型；医疗/法律可看领域微调版。
 
@@ -416,6 +482,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 ## 4. 与重排/生成模型一致性：有时同一厂商链路更省心（非必须）。
 
 ### 4.4 维度、速度、效果的权衡
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「维度、速度、效果的权衡」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
  维度高：通常表达能力更强，但索引更大、ANN 更慢。
  速度：批量推理、GPU、量化（INT8）可加速。
@@ -439,6 +507,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 5.1 什么是向量数据库
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「什么是向量数据库」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 面向 高维向量 的存储与 近似最近邻（ANN） 查询系统，支持 insert/delete/query ，常附带
 元数据过滤（时间、租户、标签）。
@@ -446,6 +516,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 暴力精确检索在高维下不可行；用 ANN 算法 换 略微精度 换 数量级加速。
 
 ### 5.2 主流选型对比
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「主流选型对比」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 | 产品 | 特点 | 适用场景 |
 | --- | --- | --- |
@@ -464,6 +536,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 5.3 ANN 算法：HNSW、IVF、PQ
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「ANN 算法：HNSW、IVF、PQ」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
  HNSW（分层导航小世界图）：图索引，查询延迟低，内存占用偏高；高召回常用。
  IVF（倒排文件）：聚类划分桶，查询只搜部分桶；需训练，适合大规模。
  PQ（乘积量化）：向量压缩，省内存、加速距离计算；有损，精度略降。
@@ -477,6 +551,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
  答： HNSW 查询时访问更多邻居，召回上升、延迟上升；需在精度与 SLA 间折中。
 
 ### 5.4 索引选择策略
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「索引选择策略」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 #### 1. 数据量小、要简单：HNSW + 精确参数调优。
 
@@ -512,6 +588,8 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 6.1 向量检索（语义相似度）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「向量检索」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 Query 与文档块 embedding 后做 Top-K 最近邻。
 短板
@@ -519,10 +597,14 @@ Query 与文档块 embedding 后做 Top-K 最近邻。
 
 ### 6.2 关键词检索（BM25）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「关键词检索」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 BM25 是经典 词频-逆文档频率 加权排序函数，擅长 精确词匹配。
 
 ### 6.3 混合检索（Hybrid Search）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「混合检索」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 BM25 分数 + 向量分数 线性加权或归一化后融合，兼顾语义与字面。
@@ -543,6 +625,8 @@ BM25 分数 + 向量分数 线性加权或归一化后融合，兼顾语义与�
 ```
 
 ### 6.4 多路检索与结果融合（RRF）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「多路检索与结果融合」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索的 排名 融合：
@@ -580,6 +664,8 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
 
 ### 6.5 查询改写（Query Rewriting）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「查询改写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 把用户原始问句改写成 更易被检索匹配 的形式，或生成 多条查询变体 做多路召回。
 原理详解
@@ -597,6 +683,8 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
 
 ### 6.6 HyDE（假设文档嵌入）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「HyDE」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 让 LLM 先写 假想的答案文档（可能含错），再对假想文档做 embedding 去检索。
 原理
@@ -606,6 +694,8 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
 假想文档可能引入错误主题，需 重排与引用校验。
 
 ### 6.7 子问题分解
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「子问题分解」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 对 多跳、多条件 问题，先由 LLM 或规则拆成 子问题序列，对每个子问题检索，再 拼接或图式合
@@ -622,6 +712,8 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
   具边界更宽。
 
 ### 6.8 Step-back Prompting
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Step-back Prompting」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 先让模型生成 更抽象的后退一步的问题（背景原理），再并行检索「具体问题 + 抽象问题」，合并
@@ -654,11 +746,15 @@ Step-back 相对 克制（仍停留在问题空间）。实践中可 并行检�
 
 ### 7.1 为什么需要重排序
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「为什么需要重排序」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 向量检索（Bi-Encoder）为速度对 query-doc 独立编码，交互信息不足；Cross-Encoder 把
 query 与 doc 拼在一起 打分，精度更高但慢，故放在 Top-K 之后做小范围重排。
 
 ### 7.2 Cross-Encoder vs Bi-Encoder
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Cross-Encoder vs Bi-Encoder」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
        类型                    机制                   优点                缺点
  Bi-Encoder          两路编码，点积/余弦               快，可 ANN         精度低于 CE
@@ -666,10 +762,14 @@ query 与 doc 拼在一起 打分，精度更高但慢，故放在 Top-K 之后�
 
 ### 7.3 常用重排序模型
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「常用重排序模型」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
   Cohere Rerank API
   BGE Reranker（如 bge-reranker-large ）开源可本地部署
 
 ### 7.4 MMR（最大边际相关性）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「MMR」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 在相关性与 多样性 间权衡，避免 Top-K 几乎重复的段落：迭代选择与 query 相关、但与已选集
@@ -731,6 +831,8 @@ S}\text{sim}(d,s)])。
 
 ### 8.1 GraphRAG（基于知识图谱的 RAG）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「GraphRAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 从文本抽取 实体与关系 构建图，检索时沿 子图 或 社区摘要 获取证据，适合 多跳关系 与 全局问
 题（「整体主题是什么」）。
@@ -740,6 +842,8 @@ S}\text{sim}(d,s)])。
 
 ### 8.2 Agentic RAG（Agent 驱动的 RAG）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agentic RAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 由 Agent 决定何时检索、检索什么、是否再检索，可调用 多工具（搜索、数据库、代码执行）。
 原理
@@ -747,16 +851,22 @@ S}\text{sim}(d,s)])。
 
 ### 8.3 Self-RAG（自我反思的 RAG）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Self-RAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 模型在生成过程中插入 反思 token：是否需要检索、检索内容是否有用、生成是否支持等，形成
 自我批评与修正 循环。
 
 ### 8.4 Corrective RAG（纠正性 RAG）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Corrective RAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 当检索质量 不达标 时，触发 额外检索（如网页搜索）或 改写查询，纠正证据不足。
 
 ### 8.5 Adaptive RAG
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Adaptive RAG」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 按问题类型 路由 到不同链路：有的只需单跳向量检索，有的需多跳或工具，避免 过度检索 浪费
@@ -788,11 +898,15 @@ S}\text{sim}(d,s)])。
 
 ### 9.1 评估指标：忠实度、相关性、答案正确性
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「评估指标：忠实度、相关性、答案正确性」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
  忠实度（Faithfulness）：答案是否可由检索上下文推出，不编造。
  上下文相关性（Context Relevance）：检索块与问题是否相关。
  答案正确性 / 有用性：是否真正解决问题（可用人工或强模型裁判）。
 
 ### 9.2 RAGAS 框架
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAGAS 框架」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 RAGAS 提供一组 基于 LLM 的指标（如 faithfulness、answer relevancy、context
@@ -801,6 +915,8 @@ precision/recall），自动化评估 RAG 管道。
 裁判模型本身有偏差，应 抽样人工复核。
 
 ### 9.3 评估数据集构建
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「评估数据集构建」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 #### 1. 从真实日志 脱敏 抽样问题
 
@@ -842,11 +958,15 @@ precision/recall），自动化评估 RAG 管道。
 
 ### 10.1 索引优化
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「索引优化」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
  选择合适的 ANN 参数（HNSW 的 M、efConstruction、efSearch）
  分段分区（按租户、时间、产品线）减少搜索空间
  定期重建 vs 增量插入 权衡
 
 ### 10.2 缓存策略
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「缓存策略」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
  Query 级缓存：相同问题直接返回答案（注意权限与 TTL）
  Embedding 缓存：热门 query 的向量
@@ -854,16 +974,22 @@ precision/recall），自动化评估 RAG 管道。
 
 ### 10.3 增量更新
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「增量更新」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
  文档变更 版本化；删除旧向量 按 doc_id
  大批量用 离线任务 重建分区索引，小批量 实时 upsert
 
 ### 10.4 多租户设计
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「多租户设计」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
  逻辑隔离： tenant_id 元数据强制过滤
  物理隔离：大客户独立集群或命名空间
  配额与限流：按租户限制 QPS 与存储
 
 ### 10.5 Token 成本控制
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Token 成本控制」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
  控制 检索条数与块长度
  选用 更小上下文模型 做摘要与路由
@@ -880,6 +1006,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>离线：解析→清洗→分块→嵌入→建索引；在线：Query（可选改写）→检索→（可选重排）→拼 Prompt→生成。追问：增量更新怎么做？（见 10.3）</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：离线：解析→清洗→分块→嵌入→建索引；在线：Query（可选改写）→检索→（可选重排）→拼 Prompt→生成。追问：增量更新怎么做？（见 10.3）。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
 </div></div>
 </div>
 
@@ -889,6 +1017,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>微调改善 格式与领域表达，RAG 提供 可更新事实；事实类优先 RAG。追问：何时单独微调？（数据稳定且任务行为化）</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。微调改善格式与领域表达，RAG 提供可更新事实；事实类优先 RAG。追问：何时单独微调？（数据稳定且任务行为化）。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -898,6 +1028,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>防止关键句被切断在两块边界，检索时丢上下文；代价是存储增加。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。防止关键句被切断在两块边界，检索时丢上下文；代价是存储增加。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -907,6 +1039,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>优先在更大语义单元（段落）断开，再退到句子、空格，减少碎片化。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。优先在更大语义单元（段落）断开，再退到句子、空格，减少碎片化。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -916,6 +1050,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不一定；语义分块成本高、阈值敏感。应用数据 A/B 测试。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提离线集 + 在线监控 + 人工抽检。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「语义分块比递归分块更好吗」，我的回答是：不一定；语义分块成本高、阈值敏感。应用数据 A/B 测试。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -925,6 +1061,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>子块带 parent_id ，检索子块→映射父块文本再生成。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。子块带 parent_id ，检索子块→映射父块文本再生成。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -934,6 +1072,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>若用 内积/余弦 且框架假设归一化向量，应归一化以稳定相似度。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Embedding 是否需要归一化」，我的回答是：若用内积/余弦且框架假设归一化向量，应归一化以稳定相似度。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -943,6 +1083,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Flat 精确但慢；HNSW 近似快，适合大规模。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。Flat 精确但慢；HNSW 近似快，适合大规模。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
 </div></div>
 </div>
 
@@ -952,6 +1094,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>验证集网格搜索；或 RRF 避免调权。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。验证集网格搜索；或 RRF 避免调权。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -961,6 +1105,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>只用排名融合，规避不同路分数尺度问题。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。只用排名融合，规避不同路分数尺度问题。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -970,6 +1116,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>重排序、引用约束、拒答、对比多条检索结果。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。重排序、引用约束、拒答、对比多条检索结果。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -979,6 +1127,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>依赖引擎；中文常需 分词或 n-gram，否则粒度不当影响效果。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「BM25 在中文要不要分词」，我的回答是：依赖引擎；中文常需分词或 n-gram，否则粒度不当影响效果。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -988,6 +1138,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>需对 每个 doc 与 query 运行，复杂度高，无法对百万级全库实时扫描。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Cross-Encoder 为何不能替代向量索引」，我的回答是：需对每个 doc 与 query 运行，复杂度高，无法对百万级全库实时扫描。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -997,6 +1149,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>调节 相关性 vs 多样性；lambda 大更偏相关。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「MMR 的 lambda 参数含义」，我的回答是：调节相关性 vs 多样性；lambda 大更偏相关。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -1006,6 +1160,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>多跳关系与部分 全局聚合类 问题。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「GraphRAG 解决普通 RAG 的什么痛点」，我的回答是：多跳关系与部分全局聚合类问题。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -1015,6 +1171,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>多步工具决策与再检索，更灵活更高成本。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。多步工具决策与再检索，更灵活更高成本。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
 </div></div>
 </div>
 
@@ -1024,6 +1182,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>生成中 自我评估 是否需要检索与证据是否充分。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Self-RAG 核心思想」，我的回答是：生成中自我评估是否需要检索与证据是否充分。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -1033,6 +1193,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>检索置信度低或证据矛盾时 改查或换源。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Corrective RAG 触发条件」，我的回答是：检索置信度低或证据矛盾时改查或换源。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -1042,6 +1204,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>依赖裁判模型，可能有 偏好与盲区。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会先承认限制，再给工程解法。依赖裁判模型，可能有偏好与盲区。。强调不是不能用，而是要知道在什么场景用、配套哪些护栏。</p></div>
 </div></div>
 </div>
 
@@ -1051,6 +1215,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>采样 + 用户反馈（点赞/纠错）+ 弱监督信号（是否点击引用）。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提离线集 + 在线监控 + 人工抽检。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。采样 + 用户反馈（点赞/纠错）+ 弱监督信号（是否点击引用）。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -1060,6 +1226,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>版本号、双写切换、后台重建与灰度；读写分离。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。版本号、双写切换、后台重建与灰度；读写分离。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -1069,6 +1237,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>文档清洗、权限隔离、输出引用限制、检测异常指令模式。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。文档清洗、权限隔离、输出引用限制、检测异常指令模式。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -1078,6 +1248,8 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不会；私域数据规模与成本、检索聚焦证据、合规审计仍需要 RAG 范式。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「长上下文模型出现后 RAG 会消失吗」，我的回答是：不会；私域数据规模与成本、检索聚焦证据、合规审计仍需要 RAG 范式。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -1086,7 +1258,10 @@ precision/recall），自动化评估 RAG 管道。
 <div class="guide-answer">
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
-<p>图像/表格编码、跨模态对齐、与文本混合索引与路由。附录：LangChain 向量存储检索（LCEL 示意）</p>
+<p>图像/表格编码、跨模态对齐、与文本混合索引与路由。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「多模态 RAG 要点」，我的回答是：图像/表格编码、跨模态对齐、与文本混合索引与路由。附录：LangChain 向量存储检索（LCEL 示意） ```python # pip install langchain langchain-openai langchain-community faiss-cpu from langchain_community.vectorstores import FAISS from langchain。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<p>附录：LangChain 向量存储检索（LCEL 示意）</p>
 </div></div>
 </div>
 
@@ -1109,10 +1284,9 @@ precision/recall），自动化评估 RAG 管道。
 
  found = retriever.invoke("年假天数")
  print(found)
+```
 
 小结
 RAG 的本质是 用检索把「可更新证据」接到生成模型上；落地胜负手常在 解析与分块、混合检
 索、重排、评估与多租户安全。建议你在简历项目里准备 一条可量化指标（如：Top-5 召回提
 升、成本下降比例）与 一次失败案例分析（检索错还是生成胡编），面试会非常有说服力。
-
-```

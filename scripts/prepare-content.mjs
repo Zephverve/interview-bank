@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { formatGuideMarkdown } from './format-guide-markdown.mjs'
+import { applyGuideEnhancements } from './apply-guide-enhancements.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -1537,6 +1538,51 @@ function postProcessGuideContent(text) {
       continue
     }
 
+    if (trimmed.startsWith('> **💡 通俗理解**')) {
+      closeQaBlock()
+      const tipParts = []
+      let j = i
+      while (j < lines.length && lines[j].trim().startsWith('>')) {
+        tipParts.push(lines[j].trim().replace(/^>\s?/, ''))
+        j++
+      }
+      const body = tipParts
+        .map((l) => l.replace(/^\*\*💡 通俗理解\*\*/, '').trim())
+        .filter(Boolean)
+        .join(' ')
+      out.push(
+        `<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>${escapeGuideHtml(body)}</p></div>`
+      )
+      i = j - 1
+      continue
+    }
+
+    const oralMatch = trimmed.match(/^\*\*口播[：:]\*\*\s*(.*)$/)
+    if (oralMatch) {
+      if (!qaOpen) {
+        out.push('<div class="guide-qa">')
+        qaOpen = true
+      }
+      inAnswer = true
+      pushAnswerLine(
+        `<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>${escapeGuideHtml(oralMatch[1])}</p></div>`
+      )
+      continue
+    }
+
+    const expandMatch = trimmed.match(/^\*\*扩写[：:]\*\*\s*(.*)$/)
+    if (expandMatch) {
+      if (!qaOpen) {
+        out.push('<div class="guide-qa">')
+        qaOpen = true
+      }
+      inAnswer = true
+      pushAnswerLine(
+        `<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>${escapeGuideHtml(expandMatch[1])}</p></div>`
+      )
+      continue
+    }
+
     if (line.startsWith('## ') && !isMajorSectionH2(line, lines.slice(i + 1))) {
       line = `#### ${line.slice(3)}`
     }
@@ -1550,7 +1596,7 @@ function postProcessGuideContent(text) {
       out.push(
         `<div class="guide-question"><span class="guide-q-label">Q${q.num}</span><span class="guide-q-text">${escapeGuideHtml(q.text)}</span></div>`
       )
-      inAnswer = false
+      inAnswer = true
       continue
     }
 
@@ -1580,8 +1626,8 @@ function postProcessGuideContent(text) {
       if (!qaOpen) {
         out.push('<div class="guide-qa">')
         qaOpen = true
-        inAnswer = true
       }
+      inAnswer = true
       const tail = star[2] ? escapeGuideHtml(star[2]) : ''
       pushAnswerLine(
         `<p class="guide-star-line"><span class="guide-star-tag">${star[1]}</span>${tail ? `：${tail}` : '：'}</p>`
@@ -1613,6 +1659,11 @@ function postProcessGuideContent(text) {
 
     if (inAnswer) {
       if (!trimmed) continue
+      if (/^第[一二三四五六七八九十]+类/.test(trimmed)) {
+        closeQaBlock()
+        out.push(line)
+        continue
+      }
       if (isSectionHeading(trimmed)) {
         closeQaBlock()
         out.push(line)
@@ -1661,6 +1712,7 @@ function normalizeGuideChapterBody(body, sidebar) {
     const t = lines[0].trim()
     if (!t) break
     if (t.startsWith('#')) break
+    if (t.startsWith('>')) break
     if (t.startsWith('**Q') || t.startsWith('Q1') || t.startsWith('Q2')) break
     if (/^\d+\.\s/.test(t) && t.length < 80) break
     lead.push(t)
@@ -1727,7 +1779,7 @@ ${gridItems}
 `
 }
 
-function publishSplitGuide(guide, srcDir) {
+async function publishSplitGuide(guide, srcDir) {
   const outDir = path.join(DOCS, 'guides', guide.slug)
   const legacyFile = path.join(DOCS, 'guides', `${guide.slug}.md`)
   if (fs.existsSync(legacyFile)) fs.unlinkSync(legacyFile)
@@ -1746,7 +1798,8 @@ function publishSplitGuide(guide, srcDir) {
   writeGuidePage(path.join(outDir, 'index.md'), guide.title, indexBody, { hideTitle: true })
 
   for (const ch of chapters) {
-    const normalized = normalizeGuideChapterBody(ch.body, ch.sidebar)
+    const enhanced = await applyGuideEnhancements(ch.body, ch.slug)
+    const normalized = normalizeGuideChapterBody(enhanced, ch.sidebar)
     writeGuidePage(
       path.join(outDir, `${ch.slug}.md`),
       ch.sidebar,
@@ -1771,14 +1824,14 @@ function publishSplitGuide(guide, srcDir) {
   }
 }
 
-function processGuides() {
+async function processGuides() {
   fs.mkdirSync(path.join(DOCS, 'guides'), { recursive: true })
   const published = []
 
   for (const guide of GUIDE_ENTRIES) {
     const srcDir = guide.sourceCandidates.find((p) => fs.existsSync(p) && fs.statSync(p).isDirectory())
     if (srcDir && guide.splitChapters?.length) {
-      published.push(publishSplitGuide(guide, srcDir))
+      published.push(await publishSplitGuide(guide, srcDir))
       continue
     }
 
@@ -1788,13 +1841,13 @@ function processGuides() {
   return published
 }
 
-function main() {
+async function main() {
   fs.mkdirSync(CUSTOM, { recursive: true })
   fs.mkdirSync(NOTES, { recursive: true })
 
   const customCategories = mergeCustomCategories(scanCustomCategories())
   const notePages = processNotes()
-  const guidePages = processGuides()
+  const guidePages = await processGuides()
 
   processBuiltinParts()
   processCustomCategories(customCategories)

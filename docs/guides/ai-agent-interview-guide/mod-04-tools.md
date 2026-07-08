@@ -8,11 +8,35 @@ aside: true
 
 <p class="guide-chapter-badge">04 · 工具调用</p>
 
-<p class="guide-lead">面向初学者的 AI Agent「工具调用」面试八股文：从 Function Calling、Tool 设计，到 MCP、路由与编排，再到安全与常见实现。 每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、Python 代码示例。</p>
+> 工具调用是 Agent 的「手」。Function Calling 让模型输出结构化参数；MCP 把工具标准化成可复用服务。安全三板斧：白名单、鉴权、参数校验。
+
+04 工具调用（Tool / Function Calling）
+
+  面向初学者的 AI Agent「工具调用」面试八股文：从 Function Calling、Tool 设计，到
+  MCP、路由与编排，再到安全与常见实现。
+  每个知识点尽量包含：概念解释、原理详解、面试 Q&A、追问应对、Python 代码示例。
+
+#### 1. Function Calling 基础
+
+#### 2. Tool Use / Tool Calling
+
+#### 3. MCP 协议（Model Context Protocol）
+
+#### 4. 工具路由（Tool Routing）
+
+#### 5. 工具编排（Tool Orchestration）
+
+#### 6. 安全性
+
+#### 7. 常见工具实现
+
+#### 8. 综合面试题精选（≥15 题）
 
 ## 1. Function Calling 基础
 
 ### 1.1 什么是 Function Calling
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「什么是 Function Calling」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 Function Calling（函数调用）指：大语言模型在生成回复时，不是直接输出最终答案，而是先输
@@ -28,6 +52,8 @@ Function Calling（函数调用）指：大语言模型在生成回复时，不�
   构化格式，便于框架自动解析与校验。
 
 ### 1.2 OpenAI Function Calling 的工作原理
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「OpenAI Function Calling 的工作原理」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
 
 概念解释
 以 OpenAI Chat Completions 为例：你在请求里提供 tools （函数元数据数组）和
@@ -63,6 +89,8 @@ Function Calling（函数调用）指：大语言模型在生成回复时，不�
 
 ### 1.3 函数定义（JSON Schema）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「函数定义」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 每个可调用函数在 API 里通常描述为： type: function ， function.name （唯一标识），
  function.description （给模型看的自然语言说明）， function.parameters （符合 JSON
@@ -82,6 +110,8 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
 </div></div>
 ### 1.4 模型如何决定调用哪个函数
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型如何决定调用哪个函数」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 模型并非运行「真正的 if-else 规则引擎」，而是基于训练与对齐后，在看到用户意图 + 工具描述
 时，输出概率最高的结构化动作。等价于：在「续写」空间里，工具描述把某些 token 序列（函
@@ -99,6 +129,8 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
 </div></div>
 ### 1.5 参数提取与验证
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「参数提取与验证」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 参数提取：从 tool_calls[].function.arguments 得到 JSON 字符串并 json.loads 。验
 证：用 JSON Schema 校验类型、范围、枚举；业务层再校验权限与资源是否存在。
@@ -115,6 +147,8 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
 <p>分层——语法层 json.loads ；结构层 jsonschema.validate ；语义层业务函数（如用户ID 是否存在）；安全层鉴权与输入清洗（见第 6 节）。</p>
 </div></div>
 ### 1.6 完整代码示例（OpenAI API 调用）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 下面示例使用 OpenAI 官方 Python SDK 风格（需安装 openai ，并设置环境变量
 OPENAI_API_KEY ）。为便于阅读，省略生产级重试与日志。
@@ -220,6 +254,8 @@ e:
 
 ### 2.1 Tool 的定义与注册
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Tool 的定义与注册」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 在应用内部，「Tool」= 可执行能力单元：名称、描述、参数规范、处理函数。注册指在 Agent 启
 动时把工具对象加入注册表（字典或列表），运行时由路由器/模型选择并派发。
@@ -234,6 +270,8 @@ e:
 <p>Tool 多了面向模型的元数据（描述、Schema）和统一执行接口（记录日志、超时、权限）。业务函数关注领域逻辑；Tool 是 Agent 可调度的「外壳」。</p>
 </div></div>
 ### 2.2 工具描述的最佳实践
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具描述的最佳实践」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
          是模型判断是否调用、如何填参的主要依据。应写：功能一句话、何时用、何时不
@@ -250,6 +288,8 @@ description
 
 ### 2.3 工具参数设计
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具参数设计」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 参数宜少而精、类型明确；能用枚举就不用自由文本；日期时间统一 ISO 8601；避免「万能字符
 串」承载多种含义。
@@ -258,6 +298,8 @@ description
  对可选参数默认值在 Schema 或文档中写清。
 
 ### 2.4 工具返回值处理
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具返回值处理」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 工具返回值会作为 tool 消息内容进入上下文。应稳定、可解析：优先 JSON 字符串；错误用统
@@ -273,6 +315,8 @@ description
 </div></div>
 ### 2.5 错误处理与重试
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「错误处理与重试」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 网络与模型都可能失败。策略包括：可重试错误（429、5xx）指数退避；不可重试（4xx 参数错）
 把错误给模型；工具内部超时；熔断防止拖垮依赖。
@@ -281,6 +325,8 @@ description
  部分成功：多工具并行时，单个子失败可只重试该分支。
 
 ### 2.6 LangChain 中的 Tool 定义代码示例
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 以下使用 LangChain 1.x 风格（ langchain-core 的 @tool ；版本差异请以官方文档为准）。
 若你环境版本不同，可改为 StructuredTool.from_function 。
@@ -320,6 +366,8 @@ description
 
 ### 3.1 MCP 是什么
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「MCP 是什么」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 MCP（Model Context Protocol）是由 Anthropic 推动的开放标准，用于在 AI 应用（Host） 与
 外部数据源/工具（MCP Server） 之间建立统一、可插拔的通信方式。可理解为「AI 侧的 USB-
@@ -329,6 +377,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
   目标：把「每个产品各写一套插件」变成「标准协议 + 多实现」。
 
 ### 3.2 核心组件：Client、Server、Transport
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「核心组件：Client、Server、Transport」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 
@@ -347,6 +397,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 </div></div>
 ### 3.3 MCP vs Function Calling 的区别
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「MCP vs Function Calling 的区别」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 | 维度 | Function Calling | MCP |
 | --- | --- | --- |
 | 层级 | 多为「单次 API 能力」：模型输出调用指令 | 系统级协议：如何发现与调用工具、资源 |
@@ -360,6 +412,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 
 ### 3.4 MCP 的优势
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「MCP 的优势」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
  标准化：消息与能力模型统一，降低集成成本。
  可复用：同一 MCP Server 给桌面、IDE、Agent 用。
@@ -367,6 +421,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
  隔离：工具崩溃不拖垮主进程（进程边界）。
 
 ### 3.5 MCP Server 的实现示例
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 以下为示意代码：真实项目请使用官方 mcp Python 包（ pip install mcp ），并以最新文档为
 准。下面用常见「FastMCP」风格说明结构。
@@ -400,6 +456,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 
 ### 3.6 MCP 在企业级应用中的价值
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「MCP 在企业级应用中的价值」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
   治理：工具集中在 MCP Server，便于审计、版本与权限。
   复用：数据中台、工单、内部 Wiki 各做一个 Server，多产品接入。
@@ -415,6 +473,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 
 ### 4.1 当工具数量多时如何高效选择
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「当工具数量多时如何高效选择」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 工具过多时，一次性把所有 description 塞进上下文会：费 token、干扰模型、增加误选。解
 决思路是先缩小候选集再让大模型填参，或用小模型专门做路由。
@@ -425,6 +485,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 
 ### 4.2 基于向量检索的工具路由
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「基于向量检索的工具路由」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 离线：把每个工具的 name + description + 关键词 做成 embedding，存向量库。在线：用户
 问题 embedding，Top-K 相似工具作为本轮唯一候选，再交给 LLM。
@@ -433,6 +495,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
  缺点：极依赖描述质量；边界 case 需加规则或混合检索（关键词 + 向量）。
 
 ### 4.3 基于分类模型的工具路由
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「基于分类模型的工具路由」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 训练或提示一个轻量分类器（BERT、小 LLM、或结构化输出），输入用户句，输出工具 ID 或工
@@ -443,6 +507,8 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
 
 ### 4.4 工具分组与层级
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具分组与层级」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 按域分组： database_* 、 hr_* 、 crm_* 。第一轮只暴露组级 meta-tool（如
 list_hr_tools ），或让模型先选组再选具体工具。
@@ -451,6 +517,8 @@ list_hr_tools ），或让模型先选组再选具体工具。
   层级过深会增加对话轮次，需在「token 节省」与「轮次增加」间权衡。
 
 ### 4.5 代码示例（向量路由示意）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 ```python
 from dataclasses import dataclass
@@ -498,6 +566,8 @@ A：Top-K 调大、混合关键词打分、加一层 LLM「是否适用」二分
 
 ### 5.1 串行工具调用
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「串行工具调用」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 后一步依赖前一步输出，例如：先 lookup_user_id 再 get_orders(user_id) 。实现上必须
 等前一个 tool 消息返回后再发起下一轮模型请求（或在同轮若模型一次输出多个有依赖的调
@@ -506,6 +576,8 @@ A：Top-K 调大、混合关键词打分、加一层 LLM「是否适用」二分
  在图工作流里体现为有向边；LangGraph、Temporal 等可显式建模。
 
 ### 5.2 并行工具调用
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「并行工具调用」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 无相互依赖的多个查询（查天气 + 查股价）可并行 HTTP，缩短延迟。OpenAI 可能在一次
@@ -516,6 +588,8 @@ assistant 消息返回多个 tool_calls 。
 
 ### 5.3 工具链（Tool Chain）
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具链」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 把多个工具按固定或动态顺序组合成复合流程，如「检索 → 摘要 → 存储」。可以是代码写死的
 Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
@@ -525,11 +599,15 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
 
 ### 5.4 条件工具调用
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「条件工具调用」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 根据中间结果分支：仅当 risk_score > 0.8 才调用 human_review 。可用规则引擎、小模型
 分类、或让主模型输出结构化「分支字段」（需校验）。
 
 ### 5.5 工具调用的依赖管理
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具调用的依赖管理」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 显式维护 DAG：节点是工具调用，边是数据依赖。调度器拓扑排序执行；检测环；失败时重试或
@@ -543,6 +621,8 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
 <p>读多且无依赖并行；有写冲突、强一致、或后一步参数必须来自上一步精确字段时串行；可并行读再串行写（Quorum 读/写视业务而定）。</p>
 </div></div>
 ### 5.6 代码示例（简单编排：先路由再并行）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
 
 ```python
  import concurrent.futures
@@ -590,6 +670,8 @@ def orchestrate(user_email: str) -> str:
 
 ### 6.1 工具调用的权限控制
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具调用的权限控制」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 模型本身没有用户身份，必须在服务端把「当前会话用户」与角色/权限绑定，执行工具前检查：
 是否可读该表、是否可操作该租户。
@@ -599,11 +681,15 @@ def orchestrate(user_email: str) -> str:
 
 ### 6.2 输入验证与清洗
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「输入验证与清洗」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 防 Prompt 注入 诱导工具执行越权参数；防 SQL 注入、路径穿越（ ../../etc/passwd ）。对所
 有进入工具的字符串做白名单、参数化查询、chroot/沙箱。
 
 ### 6.3 敏感操作确认
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「敏感操作确认」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 删除、转账、对外发邮件等，需 人在回路（HITL） 或二次令牌；或把工具设计为「创建草稿」而
@@ -611,10 +697,14 @@ def orchestrate(user_email: str) -> str:
 
 ### 6.4 调用频率限制
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「调用频率限制」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 按用户/IP/工具维度 rate limit，防刷与成本失控；指数退避应对 429。
 
 ### 6.5 审计日志
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「审计日志」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 记录：时间、用户、工具名、参数摘要、结果状态、模型请求 ID。用于合规与事后追溯。
@@ -627,6 +717,8 @@ def orchestrate(user_email: str) -> str:
 ## 7. 常见工具实现
 
 ### 7.1 搜索工具（Web Search）
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「搜索工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 封装搜索引擎 API（Bing、SerpAPI、自建爬虫需合规）。返回摘要与链接，避免整页 HTML 直接
@@ -654,6 +746,8 @@ Python 示意
 
 ### 7.2 数据库查询工具
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「数据库查询工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 永远参数化查询，禁止字符串拼接 SQL。最好只允许只读账号 + 白名单表 + 行级权限。
 ```python
@@ -668,17 +762,23 @@ Python 示意
 
 ### 7.3 API 调用工具
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「API 调用工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+
 概念解释
 对内部 REST 封装： GET/POST 、超时、重试、鉴权头从服务端保险柜取，不让模型看见
 token。
 
 ### 7.4 代码执行工具
 
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+
 概念解释
 高风险：必须在沙箱（Docker、gVisor、WASM）中执行，限制 CPU/内存/网络，禁用危险模
 块；默认应关闭或仅对内网。
 
 ### 7.5 文件操作工具
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「文件操作工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 限制根目录（chroot 或路径规范化），禁止任意路径；写操作需备份或 diff；大文件分块读。
@@ -697,6 +797,8 @@ token。
 ```
 
 ### 7.6 计算器工具
+
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「计算器工具」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
 
 概念解释
 对数学表达式用 AST 解析或 numexpr ，禁止 eval 任意字符串，以防代码执行。
@@ -741,6 +843,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Function Calling 是厂商提供的结构化工具调用通道（字段名、类型、与对话轮次绑定）；纯JSON 输出依赖 prompt 约束，解析脆弱、易混入闲聊文本。FC 更利于多轮 tool 消息与并行调用ID 对齐。实践中也可结合：FC 负责调度，JSON 负责业务负载。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。Function Calling 是厂商提供的结构化工具调用通道（字段名、类型、与对话轮次绑定）；纯 JSON 输出依赖 prompt 约束，解析脆弱、易混入闲聊文本。FC 更利于多轮 tool 消息与并行调用 ID 对齐。实践中也可结合：FC 负责调度，JSON 负责业务负载。追问：若模型不支持 FC 怎么办？——可用 JSON mode / 约束解码 / 后处理抽取；或用小模型做「动作分类」。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
 </div></div>
 </div>
 
@@ -752,6 +856,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>每条 assistant.tool_calls[] 有唯一 id ；执行后每条结果作为一条 role=tool 消息，且必须带相同 tool_call_id ，保证多并行调用时不错配。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「描述 OpenAI 兼容接口里 tool_calls 与 tool 消息的对应关系。」，我的回答是：每条 assistant.tool_calls[] 有唯一 id ；执行后每条结果作为一条 role=tool 消息，且必须带相同 tool_call_id ，保证多并行调用时不错配。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -761,6 +867,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>模型主要依据自然语言描述区分相似工具；函数名更多是给程序路由用。描述应写清边界与反例。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。模型主要依据自然语言描述区分相似工具；函数名更多是给程序路由用。描述应写清边界与反例。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -770,6 +878,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>减少可选参数模糊性；用 enum ；在 description 给示例；避免深层嵌套；必要时分拆多个函数。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。减少可选参数模糊性；用 enum ；在 description 给示例；避免深层嵌套；必要时分拆多个函数。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -779,6 +889,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>减少误触发（false positive），尤其在工具功能重叠时，这是线上质量关键。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。减少误触发（false positive），尤其在工具功能重叠时，这是线上质量关键。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -788,6 +900,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>工具集成碎片化、重复建设、难以跨产品复用；MCP 提供标准边界（Server）与传输，使工具像外设一样即插即用（在生态支持前提下）。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：工具集成碎片化、重复建设、难以跨产品复用；MCP 提供标准边界（Server）与传输，使工具像外设一样即插即用（在生态支持前提下）。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
 </div></div>
 </div>
 
@@ -797,6 +911,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不是。FC 是模型侧表达；MCP 是工具侧集成。Host 常将 MCP 工具列表映射为 FC 的tools 。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「MCP 与 Function Calling 是替代关系吗」，我的回答是：不是。FC 是模型侧表达；MCP 是工具侧集成。Host 常将 MCP 工具列表映射为 FC 的 tools 。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -806,6 +922,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>当工具数量导致上下文膨胀、误选率上升或延迟/成本明显增加时；具体阈值依赖模型与描述长度，常见从几十起考虑。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「工具路由什么时候必须上」，我的回答是：当工具数量导致上下文膨胀、误选率上升或延迟/成本明显增加时；具体阈值依赖模型与描述长度，常见从几十起考虑。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -815,6 +933,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>缺陷：描述不佳则 embedding 不准；OOV 专有名词弱。改进：混合检索、同义词表、用户域特征、日志驱动迭代描述、加轻量分类器。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「向量路由的缺陷与改进」，我的回答是：缺陷：描述不佳则 embedding 不准；OOV 专有名词弱。改进：混合检索、同义词表、用户域特征、日志驱动迭代描述、加轻量分类器。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -824,6 +944,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>幂等性、后端并发限制、数据竞争（写操作）、结果合并顺序、部分失败重试策略。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「并行工具调用要注意什么」，我的回答是：幂等性、后端并发限制、数据竞争（写操作）、结果合并顺序、部分失败重试策略。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -833,6 +955,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>把工具调用当节点，数据依赖当边；拓扑排序执行，避免环与竞态，便于失败重试与可视化监控。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「什么是工具编排中的「依赖 DAG」」，我的回答是：把工具调用当节点，数据依赖当边；拓扑排序执行，避免环与竞态，便于失败重试与可视化监控。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
 </div></div>
 </div>
 
@@ -842,6 +966,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>第一阶段生成草稿/待确认对象，第二阶段在用户确认后再真正执行，降低模型误触发损失。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。第一阶段生成草稿/待确认对象，第二阶段在用户确认后再真正执行，降低模型误触发损失。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -851,6 +977,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>便于模型解析下一步推理、便于程序校验与日志；纯自然语言易产生歧义。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。便于模型解析下一步推理、便于程序校验与日志；纯自然语言易产生歧义。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -860,6 +988,8 @@ token。
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>会话绑定真实用户身份；服务端校验租户与角色；最小权限；敏感操作 HITL；不把长期密钥暴露给模型上下文。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。会话绑定真实用户身份；服务端校验租户与角色；最小权限；敏感操作 HITL；不把长期密钥暴露给模型上下文。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>
 
@@ -871,5 +1001,7 @@ token。
 <p>沙箱隔离、资源与网络限制、禁用危险模块、超时、只读默认、审计；生产慎用。Q16（加一）：审计日志至少记哪些字段？</p>
 <p>时间、trace/request id、用户/租户、工具名、参数摘要（脱敏）、结果状态、耗时、模型版本；合规场景保留策略与不可篡改存储视要求而定。Q17（加一）：Calculator 为什么禁止 eval ？</p>
 <p>eval 可执行任意 Python，等同于远程代码执行；应使用 AST 白名单或安全数学库。小结Function Calling：模型产出结构化调用意图，应用在本地执行并回传，是 Agent 的「手」。Tool 工程：描述、Schema、返回值与错误模式与路由同样重要。MCP：标准化工具与上下文连接，利于复用与治理。路由与编排：解决规模与依赖问题；安全贯穿权限、输入、确认、限流与审计。建议结合自家业务画一张「用户请求 → 路由 → 工具 → 依赖 → 回传模型」的时序图，面试时能用白板讲清楚，比背诵定义更有说服力。</p>
+<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。沙箱隔离、资源与网络限制、禁用危险模块、超时、只读默认、审计；生产慎用。 Q16（加一）：审计日志至少记哪些字段？ **A：**时间、trace/request id、用户/租户、工具名、参数摘要（脱敏）、结果状态、耗时、模型版本；合规场景保留策略与不可篡改存储视要求而定。 Q17（加一）：Calculator 为什么禁止 eval ？ **A：** eval 可执行任意 Python，等同于远程。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
 </div></div>
 </div>

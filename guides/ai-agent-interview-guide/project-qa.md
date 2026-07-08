@@ -1696,24 +1696,25 @@ Action：
 ## 2. HPA（水平 Pod 自动扩缩容）：
 
 ```yaml
-
-   apiVersion: autoscaling/v2
-   kind: HorizontalPodAutoscaler
-   spec:
-     minReplicas: 2
-     maxReplicas: 10
-     metrics:
-       - type: Pods
-         pods:
-           metric:
-             name: requests_per_second
-           target:
-             type: AverageValue
-             averageValue: "50"
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+spec:
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Pods
+      pods:
+        metric:
+          name: requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "50"
+```
 
      QPS > 50/Pod 时扩容。
      QPS < 20/Pod 持续 5 分钟时缩容。
-3. 预测性扩容：
+## 3. 预测性扩容：
+
      基于历史数据预测高峰时段，提前扩容。
      促销等已知高峰事件手动预扩容。
 Result：
@@ -1722,7 +1723,6 @@ Result：
    高峰期 P99 延迟始终保持 < 5s。
 
 第四类：故障处理类问题
-```
 
 **Q1: Agent 死循环怎么检测和防止的？**
 Situation： ReAct 模式下，Agent 可能陷入"思考-行动-观察"的无限循环。例如检索结果不满意

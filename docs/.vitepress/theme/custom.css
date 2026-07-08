@@ -1688,6 +1688,91 @@ details.answer-reveal summary:hover {
   background: rgba(16, 185, 129, 0.12);
 }
 
+.guide-expand {
+  margin: 10px 0 4px !important;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(59, 130, 246, 0.06);
+  border-left: 3px solid #3b82f6;
+}
+
+.guide-expand-label {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #2563eb;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.guide-expand p {
+  margin: 0 !important;
+  font-size: 0.84rem !important;
+  line-height: 1.75 !important;
+  color: var(--vp-c-text-2) !important;
+}
+
+.guide-oral {
+  margin: 12px 0 0 !important;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.08);
+  border-left: 3px solid #f59e0b;
+}
+
+.guide-oral-label {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.dark .guide-oral-label {
+  color: #fcd34d;
+}
+
+.guide-oral p {
+  margin: 0 !important;
+  font-size: 0.86rem !important;
+  font-weight: 500 !important;
+  line-height: 1.75 !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.guide-tip {
+  margin: 0.75rem 0 1rem;
+  padding: 12px 14px 12px 12px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.12), rgba(245, 158, 11, 0.06));
+  border-left: 4px solid #f59e0b;
+}
+
+.guide-tip-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+}
+
+.dark .guide-tip-label {
+  color: #fcd34d;
+}
+
+.guide-tip p {
+  margin: 0 !important;
+  font-size: 0.9rem !important;
+  line-height: 1.75 !important;
+  color: var(--vp-c-text-2) !important;
+}
+
 /* 教程表格 */
 .VPDoc.guides-doc .vp-doc table {
   display: table;
