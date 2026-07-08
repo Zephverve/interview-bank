@@ -1512,6 +1512,43 @@ function postProcessGuideContent(text) {
     pushAnswerText(t)
   }
 
+  function isEnhancementBreak(t) {
+    return (
+      /^\*\*(口播|深度扩写|扩写|老师讲解|Q\d)/.test(t) ||
+      /^#{2,3}\s/.test(t) ||
+      /^追问[：:]/.test(t) ||
+      /^第[一二三四五六七八九十]+类/.test(t)
+    )
+  }
+
+  function collectParagraphs(startIdx) {
+    const paras = []
+    let j = startIdx
+    while (j < lines.length) {
+      const t = lines[j].trim()
+      if (!t) {
+        j++
+        continue
+      }
+      if (isEnhancementBreak(t)) break
+      paras.push(t)
+      j++
+    }
+    return { paras, nextIdx: j - 1 }
+  }
+
+  function renderParagraphs(paras) {
+    return paras.map((p) => `<p>${escapeGuideHtml(p)}</p>`).join('')
+  }
+
+  function ensureInAnswer() {
+    if (!qaOpen) {
+      out.push('<div class="guide-qa">')
+      qaOpen = true
+    }
+    inAnswer = true
+  }
+
   function isSectionHeading(trimmed) {
     if (trimmed.startsWith('#### ')) return false
     return trimmed.startsWith('## ') || trimmed.startsWith('### ')
@@ -1549,36 +1586,57 @@ function postProcessGuideContent(text) {
       const body = tipParts
         .map((l) => l.replace(/^\*\*💡 通俗理解\*\*/, '').trim())
         .filter(Boolean)
-        .join(' ')
       out.push(
-        `<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>${escapeGuideHtml(body)}</p></div>`
+        `<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div>${renderParagraphs(body)}</div>`
       )
       i = j - 1
       continue
     }
 
-    const oralMatch = trimmed.match(/^\*\*口播[：:]\*\*\s*(.*)$/)
-    if (oralMatch) {
-      if (!qaOpen) {
-        out.push('<div class="guide-qa">')
-        qaOpen = true
-      }
-      inAnswer = true
+    if (trimmed === '**老师讲解：**' || trimmed === '**老师讲解:**') {
+      ensureInAnswer()
+      const { paras, nextIdx } = collectParagraphs(i + 1)
       pushAnswerLine(
-        `<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>${escapeGuideHtml(oralMatch[1])}</p></div>`
+        `<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span>${renderParagraphs(paras)}</div>`
       )
+      i = nextIdx
       continue
     }
 
-    const expandMatch = trimmed.match(/^\*\*扩写[：:]\*\*\s*(.*)$/)
+    const expandMatch = trimmed.match(/^\*\*(深度扩写|扩写)[：:]\*\*\s*(.*)$/)
     if (expandMatch) {
-      if (!qaOpen) {
-        out.push('<div class="guide-qa">')
-        qaOpen = true
+      ensureInAnswer()
+      let paras = expandMatch[2]?.trim() ? [expandMatch[2].trim()] : []
+      let nextIdx = i
+      if (!expandMatch[2]?.trim()) {
+        const collected = collectParagraphs(i + 1)
+        paras = collected.paras
+        nextIdx = collected.nextIdx
+      } else {
+        paras = expandMatch[2].split('\n').map((p) => p.trim()).filter(Boolean)
       }
-      inAnswer = true
       pushAnswerLine(
-        `<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>${escapeGuideHtml(expandMatch[1])}</p></div>`
+        `<div class="guide-expand"><span class="guide-expand-label">深度扩写</span>${renderParagraphs(paras)}</div>`
+      )
+      i = nextIdx
+      continue
+    }
+
+    if (trimmed === '**口播参考：**' || trimmed === '**口播参考:**') {
+      ensureInAnswer()
+      const { paras, nextIdx } = collectParagraphs(i + 1)
+      pushAnswerLine(
+        `<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span>${renderParagraphs(paras)}</div>`
+      )
+      i = nextIdx
+      continue
+    }
+
+    const oralMatch = trimmed.match(/^\*\*口播[：:]\*\*\s*(.*)$/)
+    if (oralMatch) {
+      ensureInAnswer()
+      pushAnswerLine(
+        `<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>${escapeGuideHtml(oralMatch[1])}</p></div>`
       )
       continue
     }

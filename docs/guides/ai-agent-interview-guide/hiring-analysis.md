@@ -8,7 +8,7 @@ aside: true
 
 <p class="guide-chapter-badge">企业招聘需求分析</p>
 
-> 阅读本章时建议先画一张心智图，再把每节面试题出声答一遍。
+> 阅读本章时建议：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。
 
 2026 年 AI Agent 企业招聘需求分析
 
@@ -34,7 +34,7 @@ aside: true
 
 ### 1.1 2026 年 AI Agent 岗位的增长趋势
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「2026 年 AI Agent 岗位的增长趋势」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「2026 年 AI Agent 岗位的增长趋势」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 2024–2026 年，大模型从「单轮对话」走向「可执行、可编排、可观测」的 Agent 形态，企业
 侧需求呈现以下特征：
@@ -52,7 +52,7 @@ aside: true
 「能落地、能扛线上」的工程师，而非仅会 Prompt 的爱好者。
 ### 1.2 BOSS 直聘数据：AI 相关岗位供给端变化
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「BOSS 直聘数据：AI 相关岗位供给端变化」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「BOSS 直聘数据：AI 相关岗位供给端变化」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 根据 BOSS 直聘 等平台公开披露的行业数据（统计口径为 AI 相关岗位月均新发职位数）：
    同比增长约 74.1%（同比对象为上一统计周期，具体基期以平台财报/行业白皮书为准）。
@@ -67,7 +67,7 @@ aside: true
    验、开源/论文） 更加重要。
 ### 1.3 薪资范围分析（归纳性说明）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「薪资范围分析」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「薪资范围分析」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 以下为基于 一线城市大厂/准一线互联网 常见区间归纳的参考范围（税前年包，含基础薪资+年终
 常见区间，不含股权个体差异；2026 年市场仍可能随融资与业务线波动）：
@@ -94,7 +94,7 @@ aside: true
 
 ### 2.1 腾讯
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「腾讯」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「腾讯」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 腾讯在 智能运维、内部效率、云与社交生态 等方向持续投入 AI Agent 能力，北京、深圳等地均
 有明确岗位。
@@ -143,7 +143,7 @@ aside: true
 
 ### 2.2 小红书
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「小红书」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「小红书」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 小红书内容社区属性强，Agent 方向与 搜索、推荐、创作助手、社区治理 等场景结合紧密。
 ### 2.2.1 AI Agent 工程师（智能体系统与上下文工程）
@@ -160,7 +160,7 @@ aside: true
 
 ### 2.3 字节跳动
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「字节跳动」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「字节跳动」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 字节在 剪映（CapCut） 等产品线上，将 AI Agent 用于创作辅助、素材理解与流程自动化，后端
 强调 可扩展编排与成本控制。
@@ -188,7 +188,7 @@ aside: true
 重。
 ### 3.1 编程语言要求分布
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「编程语言要求分布」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「编程语言要求分布」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 语言 | 出现情况 | 典型用途 |
 | --- | --- | --- |
@@ -199,7 +199,7 @@ aside: true
 
 ### 3.2 框架要求分布
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「框架要求分布」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「框架要求分布」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
           框架/生态              出现情况                      备注
  LangChain               高                入门与原型常见
@@ -211,7 +211,7 @@ aside: true
 
 ### 3.3 核心技术要求分布
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「核心技术要求分布」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「核心技术要求分布」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 技术点 | 腾讯 | 小红书 | 字节（剪映） | 综合 |
 | --- | --- | --- | --- | --- |
@@ -233,7 +233,7 @@ aside: true
 说明：●●● 高，●● 中，○ 低或岗位特定。
 ### 3.4 工程能力要求分布
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工程能力要求分布」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工程能力要求分布」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 能力 | 说明 | 频次 |
 | --- | --- | --- |
@@ -245,7 +245,7 @@ aside: true
 
 ### 3.5 学历要求
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「学历要求」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「学历要求」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
         学历                           情况
  本科及以上        绝大多数 JD 基准线
@@ -254,7 +254,7 @@ aside: true
 
 ### 3.6 经验要求
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「经验要求」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「经验要求」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
          年限                            典型岗位
  3 年+             腾讯资深（运维 Agent）、小红书 Agent 工程师、字节（视具体
@@ -268,7 +268,7 @@ aside: true
 月学习计划的优先级）。
 ### 4.1 必备技能（Must Have）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「必备技能」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「必备技能」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 #### 1. Python 后端能力：异步 IO、API 设计、依赖注入与模块化；能独立部署一个「带工具调用的
 
@@ -289,7 +289,7 @@ aside: true
 
 ### 4.2 加分技能（Nice to Have）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「加分技能」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「加分技能」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 #### 1. LangGraph（或同类）：状态图、子图、持久化 checkpoint 概念。
 
@@ -305,7 +305,7 @@ aside: true
 
 ### 4.3 差异化技能（Differentiator）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「差异化技能」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「差异化技能」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 #### 1. 领域结合的 RAG：运维日志/指标、剪映类创作链路——能讲「数据从哪来、如何评测」。
 
@@ -323,7 +323,7 @@ aside: true
 
 ### 5.1 Java 后端转 AI Agent
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 后端转 AI Agent」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 后端转 AI Agent」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 优势：分布式事务、Spring 生态、企业集成经验丰富。
 Gap：Python 生态与 Notebook 习惯、LLM 调试方式、向量与评测流水线。
@@ -337,7 +337,7 @@ Gap：Python 生态与 Notebook 习惯、LLM 调试方式、向量与评测流�
 
 ### 5.2 Python 后端转 AI Agent
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 后端转 AI Agent」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 后端转 AI Agent」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 优势：与主流框架一致，上手快。
 Gap：往往缺 分布式与线上 叙事；项目易停留在 Demo。
@@ -350,7 +350,7 @@ Gap：往往缺 分布式与线上 叙事；项目易停留在 Demo。
 
 ### 5.3 Go 后端转 AI Agent
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 后端转 AI Agent」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 后端转 AI Agent」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 优势：性能与并发模型、云原生部署。
 Gap：LLM 生态库多在 Python；需明确「哪层用 Go、哪层用 Python」。
@@ -364,7 +364,7 @@ Gap：LLM 生态库多在 Python；需明确「哪层用 Go、哪层用 Python�
 
 ### 5.4 应届生 / 小白入门
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「应届生 / 小白入门」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「应届生 / 小白入门」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 现实：3 年+ 岗位占比较高，应届生需用 实习、竞赛、开源、高质量毕设 缩小差距。
 可执行路径：
@@ -376,7 +376,7 @@ Gap：LLM 生态库多在 Python；需明确「哪层用 Go、哪层用 Python�
 
 ### 5.5 前端转 AI Agent
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「前端转 AI Agent」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「前端转 AI Agent」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 优势：交互与产品感、流式 UI、可视化调试面板。
 Gap：后端、向量、评测与线上运维。
@@ -391,7 +391,7 @@ Gap：后端、向量、评测与线上运维。
 
 ### 6.1 不同城市的薪资水平（参考）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不同城市的薪资水平」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不同城市的薪资水平」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 以下为 同级别 Engineer（含 Agent 方向） 大致对比，个体差异大于城市差异；单位：人民币年
 包大致区间（税前，2026 年参考）。
@@ -406,7 +406,7 @@ Gap：后端、向量、评测与线上运维。
  远程/混合 岗位在 AI 领域有增多，但头部大厂仍以 onsite 或混合为主，投递前确认政策。
 ### 6.2 职业发展路径
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「职业发展路径」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「职业发展路径」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 阶段 | 方向 | 典型能力重点 |
 | --- | --- | --- |

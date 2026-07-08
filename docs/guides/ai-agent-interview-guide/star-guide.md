@@ -8,7 +8,7 @@ aside: true
 
 <p class="guide-chapter-badge">STAR 面试稿指南</p>
 
-> 阅读本章时建议先画一张心智图，再把每节面试题出声答一遍。
+> 阅读本章时建议：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。
 
 STAR 面试稿准备指南（小白版）
 面向第一次准备技术面试、尤其是 AI Agent / 大模型应用 相关项目面试的同学。本文把 STAR
@@ -22,7 +22,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 么决策、怎么落地、数据上有没有变化。
 ### 1.1 S（Situation）：项目背景，怎么说
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「S：项目背景，怎么说」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「S：项目背景，怎么说」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 你要交代什么：
 
@@ -45,7 +45,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 1.2 T（Task）：你的任务，怎么说
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「T：你的任务，怎么说」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「T：你的任务，怎么说」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 你要交代什么：
  你的角色：Owner / 核心开发 / 接口人（诚实表述，忌夸大成「我一个人做完整个平台」）。
@@ -60,7 +60,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 1.3 A（Action）：你做了什么，怎么说
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「A：你做了什么，怎么说」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「A：你做了什么，怎么说」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 这是 STAR 的核心，占比最大（建议占总时长一半左右）。
 你要交代什么：
@@ -79,7 +79,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 1.4 R（Result）：取得了什么成果，怎么说
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「R：取得了什么成果，怎么说」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「R：取得了什么成果，怎么说」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 你要交代什么：
  业务结果：人效、转化率、工单量、满意度（有则说；没有可用 proxy 指标）。
@@ -96,7 +96,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 1.5 时间控制：每个部分说多久
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「时间控制：每个部分说多久」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「时间控制：每个部分说多久」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 以下按 「一段完整项目经历」约 2.5～3.5 分钟 分配（可按面试节奏微调）：
 
@@ -115,7 +115,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 1.6 常见误区
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「常见误区」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「常见误区」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 #### 1. 只堆名词：「我用了 LangChain、向量库、K8s、Prometheus……」——没有因果链，面试官
 
@@ -147,7 +147,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 2.1 三分钟完整版本（通用 · 推荐默认练这一版）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「三分钟完整版本」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「三分钟完整版本」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 （开场 — 可按你习惯微调，建议保留业务一句话）
 面试官您好，我来介绍一下我做的这个项目。
@@ -178,7 +178,7 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 
 ### 2.2 一分钟精简版本（通用）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「一分钟精简版本」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「一分钟精简版本」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 面试官您好，我参与的是 企业级 AI Agent 智能助手平台，面向 知识管理和智能客服，把 多路
 RAG、Agent 编排、ReAct、工具与 MCP、记忆、模型路由与熔断、文档 ETL、全链路追踪 串
@@ -189,7 +189,7 @@ RAG、Agent 编排、ReAct、工具与 MCP、记忆、模型路由与熔断、�
 
 ### 2.3 Python 版本（完整 3 分钟 + 完整 1 分钟）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版本」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版本」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 Python · 三分钟（完整可直接练）
 面试官您好，我来介绍这个项目。我们做的是 企业级 AI Agent 智能助手平台，解决企业在 知识
@@ -210,7 +210,7 @@ Python · 一分钟（完整可直接练）
 
 ### 2.4 Java 版本（完整 3 分钟 + 完整 1 分钟）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版本」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版本」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 Java · 三分钟（完整可直接练）
 面试官您好，我来介绍这个项目。项目是 企业级 AI Agent 智能助手平台，业务上解决 知识分
@@ -229,7 +229,7 @@ Java · 一分钟（完整可直接练）
 
 ### 2.5 Go 版本（完整 3 分钟 + 完整 1 分钟）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版本」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版本」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 Go · 三分钟（完整可直接练）
 面试官您好，我来介绍这个项目。项目是 企业级 AI Agent 智能助手平台，覆盖 知识管理、智能
@@ -253,7 +253,7 @@ Go · 一分钟（完整可直接练）
 
 ### 3.1 Agent 编排系统
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 编排系统」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 编排系统」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 企业需要一个能处理复杂问题的 AI 助手，但 单一 Agent 模式 无法应对所有场景：有的问题只要
@@ -270,7 +270,7 @@ Execute 等）的 智能切换与组合，并在 延迟与成本预算 内稳定
 </div></div>
 ### 3.2 ReAct Agent
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「ReAct Agent」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「ReAct Agent」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 很多业务问题不是「一次检索就能回答」，需要 多轮思考 + 多次工具调用，但又要避免模型胡
@@ -286,7 +286,7 @@ T：
 </div></div>
 ### 3.3 多路 RAG 检索引擎
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「多路 RAG 检索引擎」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「多路 RAG 检索引擎」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 企业知识来源多样：制度 PDF、内部 Wiki、工单、结构化表。单一向量检索容易出现 召回不全或
@@ -301,7 +301,7 @@ T：
 </div></div>
 ### 3.4 记忆系统
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「记忆系统」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「记忆系统」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 对话助手若完全没有记忆，用户要重复说上下文；若把大量历史全塞进 prompt，又会 Token 暴
@@ -316,7 +316,7 @@ T：
 </div></div>
 ### 3.5 工具系统与 MCP
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具系统与 MCP」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具系统与 MCP」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 Agent 要落地必须连接企业内部系统：工单、知识库、CRM、审批等。工具越多，越容易出现 权
@@ -331,7 +331,7 @@ T：
 </div></div>
 ### 3.6 模型路由与熔断降级
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型路由与熔断降级」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型路由与熔断降级」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 大模型调用存在 超时、抖动、供应商差异；若核心链路没有路由与熔断，容易出现 雪崩，一次抖
@@ -346,7 +346,7 @@ T：
 </div></div>
 ### 3.7 文档 ETL 流水线
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「文档 ETL 流水线」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「文档 ETL 流水线」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 RAG 效果上限很大程度上取决于 文档入库质量：格式混乱、扫描件、表格跨页、权限变更，都会
@@ -361,7 +361,7 @@ T：
 </div></div>
 ### 3.8 全链路追踪
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「全链路追踪」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「全链路追踪」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 Agent 链路长：路由、检索、工具、模型多次调用。没有 tracing，线上问题只能靠猜，排障成本
@@ -378,7 +378,7 @@ T：
 </div></div>
 ### 4.1 模型调用超时和不稳定
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型调用超时和不稳定」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型调用超时和不稳定」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 上线初期，高峰时经常出现 回答卡住或耗时飙升。监控显示模型侧延迟抖动大，内部链路还存在
@@ -393,7 +393,7 @@ T：
 </div></div>
 ### 4.2 RAG 检索结果不准确的优化
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAG 检索结果不准确的优化」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAG 检索结果不准确的优化」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 用户反馈「引用条款不对」或「答案对但依据不对」。问题分散在 chunk、embedding、召回、重
@@ -409,7 +409,7 @@ T：
 </div></div>
 ### 4.3 Agent 死循环的排查与解决
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 死循环的排查与解决」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 死循环的排查与解决」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 部分会话出现 重复思考、重复调用同一工具、步数飙高，最终超时；浪费资源、体验差。
@@ -422,7 +422,7 @@ T：
 </div></div>
 ### 4.4 Token 成本失控的治理
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Token 成本失控的治理」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Token 成本失控的治理」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 早期倾向 大上下文 + 强模型，成本快速上升；许多简单问题不需要这种配置。
@@ -436,7 +436,7 @@ T：
 </div></div>
 ### 4.5 高并发下的性能瓶颈
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「高并发下的性能瓶颈」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「高并发下的性能瓶颈」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 推广后并发上升，出现 队列堆积、CPU 飙高、检索延迟变大、流式卡顿。
@@ -451,7 +451,7 @@ T：
 </div></div>
 ### 5.1 「你在项目中遇到的最大挑战是什么？」
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你在项目中遇到的最大挑战是什么？」」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你在项目中遇到的最大挑战是什么？」」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 项目中期推广加快，业务期望上升，线上出现 成本、延迟、效果 三者拉扯：加能力往往意味着更
@@ -465,7 +465,7 @@ T：
 </div></div>
 ### 5.2 「你是如何做技术选型的？」
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你是如何做技术选型的？」」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你是如何做技术选型的？」」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 项目涉及编排框架、向量库、网关、观测栈等，早期选错迁移成本很高。
@@ -478,7 +478,7 @@ T：
 </div></div>
 ### 5.3 「你和团队成员有没有技术分歧？怎么解决的？」
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你和团队成员有没有技术分歧？怎么解决的？」」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「你和团队成员有没有技术分歧？怎么解决的？」」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 引入更复杂 Agent 模式时，有同事认为应 尽快上更强模型，我认为应先 把路由、预算、观测 做
@@ -492,7 +492,7 @@ T：
 </div></div>
 ### 5.4 「项目中你最自豪的贡献是什么？」
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「项目中你最自豪的贡献是什么？」」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「项目中你最自豪的贡献是什么？」」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 项目从 demo 走向生产时，最大风险不是「能不能跑」，而是 出了问题能不能快速定位与恢复。
@@ -505,7 +505,7 @@ T：
 </div></div>
 ### 5.5 「如果重新做这个项目，你会有什么改进？」
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「如果重新做这个项目，你会有什么改进？」」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「「如果重新做这个项目，你会有什么改进？」」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 S：
 第一次做企业级 Agent 平台，许多决策在信息不完整下做出，这很正常。
@@ -521,7 +521,7 @@ T：
 
 ### 6.1 不要只说技术，要说业务价值
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不要只说技术，要说业务价值」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不要只说技术，要说业务价值」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 面试官问项目，本质在问：你为公司带来了什么。技术细节是证据，不是目的。
 每段 STAR 的 R 尽量落到：效率、成本、风险、体验 之一。例如：「排障从小时到分钟」是风险
@@ -531,7 +531,7 @@ T：
 
 ### 6.2 不要背书式回答
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不要背书式回答」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「不要背书式回答」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 背书特征：语速均匀、不容打断、追问仍复述同一段。
 改进：记 STAR 结构 + 3～5 个关键词，用口语串联。被追问时先 确认层级：架构 / 实现 / 指标
@@ -539,14 +539,14 @@ T：
 
 ### 6.3 要有自己的思考
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「要有自己的思考」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「要有自己的思考」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 加分回答通常包含：权衡（为什么）、取舍（放弃了什么）、复盘（如果重来）。结论普通没关系，
 逻辑自洽 比「标准答案腔」更可信。
 
 ### 6.4 如何应对不会的问题
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「如何应对不会的问题」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「如何应对不会的问题」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 原则： 诚实、结构化、展示学习能力，不要胡编。
 话术模板：
@@ -558,7 +558,7 @@ T：
 
 ### 6.5 其他注意事项（清单）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「其他注意事项」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「其他注意事项」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
  贡献表述真实：区分「我主导 / 我负责 / 我参与 / 我配合」。
  准备 2～3 个追问点：如为什么 RRF、熔断阈值依据、评测集构造、灰度比例。

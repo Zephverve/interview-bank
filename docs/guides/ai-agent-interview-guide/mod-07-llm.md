@@ -8,7 +8,9 @@ aside: true
 
 <p class="guide-chapter-badge">07 · 大模型基础</p>
 
-> 大模型基础是 Agent 的「发动机」。Attention 决定看哪里，KV Cache 决定推理快不快，LoRA 决定怎么便宜微调，RLHF/DPO 决定对齐人类偏好。
+> 大模型是 Agent 的「发动机」。Attention 决定看哪里；KV Cache 影响推理速度；LoRA 是便宜微调；RLHF/DPO 是对齐人类偏好。
+> 
+> 这些题偏八股，但老师讲解会帮你建立「和 Agent 的关系」，避免孤立背概念。
 
 07 大模型基础（面试八股文）
 
@@ -40,7 +42,7 @@ aside: true
 
 ### 1.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 Transformer 是一种完全基于自注意力（Self-Attention）的神经网络结构，用于序列建模。与
 RNN/CNN 不同，它不依赖逐步递归或局部卷积，而是通过注意力在任意两个位置之间直接建立
@@ -53,7 +55,7 @@ RNN/CNN 不同，它不依赖逐步递归或局部卷积，而是通过注意力
 纯 Decoder 堆叠（如 GPT 系列）已成为当前大语言模型（LLM）的主流形态。
 ### 1.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 1.2.1 Encoder–Decoder 结构
 
@@ -112,7 +114,7 @@ Pre-Norm 通常更稳定、更易训练深层网络；Post-Norm 在理论上与�
 作用：缓解梯度消失、提供恒等映射捷径，使深层网络可优化。
 ### 1.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：Transformer 和 RNN 相比，核心优势是什么？
 <div class="guide-answer">
@@ -123,7 +125,7 @@ Q：Transformer 和 RNN 相比，核心优势是什么？
 </div></div>
 ### 1.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>为什么大模型多是 Decoder-only？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>生成式预训练目标（下一词预测）与架构一致；工程上堆叠简单、扩展性好；Encoder-only（如 BERT）更偏理解，需另做生成适配。</p>
@@ -131,7 +133,7 @@ Q：Transformer 和 RNN 相比，核心优势是什么？
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>Pre-Norm 让子层输入分布更稳定，梯度在残差路径上更平滑；可提一嘴深层Transformer 实践中 Pre-Norm 更常见。</p>
 ### 1.5 代码示例：缩放点积注意力（PyTorch 风格伪代码）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
   import torch
@@ -153,13 +155,13 @@ Q：Transformer 和 RNN 相比，核心优势是什么？
 
 ### 2.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 注意力本质上是一种软寻址机制：根据 Query 与各个 Key 的相似度得到权重，再对 Value 加权求
 和。Self-Attention 中 Q、K、V 都来自同一组输入（不同线性投影）。
 ### 2.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 2.2.1 数学公式
 
@@ -194,7 +196,7 @@ Flash Attention 利用 GPU SRAM 快、HBM 慢 的层次结构，把 Q、K、V �
 一步优化并行与工作划分。
 ### 2.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：简述 Flash Attention 为什么能快和省显存？
 <div class="guide-answer">
@@ -205,13 +207,13 @@ Q：简述 Flash Attention 为什么能快和省显存？
 </div></div>
 ### 2.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>不用 softmax 可以吗？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>注意力需非负且归一的权重；softmax 是最常见选择，也有线性注意力、核方法等变体用于线性复杂度，但各有近似与实现代价。</p>
 ### 2.5 代码示例：多头形状演示
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
   # batch=2, seq=128, heads=8, d_model=512 -> d_k=64
@@ -225,13 +227,13 @@ Q：简述 Flash Attention 为什么能快和省显存？
 
 ### 3.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 Tokenization 把原始文本切成模型可处理的 token 序列；每个 token 对应词表中的 id，再经
 embedding 变为向量。切分方式直接影响序列长度、OOV 处理、多语言与符号表现。
 ### 3.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 3.2.1 BPE（Byte Pair Encoding）
 
@@ -261,7 +263,7 @@ embedding 变为向量。切分方式直接影响序列长度、OOV 处理、多
   与预训练一致性：微调与推理必须用同一套 tokenizer 与规则。
 ### 3.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：BPE 和 WordPiece 主要区别？
 <div class="guide-answer">
@@ -272,7 +274,7 @@ Q：BPE 和 WordPiece 主要区别？
 </div></div>
 ### 3.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>字节级 BPE 优缺点？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>词表小、任意字符可表示；缺点是同样文本 token 变长，算力与上下文窗口压力增大。</p>
@@ -281,13 +283,13 @@ Q：BPE 和 WordPiece 主要区别？
 
 ### 4.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 推理指模型前向计算生成输出。自回归 LM 逐 token 生成，分为 Prefill（处理提示词）与
 Decode（逐个生成新 token）。
 ### 4.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 4.2.1 Prefill vs Decode
 
@@ -319,7 +321,7 @@ Decode（逐个生成新 token）。
 （FlashAttention）等（见第 8 节）。
 ### 4.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 <div class="guide-answer">
@@ -330,13 +332,13 @@ Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 </div></div>
 ### 4.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>KV Cache 显存如何估算？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>与层数、头数、每头维度、batch、序列长度、精度（FP16/BF16/INT8）成正比；可答「每层每 token 存 K、V 两份向量，总显存随长度线性增」。</p>
 ### 4.5 代码示例：简单 Greedy + 温度（概念）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
   import torch
@@ -356,13 +358,13 @@ Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 
 ### 5.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 微调在预训练模型上用下游数据继续训练，使模型适配任务或领域。全量微调更新全部参数；**参
 数高效微调（PEFT）**只训练少量附加参数或低秩增量，降低显存与存储。
 ### 5.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 5.2.1 全量微调（Full Fine-tuning）
 
@@ -403,7 +405,7 @@ BA) 或保持分开。
 
 ### 5.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：LoRA 秩 r 怎么选？
 <div class="guide-answer">
@@ -414,13 +416,13 @@ Q：LoRA 秩 r 怎么选？
 </div></div>
 ### 5.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>LoRA 一般接在哪些层？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>常对 Attention 的 q,v（及有时 k,o）和/或 FFN 注入；实践有默认配置（如 r、alpha、target_modules）。</p>
 ### 5.5 代码示例：LoRA 形式（数学）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
                                                           text
  #   前向：h = W x + (B A) x = (W + B A) x
@@ -430,13 +432,13 @@ Q：LoRA 秩 r 怎么选？
 
 ### 6.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 对齐指使模型行为符合人类意图与安全规范。RLHF 用人类偏好训练奖励模型再用强化学习；
 DPO 等直接用偏好数据优化策略，无需显式奖励模型与 RL 循环。
 ### 6.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 6.2.1 RLHF 完整流程（经典三阶段）
 
@@ -477,7 +479,7 @@ DeepSeek 等工作中强调：对同一 prompt 一组输出内做相对奖励归
 
 ### 6.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：RLHF 为什么要 KL 惩罚？
 <div class="guide-answer">
@@ -488,7 +490,7 @@ Q：RLHF 为什么要 KL 惩罚？
 </div></div>
 ### 6.4 追问应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>偏好数据噪声大怎么办？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>数据清洗、多裁判一致性、对比学习过滤、鲁棒损失与正则；工业界常强调标注指南与质检。</p>
@@ -497,13 +499,13 @@ Q：RLHF 为什么要 KL 惩罚？
 
 ### 7.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 量化把浮点权重/激活用低比特整数近似，减少显存与带宽，加速推理。训练后量化（PTQ）常
 见；QAT（量化感知训练）精度更好但成本高。
 ### 7.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 7.2.1 INT8 / INT4
 
@@ -529,7 +531,7 @@ Q：RLHF 为什么要 KL 惩罚？
   心误差累积。
 ### 7.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：INT4 比 INT8 主要风险是什么？
 <div class="guide-answer">
@@ -542,13 +544,13 @@ Q：INT4 比 INT8 主要风险是什么？
 
 ### 8.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 大模型推理瓶颈来自 算力、显存带宽、KV Cache、批调度 等，工程上从模型分片、内核、缓存
 管理、批处理、投机解码等多方面优化。
 ### 8.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 8.2.1 模型并行
 
@@ -574,7 +576,7 @@ token 延迟（理想情况），需 draft 与 target 兼容。
 提高容量与效率比；挑战是 负载均衡与通信（如 DeepSeek-MoE、Mixtral）。
 ### 8.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：vLLM 的 PagedAttention 解决什么问题？
 <div class="guide-answer">
@@ -587,13 +589,13 @@ Q：vLLM 的 PagedAttention 解决什么问题？
 
 ### 9.1 概念解释
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 闭源（API）与开源（可自托管）在能力、成本、合规、迭代速度上权衡；各系列有长上下文、多
 模态、代码、价格等差异。
 ### 9.2 原理详解
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 9.2.1 DeepSeek 系列特点（概括）
 
@@ -615,7 +617,7 @@ Q：vLLM 的 PagedAttention 解决什么问题？
   混合：敏感数据本地开源模型，通用能力调用 API。
 ### 9.3 面试问题（Q）与标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 Q：选开源 70B 还是闭源 API？
 <div class="guide-answer">
@@ -631,8 +633,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>(\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免softmax 饱和与梯度问题。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。」，我的回答是：(\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免 softmax 饱和与梯度问题。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】(\text{softmax}(QK^\top/\sqrt{d_k})V)。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. (\text{softmax}(QK^\top/\sqrt{d_k})V)。除 … → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」（/custom/ai100-planning/049-cot-and-tot） — 要点：Chain-of-Thought (CoT) 和 Tree-of-Thought (ToT) 是两种主流的 LLM 推理策略。**CoT 是线性推理**——通过引导模型"一步步思考"而非直接给出答案，…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：推理策略详解：Chain-of-Thought 与 Tree-of-Thought。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】(\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免 softmax 饱和与梯度问题。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -642,8 +645,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …」（/custom/xiaolin-llm/mha_mqa_gqa_flash_attention） — 要点：我理解 MHA 有三个核心痛点…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -653,8 +657,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有Cross-Attention 读 Encoder。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Encoder 和 Decoder 的自注意力有何不同」，我的回答是：Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有 Cross-Attention 读 Encoder。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Encoder 和 Decoder 的自注意力有何不同」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. Encoder 一般为双向；Decoder 用 causal mask 保证自回… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「6. Encoder vs Decoder vs Decoder-Only：三大架构…」（/custom/kama-transformer/transformer_interview-q6） — 要点：面试官会问：&amp;quot;GPT、BERT、T5 的架构有什么区别…</p><p>· 「Re-ranking 的原理与实现：Cross-Encoder vs Bi-Enco…」（/custom/ai100-rag/017-reranking-strategies） — 要点：Bi-Encoder 将查询和文档独立编码为向量，速度快但精度有限，用于第一阶段的大规模检索（Retrieval）。Cross-Encoder 将查询和文档拼接后联合编码，精度高但速度慢，用于第二阶段…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：6. Encoder vs Decoder vs Decoder-Only：三大架构…、Re-ranking 的原理与实现：Cross-Encoder vs Bi-Enco…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有 Cross-Attention 读 Encoder。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「6. Encoder vs Decoder vs Decoder-Only：三大架构…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -664,8 +669,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论较多但现代架构更常选 RoPE/ALiBi。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「RoPE 与正弦绝对位置编码各有什么特点」，我的回答是：RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论较多但现代架构更常选 RoPE/ALiBi。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】RoPE 通过旋转编码相对位置，常用于 Decoder LLM。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型的位置编码是干什么用的？sin/cos、RoPE、ALiBi 有什么区别？」（/custom/xiaolin-llm/position_encoding） — 要点：我理解位置编码要解决的问题，本质上是 Self-Attention 的「位置盲」缺陷…</p><p>· 「6. Encoder vs Decoder vs Decoder-Only：三大架构…」（/custom/kama-transformer/transformer_interview-q6） — 要点：面试官会问：&amp;quot;GPT、BERT、T5 的架构有什么区别…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型的位置编码是干什么用的？sin/cos、RoPE、ALiBi 有什么区别？、6. Encoder vs Decoder vs Decoder-Only：三大架构…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论较多但现代架构更常选 RoPE/ALiBi。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型的位置编码是干什么用的？sin/cos、RoPE、ALiBi 有什么区别？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -675,8 +681,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】Pre-Norm：LN 在子层前。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 … → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…」（/custom/xiaolin-llm/post_training） — 要点：我理解 Post-Training 是个上位概念，指的是 SFT 之后所有继续提升模型质量的训练阶段…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -686,8 +693,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「解释 MQA 与 GQA 的动机。」，我的回答是：减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「解释 MQA 与 GQA 的动机。」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「KV Cache 是什么？Prompt Caching 的原理是什么？」（/custom/xiaolin-llm/kv_cache_prompt_caching） — 要点：我理解 KV Cache 和 Prompt Caching 是同一个机制在两个时间尺度上的应用…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：KV Cache 是什么？Prompt Caching 的原理是什么？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「KV Cache 是什么？Prompt Caching 的原理是什么？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -697,8 +705,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Flash Attention 核心优化思想」，我的回答是：分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】分块、减少 HBM 访问、融合算子。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …」（/custom/xiaolin-llm/mha_mqa_gqa_flash_attention） — 要点：我理解 MHA 有三个核心痛点…</p><p>· 「3. Self-Attention：Transformer 的灵魂」（/custom/kama-transformer/transformer_interview-q3） — 要点：面试官会问：&amp;quot;Self-Attention 是什么…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …、3. Self-Attention：Transformer 的灵魂。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「多头注意力（MHA）有哪些局限？MQA、GQA、Flash Attention …」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -708,8 +717,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -719,8 +729,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不依赖空格分词，可学习子词；适合无空格语言与多语言统一。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「SentencePiece 适合中文的原因」，我的回答是：不依赖空格分词，可学习子词；适合无空格语言与多语言统一。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「SentencePiece 适合中文的原因」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. 不依赖空格分词，可学习子词；适合无空格语言与多语言统一。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -730,8 +741,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>id 错位、性能异常；微调与推理必须与基座一致。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提缓存、模型路由、批量与流式。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Tokenizer 不一致会导致什么问题」，我的回答是：id 错位、性能异常；微调与推理必须与基座一致。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Tokenizer 不一致会导致什么问题」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】权衡题不要一边倒。先承认局限，再给配套护栏，最后说在什么业务条件下仍然值得做。</p><p>【拆开理解】</p><p>1. id 错位、性能异常；微调与推理必须与基座一致。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】先承认局限 → 再给缓解手段 → 最后说适用场景。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「3. AI 编程工具的 Token 成本怎么控制？」（/custom/kama-ai-coding/vibe_coding_interview-q3） — 要点：这个问题面试官越来越爱问，因为这是团队用 AI 编程最实际的问题…</p><p>· 「如何防止 Agent 死循环浪费 Token」（/custom/today-interview/agent-infinite-loop） — 要点：硬上限 + 重复检测 + 无进展熔断三道保险；到线就停、状态可恢复；宁可早停可重试，也不烧 token 空转。…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：3. AI 编程工具的 Token 成本怎么控制？、如何防止 Agent 死循环浪费 Token。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先承认局限，因为面试官更想听你怎么控制风险，而不是吹完美方案。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「3. AI 编程工具的 Token 成本怎么控制？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -741,8 +753,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Prefill 和 Decode 阶段特点」，我的回答是：Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】Prefill 并行处理 prompt。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「KV Cache 是什么？Prompt Caching 的原理是什么？」（/custom/xiaolin-llm/kv_cache_prompt_caching） — 要点：我理解 KV Cache 和 Prompt Caching 是同一个机制在两个时间尺度上的应用…</p><p>· 「prompt 结合是怎么做的？」（/custom/langgraph-real/073-prompt-combination） — 要点：这道题我会这样回答面试官：阿里淘天一面原题，考察**prompt 工程在图编排里的落地方式**。 **分机节点策略**： - **静态 system prompt**：角色定义、输出格式约束、安全边界…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：KV Cache 是什么？Prompt Caching 的原理是什么？、prompt 结合是怎么做的？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「KV Cache 是什么？Prompt Caching 的原理是什么？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -752,8 +765,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>缓存历史 K、V；避免重复计算过去 token 的注意力键值。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：缓存历史 K、V；避免重复计算过去 token 的注意力键值。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「KV Cache 是什么？为什么能加速」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 缓存历史 K、V；避免重复计算过去 token 的注意力键值。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「KV Cache 是什么？Prompt Caching 的原理是什么？」（/custom/xiaolin-llm/kv_cache_prompt_caching） — 要点：我理解 KV Cache 和 Prompt Caching 是同一个机制在两个时间尺度上的应用…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：KV Cache 是什么？Prompt Caching 的原理是什么？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】缓存历史 K、V；避免重复计算过去 token 的注意力键值。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「KV Cache 是什么？Prompt Caching 的原理是什么？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -763,8 +777,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>随机性/确定性；截断长尾候选；动态 nucleus 截断。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Temperature、Top-k、Top-p 各影响什么」，我的回答是：随机性/确定性；截断长尾候选；动态 nucleus 截断。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Temperature、Top-k、Top-p 各影响什么」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. 随机性/确定性；截断长尾候选；动态 nucleus 截断。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型的参数：温度值、Top-P、Top-K 分别是什么？各个场景下的最佳设置是…」（/custom/xiaolin-llm/temperature_top_p_top_k） — 要点：我调这几个参数的经验是，Temperature 是最关键的，另外两个基本不用动…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型的参数：温度值、Top-P、Top-K 分别是什么？各个场景下的最佳设置是…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型的参数：温度值、Top-P、Top-K 分别是什么？各个场景下的最佳设置是…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -774,8 +789,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>易重复、不自然；开放域更常用采样类方法。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。易重复、不自然；开放域更常用采样类方法。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「对话生成为什么少用 Beam Search」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>把标准答案逐句读一遍，每句问自己「为什么？」——能答上来，面试就不会卡壳。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型生成文本时的解码策略有哪些？贪心、Beam Search、采样分别什么时候…」（/custom/xiaolin-llm/decoding_strategies） — 要点：我理解大模型的解码策略本质上是回答一个问题：模型在每一步输出了一个 vocabulary 大小的概率分布，我们怎么从中选下一个 token…</p><p>· 「Monte Carlo Tree Search 在 Agent 规划中的应用」（/custom/ai100-planning/056-mcts-in-agent-planning） — 要点：Monte Carlo Tree Search (MCTS) 是一种结合树搜索与随机模拟的决策算法，通过四步循环——**选择（Selection）、扩展（Expansion）、模拟（Simulatio…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型生成文本时的解码策略有哪些？贪心、Beam Search、采样分别什么时候…、Monte Carlo Tree Search 在 Agent 规划中的应用。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型生成文本时的解码策略有哪些？贪心、Beam Search、采样分别什么时候…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -785,8 +801,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「LoRA 的低秩假设直觉」，我的回答是：任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「请讲一下 LoRA 技术，除了减少参数量，它还有哪些优点？」（/custom/xiaolin-llm/lora） — 要点：LoRA 我在项目里用过，省参数这个优点大家都知道，但它还有几个很实用的好处…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：请讲一下 LoRA 技术，除了减少参数量，它还有哪些优点？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「请讲一下 LoRA 技术，除了减少参数量，它还有哪些优点？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -796,8 +813,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】基座 4-bit 存权重 + LoRA 训练少量参数。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「微调如何避免灾难性遗忘」（/custom/today-interview/finetune-forgetting） — 要点：QLoRA 只训 adapter 不动基座、数据掺通用样本、小学习率早停、双验证集盯两头——训完跑回归对比看有没有变傻。…</p><p>· 「请讲一下 LoRA 技术，除了减少参数量，它还有哪些优点？」（/custom/xiaolin-llm/lora） — 要点：LoRA 我在项目里用过，省参数这个优点大家都知道，但它还有几个很实用的好处…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：微调如何避免灾难性遗忘、请讲一下 LoRA 技术，除了减少参数量，它还有哪些优点？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「微调如何避免灾难性遗忘」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -807,8 +825,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>常对 assistant token 做交叉熵，忽略 user 与 mask。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。常对 assistant token 做交叉熵，忽略 user 与 mask。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】常对 assistant token 做交叉熵，忽略 user 与 mask。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 常对 assistant token 做交叉熵，忽略 user 与 mask。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】常对 assistant token 做交叉熵，忽略 user 与 mask。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -818,8 +837,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>SFT → 奖励模型 → PPO（带 KL）强化学习。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：SFT →奖励模型→ PPO（带 KL）强化学习。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】SFT →奖励模型→ PPO（带 KL）强化学习。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. SFT →奖励模型→ PPO（带 KL）强化学习。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型微调面试怎么答？SFT、RLHF、DPO、PPO 到底还有没有必要？」（/custom/kama-finetune/finetuning_sft_rlhf_interview） — 要点：- 先说结论：微调没有消失，只是价值变了…</p><p>· 「SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…」（/custom/xiaolin-llm/post_training） — 要点：我理解 Post-Training 是个上位概念，指的是 SFT 之后所有继续提升模型质量的训练阶段…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型微调面试怎么答？SFT、RLHF、DPO、PPO 到底还有没有必要？、SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型微调面试怎么答？SFT、RLHF、DPO、PPO 到底还有没有必要？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -829,8 +849,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不显式训练奖励模型与 RL 循环，用偏好直接优化策略。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提步数上限、停止条件与任务清单防迷失。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：不显式训练奖励模型与 RL 循环，用偏好直接优化策略。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】不显式训练奖励模型与 RL 循环，用偏好直接优化策略。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 不显式训练奖励模型与 RL 循环，用偏好直接优化策略。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agentic-RL 是什么？如何用 GRPO 训练 Agent 的决策能力？」（/custom/ai100-planning/103-agentic-rl-grpo） — 要点：**Agentic-RL** 是指用强化学习训练 LLM Agent 的工具调用、多步规划和任务执行能力，区别于传统 **RLHF** 只对齐人类偏好——Agentic-RL 的奖励信号来自**任务完…</p><p>· 「大模型微调面试怎么答？SFT、RLHF、DPO、PPO 到底还有没有必要？」（/custom/kama-finetune/finetuning_sft_rlhf_interview） — 要点：- 先说结论：微调没有消失，只是价值变了…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：Agentic-RL 是什么？如何用 GRPO 训练 Agent 的决策能力？、大模型微调面试怎么答？SFT、RLHF、DPO、PPO 到底还有没有必要？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agentic-RL 是什么？如何用 GRPO 训练 Agent 的决策能力？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -840,8 +861,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>限制偏离参考策略，减轻 reward hacking 与模式崩塌。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「PPO 中 KL 惩罚目的」，我的回答是：限制偏离参考策略，减轻 reward hacking 与模式崩塌。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】限制偏离参考策略，减轻 reward hacking 与模式崩塌。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. 限制偏离参考策略，减轻 reward hacking 与模式崩塌。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】限制偏离参考策略，减轻 reward hacking 与模式崩塌。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -851,8 +873,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会先承认限制，再给工程解法。精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。。强调不是不能用，而是要知道在什么场景用、配套哪些护栏。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「INT4 量化主要风险」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】权衡题不要一边倒。先承认局限，再给配套护栏，最后说在什么业务条件下仍然值得做。</p><p>【拆开理解】</p><p>1. 精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】先承认局限 → 再给缓解手段 → 最后说适用场景。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？」（/custom/xiaolin-llm/quantization） — 要点：我理解量化（Quantization）的本质是把模型参数从「高精度浮点数」（FP32 或 FP16）映射到「低精度整数」（INT8 或 INT4），用更少的比特表示同样的信息…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先承认局限，因为面试官更想听你怎么控制风险，而不是吹完美方案。</p><p>【主体】精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -862,8 +885,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>训练后量化权重，按层/块最小化误差，常用 Hessian 近似。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「GPTQ 大致做什么」，我的回答是：训练后量化权重，按层/块最小化误差，常用 Hessian 近似。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】训练后量化权重，按层/块最小化误差，常用 Hessian 近似。</p><p>【为什么考这个】这题在真实面试里出现频率不低，不能只背结论。</p><p>【拆开理解】</p><p>1. 训练后量化权重，按层/块最小化误差，常用 Hessian 近似。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？」（/custom/xiaolin-llm/quantization） — 要点：我理解量化（Quantization）的本质是把模型参数从「高精度浮点数」（FP32 或 FP16）映射到「低精度整数」（INT8 或 INT4），用更少的比特表示同样的信息…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】训练后量化权重，按层/块最小化误差，常用 Hessian 近似。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「大模型量化是什么？INT8/INT4/AWQ/GPTQ 怎么选？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -873,8 +897,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>TP 切分单层张量；PP 切分不同层到不同设备。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。TP 切分单层张量；PP 切分不同层到不同设备。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「张量并行与流水线并行区别」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. TP 切分单层张量；PP 切分不同层到不同设备。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -884,8 +909,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>KV Cache 变长导致的浪费与碎片化，提高批处理效率。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「PagedAttention 解决什么」，我的回答是：KV Cache 变长导致的浪费与碎片化，提高批处理效率。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】KV Cache 变长导致的浪费与碎片化，提高批处理效率。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. KV Cache 变长导致的浪费与碎片化，提高批处理效率。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「KV Cache 是什么？Prompt Caching 的原理是什么？」（/custom/xiaolin-llm/kv_cache_prompt_caching） — 要点：我理解 KV Cache 和 Prompt Caching 是同一个机制在两个时间尺度上的应用…</p><p>· 「3. Self-Attention：Transformer 的灵魂」（/custom/kama-transformer/transformer_interview-q3） — 要点：面试官会问：&amp;quot;Self-Attention 是什么…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：KV Cache 是什么？Prompt Caching 的原理是什么？、3. Self-Attention：Transformer 的灵魂。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「KV Cache 是什么？Prompt Caching 的原理是什么？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -895,8 +921,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>小模型提议多 token，大模型并行验证，减少串行步数。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。小模型提议多 token，大模型并行验证，减少串行步数。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】小模型提议多 token，大模型并行验证，减少串行步数。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 小模型提议多 token，大模型并行验证，减少串行步数。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -906,8 +933,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>负载均衡、通信、路由稳定性；避免专家坍塌。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提缓存、模型路由、批量与流式。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「MoE 训练难点」，我的回答是：负载均衡、通信、路由稳定性；避免专家坍塌。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「MoE 训练难点」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】这题和 Engineering 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 负载均衡、通信、路由稳定性；避免专家坍塌。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -917,8 +945,9 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>数据不出域、可深度定制、长期成本可控（有算力前提）。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提缓存、模型路由、批量与流式。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「开源模型相对闭源 API 的核心优势场景」，我的回答是：数据不出域、可深度定制、长期成本可控（有算力前提）。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】数据不出域、可深度定制、长期成本可控（有算力前提）。</p><p>【为什么考这个】举例题要把抽象概念落到具体场景，最好带一个你熟悉或能想象的业务流程。</p><p>【拆开理解】</p><p>1. 数据不出域、可深度定制、长期成本可控（有算力前提）。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】场景 1 句 → 流程走一遍 → 哪一步是 Agent 价值所在。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我结合一个具体业务场景，把流程走一遍，让你看到 Agent 在哪一步创造价值。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -928,8 +957,8 @@ Q：选开源 70B 还是闭源 API？
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「GRPO / KTO 你了解到什么程度」，我的回答是：诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。附录：速查公式与术语符号/术语含义 (d_{model}) 模型隐藏维度 (d_k) 每头 Key/Query 维度 KV Cache 缓存每步 K、V 以加速自回归 PEFT 参数高效微调总称（LoRA、Adapter 。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
-<p>附录：速查公式与术语符号/术语                      含义(d_{model})     模型隐藏维度(d_k)           每头 Key/Query 维度KV Cache        缓存每步 K、V 以加速自回归PEFT            参数高效微调总称（LoRA、Adapter 等）PTQ             训练后量化TP / PP         张量并行 / 流水线并行文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。</p>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合。</p><p>【为什么考这个】这题和 LLM 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…」（/custom/xiaolin-llm/post_training） — 要点：我理解 Post-Training 是个上位概念，指的是 SFT 之后所有继续提升模型质量的训练阶段…</p><p>· 「如何润色用户的 Query（Query Rewrite）？目的是什么？」（/custom/xiaolin-rag/query_rewrite） — 要点：我用 Query Rewrite 主要是为了弥补用户提问方式和知识库文档表述之间的语义鸿沟…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…、如何润色用户的 Query（Query Rewrite）？目的是什么？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。附录：速查公式与术语符号/术语含义 (d_{model}) 模型隐藏维度 (d_k) 每头 Key/Query 维度 KV Cache 缓存每步 K、V 以加速自回归 PEFT 参数高效微调总称（LoRA、Adapter 等） PTQ 训练后量化 TP / PP 张量并行 / 流水线并行文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「SFT 之后还有哪些 Post-Training？RLHF、DPO、GRPO、拒…」里有更完整的口播示范，建议对照练一遍。</p><p>附录：速查公式与术语</p><p>符号/术语                      含义</p><p>(d_{model})     模型隐藏维度</p><p>(d_k)           每头 Key/Query 维度</p><p>KV Cache        缓存每步 K、V 以加速自回归</p><p>PEFT            参数高效微调总称（LoRA、Adapter 等）</p><p>PTQ             训练后量化</p><p>TP / PP         张量并行 / 流水线并行</p><p>文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。</p></div>
 </div></div>
 </div>

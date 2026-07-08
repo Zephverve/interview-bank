@@ -8,7 +8,9 @@ aside: true
 
 <p class="guide-chapter-badge">02 · 核心框架</p>
 
-> 框架章考「你怎么组织多步推理」。ReAct 是高频必考：想一步、做一步、看反馈。Plan-and-Execute 适合步骤清晰的任务；Reflexion 加自我纠错；LangGraph 用图把流程写清楚。别背名词，要能画循环。
+> 框架章考「你怎么组织多步推理」。ReAct = 想一步、做一步、看反馈；Plan-and-Execute = 先列计划再执行；LangGraph = 用图把流程写清楚。
+> 
+> 别只背名词——要能画循环/拓扑，并说出何时用哪种、怎么混合。建议对照本站 langgraph-advanced 第 077 题（ReAct vs Plan-and-Execute）。
 
 02 核心框架（AI Agent 面试八股文 · 模块二）
 
@@ -36,7 +38,7 @@ aside: true
 
 ### 1.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象成：一个会做题的学生，不
 是一口气写完答案，而是 边想边做——先在心里说一句「我接下来要干什么」（推理），然后真的
@@ -52,7 +54,7 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 
 ### 1.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 1.2.1 核心思想：交替推理与行动
 
@@ -143,7 +145,7 @@ Final Answer: ...
 
 ### 1.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">ReAct 和「普通 CoT 提示」有什么本质区别？</span></div>
@@ -151,8 +153,9 @@ Final Answer: ...
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与 可执行行动绑定，每一步行动后都有 真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与可执行行动绑定，每一步行动后都有真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】ReAct = Reasoning + Acting，交替进行推理与行动，用 Observation 锚定真实环境。</p><p>【拆开理解】</p><p>· Thought：模型显式推理「下一步做什么」</p><p>· Action：调用工具（搜索/代码/API）</p><p>· Observation：工具返回，写回上下文</p><p>· 循环直到 Final Answer</p><p>【和 Plan-and-Execute 对比】</p><p>· ReAct：环境不确定、需频繁调工具、用户意图可能变（如客服）</p><p>· Plan：步骤可预知（写研报、数据流水线）</p><p>· 混合：粗 Plan + 每步 ReAct（生产最常见）</p><p>【题库延伸】langgraph-advanced/077 有完整口播和拓扑对比，建议对照练习。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与可执行行动绑定，每一步行动后都有真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -162,14 +165,15 @@ Final Answer: ...
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定地选择 Action。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我用 STAR 讲。Situation 一句话背景，Task 说目标指标，Action 讲 2～3 个关键决策（为什么选这个方案），Result 给数字。核心结论：显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定地选择 Action。。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】这题用 STAR 讲故事：背景要短、动作要有决策理由、结果要有数字。下面按段落帮你拆。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>4. 空谈「要注意安全」，没有最小权限、审计日志、人在回路的具体做法。</p><p>【面试怎么答】口播结构（约 90 秒）：</p><p>① Situation：1 句业务背景（谁、什么系统、什么痛点）。</p><p>② Task：你的目标指标（延迟、准确率、成本、完成率）。</p><p>③ Action：2～3 个关键决策，每个说「为什么选它而不是别的」。</p><p>④ Result：至少 2 个数字（前后对比或百分比提升）。</p><p>⑤ 收尾：如果重来会怎么改进——显得你有复盘习惯。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」（/custom/ai100-planning/049-cot-and-tot） — 要点：Chain-of-Thought (CoT) 和 Tree-of-Thought (ToT) 是两种主流的 LLM 推理策略。**CoT 是线性推理**——通过引导模型"一步步思考"而非直接给出答案，…</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 安全：最小权限、审计日志、注入防护、输出审核。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 延伸阅读：推理策略详解：Chain-of-Thought 与 Tree-of-Thought、Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>面试官好，这题我按 STAR 来答。</p><p>Situation：先交代业务背景和系统规模</p><p>Task：说清要优化的目标指标</p><p>Action：我重点做了三件事——显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定地选择 Action。</p><p>Result：给量化结果，如延迟降 X%、准确率升 Y%</p><p>你也可以补充：本站题库「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
 ### 1.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
       追问                                     应对要点
  Observation 造假怎    由 执行器 生成 Observation，模型只负责 Thought/Action；可加
@@ -181,7 +185,7 @@ Final Answer: ...
 
 ### 1.5 代码示例（Python，简化版 ReAct 循环）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
  from dataclasses import dataclass
@@ -276,7 +280,7 @@ def react_loop(
 
 ### 1.6 优缺点分析
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「优缺点分析」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「优缺点分析」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 优点
  可解释：轨迹可读，便于调试与评测中间步骤。
@@ -290,7 +294,7 @@ def react_loop(
 
 ### 1.7 与 Chain-of-Thought（CoT）的区别
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「与 Chain-of-Thought的区别」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「与 Chain-of-Thought的区别」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 维度 | CoT | ReAct |
 | --- | --- | --- |
@@ -306,7 +310,7 @@ def react_loop(
 
 ### 2.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执行（Executor）。像旅行前先
 列行程单，再按天去玩；执行中若发现「景点关门」，再 改行程（Re-planning）。
@@ -315,7 +319,7 @@ Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执�
 
 ### 2.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 2.2.1 两阶段模式
 
@@ -376,7 +380,7 @@ if error or inconsistency:
 
 ### 2.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">Plan-and-Execute 相比 ReAct 什么时候更占优？</span></div>
@@ -384,8 +388,9 @@ if error or inconsistency:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>当任务 步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长 动态工具交互、逐步探索。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Plan-and-Execute 相比 ReAct 什么时候更占优」，我的回答是：当任务步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长动态工具交互、逐步探索。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】当任务步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」。</p><p>【为什么考这个】这题和 ReAct、Plan-and-Execute、Tool 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 当任务步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】当任务步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长动态工具交互、逐步探索。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -395,14 +400,15 @@ if error or inconsistency:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、在 state 中保留已验证事实、对计划变更加 一致性检查（新旧计划差异说明）。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提步数上限、停止条件与任务清单防迷失。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、在 state 中保留已验证事实、对计划变更加一致性检查（新旧计划差异说明）。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Re-planning 会不会导致「计划抖动」？怎么缓解」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「LangGraph state 如何与外部数据库集成？」（/custom/langgraph-advanced/083-external-db-state） — 要点：我先说结论，再展开原因。外部数据库集成考察**图状态与业务数据的划界**，是系统设计高频题。 **原则：别把 DB 连接/大对象放 state** - state 要序列化进 checkpoint，D…</p><p>· 「多 Agent 之间共享 state 还是隔离？」（/custom/langgraph-multi/048-shared-state-multi-agent） — 要点：我先说结论，再展开原因。这是字节 Agent 二面的经典原题：「能不能所有子 agent 共享工具和 state？」标准答法不是简单的「能」或「不能」，而是按协作紧密度分层设计。 State 层面：紧…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：LangGraph state 如何与外部数据库集成？、多 Agent 之间共享 state 还是隔离？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、在 state 中保留已验证事实、对计划变更加一致性检查（新旧计划差异说明）。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「LangGraph state 如何与外部数据库集成？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
 ### 2.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
          追问                                  应对要点
  Planner 输出不可          加 结构化输出（JSON schema）、自检清单、必要时用更强模型只
@@ -412,7 +418,7 @@ if error or inconsistency:
 
 ### 2.5 代码示例（Python，极简 Planner + Executor）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
  from typing import Any, Dict, List
@@ -459,7 +465,7 @@ if error or inconsistency:
 
 ### 2.6 与 ReAct 的对比与适用场景
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「与 ReAct 的对比与适用场景」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「与 ReAct 的对比与适用场景」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 维度 | ReAct | Plan-and-Execute |
 | --- | --- | --- |
@@ -476,7 +482,7 @@ if error or inconsistency:
 
 ### 3.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 Reflexion 的核心是：做完不等于结束——还要 评估做得好不好，把 教训 记下来，下次 带着教
 训重试。像考试做错后写错题本，而不是盲目刷同一道题。
@@ -485,7 +491,7 @@ Reflexion 的核心是：做完不等于结束——还要 评估做得好不好
 
 ### 3.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 3.2.1 自我反思机制
 
@@ -524,7 +530,7 @@ repeat until success or max_trials:
 
 ### 3.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">Reflexion 和「让模型自己检查一遍」有什么不同？</span></div>
@@ -532,14 +538,15 @@ repeat until success or max_trials:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>自检往往是一次性的；Reflexion 把评估与反思 显式化、结构化，并 跨尝试复用 反思文本，形成可累积的「策略记忆」。工程上更易控制与评测。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提分层记忆与写入策略（事实 vs 推断）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「Reflexion 和「让模型自己检查一遍」有什么不同」，我的回答是：自检往往是一次性的；Reflexion 把评估与反思显式化、结构化，并跨尝试复用反思文本，形成可累积的「策略记忆」。工程上更易控制与评测。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Reflexion 和「让模型自己检查一遍」有什么不同」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. 自检往往是一次性的；Reflexion 把评估与反思显式化、结构化，并跨尝试复用… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像员工的笔记本 + 公司 Wiki：笔记本记当前任务，Wiki 记长期规则和客户档案。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「评估方法论：从 LLM 评估到 Agent 评估」（/custom/ai100-evaluation/069-evaluation-methodology） — 要点：LLM 评估分为三大类：(1) **自动指标评估**——用算法计算的确定性指标（如 BLEU、ROUGE、精确匹配），速度快、成本低，但只能衡量表面特征；(2) **人工评估**——由人类标注者评判输…</p><p>· 「LLM-as-Judge：使用 LLM 评估 LLM 输出」（/custom/ai100-evaluation/071-llm-as-judge） — 要点：LLM-as-Judge 是用一个强大的 LLM（如 GPT-4）自动评估另一个 LLM 输出质量的技术，在成本和质量之间取得了最佳平衡。两种核心模式：**Pointwise 评分**（对单个输出按维…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 记忆：事实 vs 推断分开存、写入时机、冲突合并、跨会话权限。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 延伸阅读：评估方法论：从 LLM 评估到 Agent 评估、LLM-as-Judge：使用 LLM 评估 LLM 输出。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】自检往往是一次性的；Reflexion 把评估与反思显式化、结构化，并跨尝试复用反思文本，形成可累积的「策略记忆」。工程上更易控制与评测。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「评估方法论：从 LLM 评估到 Agent 评估」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
 ### 3.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
         追问                                    应对要点
  Evaluator 从哪来？        规则、更强模型、单元测试、外部工具验证（因任务而异）。
@@ -547,7 +554,7 @@ repeat until success or max_trials:
 
 ### 3.5 代码示例（Python）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
 
@@ -572,7 +579,7 @@ repeat until success or max_trials:
 
 ### 3.6 适用场景
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「适用场景」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「适用场景」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
  可验证任务：代码、数学、有测试用例的生成。
  易犯系统性错误 的任务：格式、约束、工具选择。
@@ -582,7 +589,7 @@ repeat until success or max_trials:
 
 ### 4.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 LATS 把 Agent 的决策看成在 树 上搜索：每个节点是一种「状态/中间思路」，分支是不同行动。
 任务复杂、存在多条可能路径时，与其一次走到底，不如 探索多条路，用评估函数判断哪条路更
@@ -593,7 +600,7 @@ LATS 把 Agent 的决策看成在 树 上搜索：每个节点是一种「状态
 
 ### 4.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 4.2.1 树搜索 + Agent
 
@@ -616,7 +623,7 @@ while budget remains:
 
 ### 4.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">LATS 相比单次 ReAct 多在哪里成本？换来什么收益？</span></div>
@@ -624,14 +631,15 @@ while budget remains:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>成本主要来自 多分支扩展 与 多次评估/模拟。收益是 更系统的探索，降低「一条路径走到黑」的局部最优风险，适合决策点多的任务。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提步数上限、停止条件与任务清单防迷失。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「LATS 相比单次 ReAct 多在哪里成本？换来什么收益」，我的回答是：成本主要来自多分支扩展与多次评估/模拟。收益是更系统的探索，降低「一条路径走到黑」的局部最优风险，适合决策点多的任务。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】成本主要来自多分支扩展与多次评估/模拟。</p><p>【为什么考这个】这题和 ReAct、Eval、Engineering 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 成本主要来自多分支扩展与多次评估/模拟。收益是更系统的探索，降低「一条路径走到黑… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】成本主要来自多分支扩展与多次评估/模拟。收益是更系统的探索，降低「一条路径走到黑」的局部最优风险，适合决策点多的任务。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
 ### 4.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
          追问                                       应对要点
  和束搜索（Beam Search）         Beam 偏序列生成；LATS/MCTS 更强调 节点价值估计 与
@@ -640,7 +648,7 @@ while budget remains:
 
 ### 4.5 代码示例（Python，极度简化的「多候选一步扩展」）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
  import random
@@ -664,7 +672,7 @@ while budget remains:
 
 ### 4.6 适用于需要探索多条路径的复杂任务
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「适用于需要探索多条路径的复杂任务」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「适用于需要探索多条路径的复杂任务」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
  策略游戏、规划 puzzle、代码修复（多方案补丁）。
  研究型问题：需要先提出多种假设再验证。
@@ -673,14 +681,14 @@ while budget remains:
 
 ### 5.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行程序。Agent 在这里通常指：
 由 LLM 决定下一步调用哪个工具 的循环执行体；AgentExecutor 负责「跑这个循环直到结束」。
 
 ### 5.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 5.2.1 LangChain 中与 Agent 相关的核心抽象（面试口径）
 
@@ -716,7 +724,7 @@ loop:
 
 ### 5.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">LangChain 里 AgentExecutor 解决的核心问题是什么？</span></div>
@@ -724,8 +732,9 @@ loop:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>把「模型决策 → 工具执行 → 结果回填 → 再决策」的 控制流 标准化，统一处理 迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：把「模型决策→工具执行→结果回填→再决策」的控制流标准化，统一处理迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】把「模型决策→工具执行→结果回填→再决策」的控制流标准化，统一处理迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 把「模型决策→工具执行→结果回填→再决策」的控制流标准化，统一处理迭代限制、错误… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像装修：先出施工图（Plan），再按步骤施工（Execute）；中途发现问题可以改图纸（Replan）。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…、说说 Single-Agent 和 Multi-Agent 的设计方案？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】把「模型决策→工具执行→结果回填→再决策」的控制流标准化，统一处理迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -735,14 +744,15 @@ loop:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Agent 依赖描述进行 工具选择；描述不清会导致错选工具或参数幻觉。应包含 用途、输入输出、边界条件、示例。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。Agent 依赖描述进行工具选择；描述不清会导致错选工具或参数幻觉。应包含用途、输入输出、边界条件、示例。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】Agent 依赖描述进行工具选择。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. Agent 依赖描述进行工具选择；描述不清会导致错选工具或参数幻觉。应包含用途、… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像给员工配电脑和系统账号：没有工具只能动嘴，有了工具才能查库存、下单、跑代码。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…、说说 Single-Agent 和 Multi-Agent 的设计方案？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】Agent 依赖描述进行工具选择；描述不清会导致错选工具或参数幻觉。应包含用途、输入输出、边界条件、示例。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
 ### 5.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
            追问                                   应对要点
  LangChain Agent 和自写         LangChain 提供 工程封装 与生态整合；底层仍是提示
@@ -752,7 +762,7 @@ loop:
 
 ### 5.5 代码示例（Python，示意：以「工具调用风格」组织循环）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
   说明：LangChain 具体 import 路径随版本变化较大，下列示例用「结构与流程」表达面试
   要点；落地时请对照你项目锁定的 LangChain 版本文档。
@@ -785,7 +795,7 @@ loop:
 
 ### 6.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 如果把 LangChain Agent 看成「一套默认的循环」，LangGraph 则是把 Agent 工作流画成 图：
 节点是处理步骤（调用模型、调工具、审核），边是流转关系。复杂业务往往需要分支、循环、人
@@ -793,7 +803,7 @@ loop:
 
 ### 6.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 6.2.1 基于图的 Agent 编排
 
@@ -828,7 +838,7 @@ else: goto continue
 
 ### 6.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">什么时候选 LangGraph 而不是 AgentExecutor？</span></div>
@@ -836,8 +846,9 @@ else: goto continue
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>当流程不是「单一工具循环」，而是需要 多阶段流水线、条件路由、回环修复、人工审核节点、并行任务 时，用图编排更清晰可维护。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。当流程不是「单一工具循环」，而是需要多阶段流水线、条件路由、回环修复、人工审核节点、并行任务时，用图编排更清晰可维护。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】当流程不是「单一工具循环」，而是需要多阶段流水线、条件路由、回环修复、人工审核节点、并行任务时，用图编排更清晰可维护。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. 当流程不是「单一工具循环」，而是需要多阶段流水线、条件路由、回环修复、人工审核节… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像装修：先出施工图（Plan），再按步骤施工（Execute）；中途发现问题可以改图纸（Replan）。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「LangGraph Agent 怎么做评测（Evaluation）？」（/custom/langgraph-advanced/085-agent-evaluation） — 要点：这道题我会这样回答面试官： LangGraph Agent 评测考察**是否理解图编排的评测优势**——能评轨迹，不只是评最终答案。 **Level 1：端到端评测** - 黄金问题集（50-200 …</p><p>· 「LangGraph Agent 安全怎么保障？」（/custom/langgraph-advanced/087-agent-security） — 要点：这道题我会这样回答面试官： Agent 安全是**生产上线的硬性要求**，考察多层防御思维。 **五层安全架构**： **Layer 1：输入 Guardrails 节点**（图入口） - 检测 pr…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：LangGraph Agent 怎么做评测（Evaluation）？、LangGraph Agent 安全怎么保障？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】当流程不是「单一工具循环」，而是需要多阶段流水线、条件路由、回环修复、人工审核节点、并行任务时，用图编排更清晰可维护。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「LangGraph Agent 怎么做评测（Evaluation）？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -847,14 +858,15 @@ else: goto continue
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确每个节点的写入职责。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确每个节点的写入职责。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「LangGraph 的状态更新为什么要谨慎设计」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append v… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像流程图软件：每个节点是一步，边是跳转条件，checkpoint 是存档点，断了可以续玩。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「LangGraph vs AutoGen vs CrewAI 怎么选？」（/custom/langgraph-basics/011-vs-autogen-crewai） — 要点：我会先把定位说清楚： LangGraph：显式状态机编排，LangChain 生态。CrewAI：角色（Role）+ 任务（Task）+ Crew 抽象，YAML 式配置多 Agent。AutoGen…</p><p>· 「为什么 LangGraph 被称为图状工作流框架？」（/custom/langgraph-basics/004-graph-workflow-framework） — 要点：这道题我会这样回答面试官：「图状工作流框架」指用 Node + Edge + State 三元组建模控制流，而非隐式的函数嵌套或 prompt 内规划。每个节点是计算单元，边是路由逻辑，条件边让 LL…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：LangGraph vs AutoGen vs CrewAI 怎么选？、为什么 LangGraph 被称为图状工作流框架？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确每个节点的写入职责。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「LangGraph vs AutoGen vs CrewAI 怎么选？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
 ### 6.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
         追问                                    应对要点
  图会不会变复杂？              用子图/模块化节点；把业务阶段分层。
@@ -862,7 +874,7 @@ else: goto continue
 
 ### 6.5 代码示例（Python，最小状态机草图）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
  from typing import TypedDict, Literal
@@ -894,7 +906,7 @@ else: goto continue
 
 ### 7.1 概念解释（通俗易懂）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」先用生活类比讲清「是什么、解决什么痛点」，再落到技术词。面试官要的是你能让非技术同学也听懂。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「概念解释」学习三步：① 用生活类比讲清是什么；② 说解决什么痛点；③ 落到技术词（LLM/规划/记忆/工具）。</p><p>不要一上来堆英文缩写——面试官要的是你能让非技术同学也听懂。</p></div>
 
 多 Agent 框架把任务拆给多个「角色」：有人负责写代码，有人负责审查，有人负责检索。它们通
 过 对话 或 结构化消息 协作。AutoGen 偏 可编程的对话与工具；CrewAI 偏 角色驱动的团队流程
@@ -902,7 +914,7 @@ else: goto continue
 
 ### 7.2 原理详解（技术细节）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」建议按「输入→处理→输出→边界条件」四步讲。提到组件时顺带说一句失败时怎么办，显得有工程经验。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>「原理详解」按「输入 → 处理 → 输出 → 失败怎么办」四步理解。</p><p>每看到一个组件，顺手想：它挂了/agent 走偏了，系统怎么兜底？这会让你的回答立刻有工程感。</p></div>
 
 ### 7.2.1 核心设计理念
 
@@ -933,7 +945,7 @@ for round in 1..N:
 
 ### 7.3 面试问题（Q）+ 标准答案（A）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：先给 15 秒结论，再补 1 个例子或数字。下面每题附了扩写与口播参考，建议出声练一遍。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>本节面试题：每题下方有 **老师讲解**（像上课一样拆答案）、**深度扩写**（加分项）、**口播参考**（60～90 秒）。</p><p>建议流程：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。</p></div>
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">多 Agent 一定比单 Agent 更强吗？</span></div>
@@ -941,8 +953,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>不一定。更多 Agent 可能带来 协调成本、错误级联、对话冗长。当任务可清晰分工且有评估机制时收益大；否则单 Agent + 强工具可能更简单高效。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「多 Agent 一定比单 Agent 更强吗」，我的回答是：不一定。更多 Agent 可能带来协调成本、错误级联、对话冗长。当任务可清晰分工且有评估机制时收益大；否则单 Agent + 强工具可能更简单高效。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「多 Agent 一定比单 Agent 更强吗」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】这题和 Tool、MultiAgent、Eval 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 不一定。更多 Agent 可能带来协调成本、错误级联、对话冗长。当任务可清晰分工… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像给员工配电脑和系统账号：没有工具只能动嘴，有了工具才能查库存、下单、跑代码。</p><p>【常见误区】</p><p>1. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…、说说 Single-Agent 和 Multi-Agent 的设计方案？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】不一定。更多 Agent 可能带来协调成本、错误级联、对话冗长。当任务可清晰分工且有评估机制时收益大；否则单 Agent + 强工具可能更简单高效。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -952,14 +965,15 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>引入 独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确 停止条件 与 异议处理流程。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。引入独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确停止条件与异议处理流程。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】引入独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确停止条件与异议处理流程。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 引入独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确停止条件与异… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像开卷考试：模型是大脑，检索是把相关页码翻到面前，禁止闭着眼瞎编。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 只说「向量检索」，不提 BM25/Hybrid、重排、引用溯源。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 检索：Hybrid（向量+BM25）、Recall@K、重排、引用溯源、拒答策略。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 延伸阅读：了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…、说说 Single-Agent 和 Multi-Agent 的设计方案？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】引入独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确停止条件与异议处理流程。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问为什么不用纯向量，我会说：编号、专有名词、精确匹配 BM25 更稳，所以 Hybrid + 重排是常态。</p></div>
 </div></div>
 </div>
 
 ### 7.4 追问及应对
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。回答模板：承认限制 → 给出工程兜底（规则/人工/降级）→ 一句业务影响。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>追问通常考边界与取舍。推荐模板：承认限制（不装完美）→ 给工程兜底（规则/人工/降级）→ 一句业务影响（延迟、成本、体验）。</p><p>下面每题的扩写里也会提示常见追问方向。</p></div>
 
        追问                                   应对要点
  AutoGen vs          看团队更偏 对话编排/代码优先（AutoGen 系生态印象）还是 角
@@ -968,7 +982,7 @@ for round in 1..N:
 
 ### 7.5 代码示例（Python，概念演示：多角色轮询）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例不是让你背语法，而是说明「循环/状态/Schema 如何落地」。面试时说清输入输出和停止条件即可。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>代码示例的目标不是背语法，而是理解：循环怎么转、状态存哪、停止条件是什么、工具 Schema 长什么样。</p><p>面试时说清输入/输出/停止条件即可；若被追问，能指出「哪一行是 Observation 写回上下文」。</p></div>
 
 ```python
  def run_crew(task: str, roles: dict, llm, rounds: int = 2) -> str:
@@ -994,8 +1008,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「解释 Agent 的核心组件：感知、推理、行动、记忆」（/custom/ai100-agent-arch/002-agent-core-components） — 要点：一个完整的 LLM Agent 由四大核心组件构成：**感知模块**（接收和解析输入）、**推理模块**（LLM 作为"大脑"进行思考和规划）、**行动模块**（调用工具执行操作）、**记忆模块**（…</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：解释 Agent 的核心组件：感知、推理、行动、记忆、Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「解释 Agent 的核心组件：感知、推理、行动、记忆」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1005,8 +1020,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1016,8 +1032,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>风险是 错误计划污染全局；缓解是 可验证子步骤、重规划、强 Planner 约束输出 与 执行期监控。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提步数上限、停止条件与任务清单防迷失。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：风险是错误计划污染全局；缓解是可验证子步骤、重规划、强 Planner 约束输出与执行期监控。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Plan-and-Execute 的最大风险是什么？如何缓解」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 风险是错误计划污染全局；缓解是可验证子步骤、重规划、强 Planner 约束输出… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像装修：先出施工图（Plan），再按步骤施工（Execute）；中途发现问题可以改图纸（Replan）。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】风险是错误计划污染全局；缓解是可验证子步骤、重规划、强 Planner 约束输出与执行期监控。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -1027,8 +1044,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>关键是 高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提分层记忆与写入策略（事实 vs 推断）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：关键是高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「Reflexion 的关键产出是什么？它如何提升下一轮」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. 关键是高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像员工的笔记本 + 公司 Wiki：笔记本记当前任务，Wiki 记长期规则和客户档案。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 记忆：事实 vs 推断分开存、写入时机、冲突合并、跨会话权限。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】关键是高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -1038,8 +1056,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>ReAct 通常主路径贪心推进；LATS/MCTS 通过 多分支搜索与价值回传 更系统探索决策空间（成本更高）。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提步数上限、停止条件与任务清单防迷失。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。ReAct 通常主路径贪心推进；LATS/MCTS 通过多分支搜索与价值回传更系统探索决策空间（成本更高）。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「LATS 与 ReAct 在「探索能力」上如何对比」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. ReAct 通常主路径贪心推进；LATS/MCTS 通过多分支搜索与价值回传更系… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】ReAct 通常主路径贪心推进；LATS/MCTS 通过多分支搜索与价值回传更系统探索决策空间（成本更高）。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1049,8 +1068,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>防止工具循环、解析失败导致的 无限循环，并控制成本与延迟。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。防止工具循环、解析失败导致的无限循环，并控制成本与延迟。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】防止工具循环、解析失败导致的无限循环，并控制成本与延迟。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 防止工具循环、解析失败导致的无限循环，并控制成本与延迟。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像装修：先出施工图（Plan），再按步骤施工（Execute）；中途发现问题可以改图纸（Replan）。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…、说说 Single-Agent 和 Multi-Agent 的设计方案？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -1060,8 +1080,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提缓存、模型路由、批量与流式。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「描述 LangGraph 的条件边解决的业务问题。」，我的回答是：根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。</p><p>【为什么考这个】权衡题不要一边倒。先承认局限，再给配套护栏，最后说在什么业务条件下仍然值得做。</p><p>【拆开理解】</p><p>1. 根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像流程图软件：每个节点是一步，边是跳转条件，checkpoint 是存档点，断了可以续玩。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】先承认局限 → 再给缓解手段 → 最后说适用场景。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「LangGraph 里的状态 State 怎么设计？」（/custom/langgraph-state/013-state-design） — 要点：我先说结论，再展开原因。 State 通常用 TypedDict 或 Pydantic 定义，是图内所有节点的输入输出契约。每个字段可绑定 reducer 声明合并语义。节点只返回 partial u…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：LangGraph 里的状态 State 怎么设计？、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先承认局限，因为面试官更想听你怎么控制风险，而不是吹完美方案。</p><p>【主体】根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「LangGraph 里的状态 State 怎么设计？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -1071,8 +1092,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】任务边界清晰、无需组织化分工、协调成本可能大于收益时。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. 任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像给员工配电脑和系统账号：没有工具只能动嘴，有了工具才能查库存、下单、跑代码。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>2. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「说说 Single-Agent 和 Multi-Agent 的设计方案？」（/custom/xiaolin-agent/single_multi） — 要点：Single-Agent 适合任务流程清晰、复杂度适中的场景，实现简单、好维护；Multi-Agent 适合需要专业分工、任务量大或者需要并行执行的复杂场景…</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：说说 Single-Agent 和 Multi-Agent 的设计方案？、了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「说说 Single-Agent 和 Multi-Agent 的设计方案？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -1082,8 +1104,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「多 Agent 系统的「评估器」可以有哪些实现」，我的回答是：单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。</p><p>【为什么考这个】这题和 RAG、MultiAgent、Eval 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像开卷考试：模型是大脑，检索是把相关页码翻到面前，禁止闭着眼瞎编。</p><p>【常见误区】</p><p>1. 只说「向量检索」，不提 BM25/Hybrid、重排、引用溯源。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent Benchmark：如何设计端到端的 Agent 测试？」（/custom/ai100-evaluation/072-agent-benchmarks） — 要点：Agent Benchmark 是用于端到端评估 AI Agent 在真实或模拟环境中完成任务能力的标准化测试。与传统 LLM 基准（如 MMLU 测知识）不同，Agent Benchmark 评估的…</p><p>· 「了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…」（/custom/xiaolin-agent/patterns） — 要点：我理解 Agent 和 Workflow 最核心的区别是「谁来决定下一步」…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 检索：Hybrid（向量+BM25）、Recall@K、重排、引用溯源、拒答策略。</p><p>· 评估：离线集 + 在线监控 + 人工抽检；过程正确性不只最终答案。</p><p>· 延伸阅读：Agent Benchmark：如何设计端到端的 Agent 测试？、了解哪些其他的 Agent 设计范式？Agent 和 Workflow的区别是什…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent Benchmark：如何设计端到端的 Agent 测试？」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问为什么不用纯向量，我会说：编号、专有名词、精确匹配 BM25 更稳，所以 Hybrid + 重排是常态。</p></div>
 </div></div>
 </div>
 
@@ -1093,8 +1116,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>提升模型对 固定格式 的遵从度，降低解析失败率，稳定工具调用。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。提升模型对固定格式的遵从度，降低解析失败率，稳定工具调用。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】提升模型对固定格式的遵从度，降低解析失败率，稳定工具调用。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 提升模型对固定格式的遵从度，降低解析失败率，稳定工具调用。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Prompt Chaining：多步骤 Prompt 的设计与编排」（/custom/ai100-prompt/063-prompt-chaining） — 要点：Prompt Chaining（提示链）是将复杂任务分解为多个顺序执行的 LLM 调用，每个调用的输出作为下一个调用的输入。它是 Agentic AI 中最基础的设计模式，也被称为 Pipeline …</p><p>· 「跨模型 Prompt 迁移：如何编写模型无关的 Prompt？」（/custom/ai100-prompt/068-cross-model-prompt-portability） — 要点：跨模型 Prompt 迁移（Cross-Model Prompt Portability）是指让同一个 Prompt 在不同 LLM（GPT-4、Claude、Gemini、Llama 等）上都能有效…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：Prompt Chaining：多步骤 Prompt 的设计与编排、跨模型 Prompt 迁移：如何编写模型无关的 Prompt？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】（把标准答案用自己的话展开，每点 2～3 句）</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Prompt Chaining：多步骤 Prompt 的设计与编排」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1104,8 +1128,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>Re-planning 偏 计划结构 的调整（下一步怎么走）；Reflexion 偏 策略/经验 的语言化总结并跨轮复用。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我会先给定义：Re-planning 偏计划结构的调整（下一步怎么走）；Reflexion 偏策略/经验的语言化总结并跨轮复用。。然后补一句和普通 LLM 单次调用的区别——Agent 有闭环，会根据工具反馈多步决策，不是一次性生成就结束。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】Re-planning 偏计划结构的调整（下一步怎么走）。</p><p>【为什么考这个】定义题考你能不能「用类比 + 结构」讲清楚，而不是堆术语。面试官想确认你真的理解，而不是背过。</p><p>【拆开理解】</p><p>1. Re-planning 偏计划结构的调整（下一步怎么走）；Reflexion 偏… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】可以把 Agent 想成「会自己查资料、记笔记、调系统的数字员工」，比普通 ChatBot 多了闭环和多步决策。</p><p>【常见误区】</p><p>1. 只背一句定义，没有说「和普通 LLM 单次调用差在哪」。</p><p>【面试怎么答】15 秒定义 → 30 秒展开组件/流程 → 15 秒举例 → 10 秒和 ChatBot/Chain 的区别。</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 补一个反例：什么情况下这个方案不适用，你会怎么降级。</p><p>· 补一个数字或指标：怎么证明方案有效。</p><p>· 补一个失败案例：出过什么问题、怎么修的。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我先给一个清晰定义，再用类比帮你建立直觉，最后说和生产的关系。</p><p>【主体】Re-planning 偏计划结构的调整（下一步怎么走）；Reflexion 偏策略/经验的语言化总结并跨轮复用。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p></div>
 </div></div>
 </div>
 
@@ -1115,8 +1140,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>把流程 显式化 为图，分支/回环/人机节点一等公民，更易维护与观测。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可补一句你在项目里如何验证该方案有效（指标或案例）。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>关于「LangGraph 相比普通脚本编排的核心收益」，我的回答是：把流程显式化为图，分支/回环/人机节点一等公民，更易维护与观测。。如果面试官追问，我会举一个简短场景把流程串起来。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】把流程显式化为图，分支/回环/人机节点一等公民，更易维护与观测。</p><p>【为什么考这个】这题和 LangGraph 都相关，属于 Agent 面试的高频交叉点。</p><p>【拆开理解】</p><p>1. 把流程显式化为图，分支/回环/人机节点一等公民，更易维护与观测。 → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像流程图软件：每个节点是一步，边是跳转条件，checkpoint 是存档点，断了可以续玩。</p><p>【常见误区】</p><p>1. 答案太短，缺少例子或数字；或者只会概念，不会落到工程实践。</p><p>【面试怎么答】结论 → 原理 → 例子 → 边界/兜底。控制在 60～90 秒，留时间给追问。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「LangGraph 相比普通 Workflow 的最大价值是什么？」（/custom/langgraph-basics/010-vs-workflow） — 要点：必须用 LangGraph 的三种情况：需要循环（代码生成-运行-修复）、需要人工介入（生成方案-用户确认）、多 Agent 协作有依赖关系。不必用的场景：固定三步流程，比如检索→生成→格式化，普通 …</p><p>· 「LangGraph 和 LangChain 有什么区别」（/custom/today-interview/langgraph-vs-langchain） — 要点：LangChain 是组件库加链式拼接，适合一条线走到底的 RAG；LangGraph 是有状态图执行引擎，适合带循环、分支、人工审批点的 Agent 流程。…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 延伸阅读：LangGraph 相比普通 Workflow 的最大价值是什么？、LangGraph 和 LangChain 有什么区别。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我尽量用你能直接复述的结构来答，先结论后展开。</p><p>【主体】把流程显式化为图，分支/回环/人机节点一等公民，更易维护与观测。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「LangGraph 相比普通 Workflow 的最大价值是什么？」里有更完整的口播示范，建议对照练一遍。</p></div>
 </div></div>
 </div>
 
@@ -1126,8 +1152,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>模型可能被噪声误导；改进包括 工具侧清洗/结构化输出、二次检索、在 Thought 里强制 引用证据片段、增加 校验工具。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Recall@K、引用溯源或 Hybrid 检索。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>我会按「目标→方案→关键细节→兜底」来说。模型可能被噪声误导；改进包括工具侧清洗/结构化输出、二次检索、在 Thought 里强制引用证据片段、增加校验工具。。最后加一句上线后怎么观测、怎么发现做得不好。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】核心围绕「如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进」：把标准答案里的每个要点都能用自己的话展开 2～3 句。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. 模型可能被噪声误导；改进包括工具侧清洗/结构化输出、二次检索、在 Thought… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 只说「向量检索」，不提 BM25/Hybrid、重排、引用溯源。</p><p>4. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】目标 1 句 → 方案 2～3 点 → 每点 1 个工程细节 → 兜底/观测 1 句。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」（/custom/ai100-planning/049-cot-and-tot） — 要点：Chain-of-Thought (CoT) 和 Tree-of-Thought (ToT) 是两种主流的 LLM 推理策略。**CoT 是线性推理**——通过引导模型"一步步思考"而非直接给出答案，…</p><p>· 「结构化输出（Structured Output）：如何让 LLM 返回 JSON/X…」（/custom/ai100-prompt/061-structured-output） — 要点：结构化输出是让 LLM 返回机器可解析格式（JSON、XML 等）而非自由文本的技术，是 Agent 系统和数据管道的基础能力。主要实现方法有四种：(1) **Prompt 指令**——在 Promp…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 检索：Hybrid（向量+BM25）、Recall@K、重排、引用溯源、拒答策略。</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 延伸阅读：推理策略详解：Chain-of-Thought 与 Tree-of-Thought、结构化输出（Structured Output）：如何让 LLM 返回 JSON/X…。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】我会按「目标 → 方案 → 细节 → 兜底」四步来说，保证既有设计也有工程落点。</p><p>【主体】模型可能被噪声误导；改进包括工具侧清洗/结构化输出、二次检索、在 Thought 里强制引用证据片段、增加校验工具。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「推理策略详解：Chain-of-Thought 与 Tree-of-Thought」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1137,8 +1164,9 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>看任务是否 强流程、是否需要 可审计计划书、是否允许 前期规划成本；需要强工具交互与动态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>对比题我习惯用「控制流在谁手里」来切入。看任务是否强流程、是否需要可审计计划书、是否允许前期规划成本；需要强工具交互与动态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。。最后补一句两者怎么结合，显得不是非黑即白。</p></div>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】看任务是否强流程、是否需要可审计计划书、是否允许前期规划成本。</p><p>【为什么考这个】对比题考「边界感」：什么场景用 A、什么场景用 B、能不能混合。背差异表不够，要说控制流在谁手里。</p><p>【拆开理解】</p><p>1. 看任务是否强流程、是否需要可审计计划书、是否允许前期规划成本；需要强工具交互与动… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只说 A 好 B 不好，没有说混合方案或选型条件。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>4. 空谈「要注意安全」，没有最小权限、审计日志、人在回路的具体做法。</p><p>【面试怎么答】15 秒结论（谁适合什么）→ 各 30 秒说 A/B 特点 → 20 秒混合方案 → 10 秒业务例子。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 安全：最小权限、审计日志、注入防护、输出审核。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>【开场】这类对比题我会先说选型结论，再分点讲两者差异，最后说怎么混合用。</p><p>【主体】看任务是否强流程、是否需要可审计计划书、是否允许前期规划成本；需要强工具交互与动态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。</p><p>【收尾】以上是我的回答。如果您感兴趣，我可以再画一张架构图，或者举一个我们项目里的具体例子。</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>如果追问 Plan-and-Execute，我会说：步骤可预知用 Plan，环境不确定用 ReAct，生产里常混合——粗计划 + 每步 ReAct。</p></div>
 </div></div>
 </div>
 
@@ -1148,8 +1176,8 @@ for round in 1..N:
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
 <p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。</p>
-<div class="guide-expand"><span class="guide-expand-label">扩写</span><p>标准答案覆盖了要点；面试时可再补边界条件：可提 Schema 描述、鉴权与超时重试。</p></div>
-<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播</span><p>这题我用 STAR 讲。Situation 一句话背景，Task 说目标指标，Action 讲 2～3 个关键决策（为什么选这个方案），Result 给数字。核心结论：LLM 靠描述做路由与填参；描述就是人机接口，直接影响成功率。附录：对比速记表框架/概念关键词典型循环 ReAct 推理+行动交替 Thought→Action→Observation Plan-and-Execute 先计划后执行 Pla。</p></div>
-<p>附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→ObservationPlan-and-Execute   先计划后执行             Plan→Execute→(Replan)Reflexion          反思记忆               Act→Eval→Reflect→RetryLATS               树搜索 / MCTS         Select→Expand→Evaluate→BackpropLangChain Agent    Executor 循环        decide→tool→observeLangGraph          图编排                node→conditional edge多 Agent            角色协作               对话/流水线文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p>
+<div class="guide-teach"><span class="guide-teach-label">👨‍🏫 老师讲解</span><p>【结论先说】这题用 STAR 讲故事：背景要短、动作要有决策理由、结果要有数字。下面按段落帮你拆。</p><p>【为什么考这个】方案题考工程思维：目标是什么 → 为什么选这个方案 → 关键实现细节 → 失败了怎么办。</p><p>【拆开理解】</p><p>1. LLM 靠描述做路由与填参；描述就是人机接口，直接影响成功率。附录：对比速记表框… → 你要能展开：它解决什么问题、不用它会怎样、生产里怎么验证有效。</p><p>【类比记忆】像侦探办案：先推理（Thought），再行动查线索（Action），看结果（Observation），循环直到破案。</p><p>【常见误区】</p><p>1. 只讲理想路径，不说失败兜底、步数上限、观测指标。</p><p>2. 把 ReAct 说成「想一步做一步」但说不清 Observation 从哪来、何时停止。</p><p>3. 忽略工具 Schema 描述、鉴权、超时重试和参数校验。</p><p>【面试怎么答】口播结构（约 90 秒）：</p><p>① Situation：1 句业务背景（谁、什么系统、什么痛点）。</p><p>② Task：你的目标指标（延迟、准确率、成本、完成率）。</p><p>③ Action：2～3 个关键决策，每个说「为什么选它而不是别的」。</p><p>④ Result：至少 2 个数字（前后对比或百分比提升）。</p><p>⑤ 收尾：如果重来会怎么改进——显得你有复盘习惯。</p><p>【题库延伸】</p><p>本题还可对照本站其他题库加深理解：</p><p>· 「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」（/custom/ai100-agent-arch/003-agent-architecture-patterns） — 要点：主流 Agent 架构模式各有侧重：**ReAct** 交替推理与行动，灵活且可解释性强，但 token 消耗高；**Plan-and-Execute** 先规划后执行，高效但适应性低；**LATS*…</p><p>· 「ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？」（/custom/langgraph-advanced/077-react-vs-plan-execute） — 要点：这道题我会这样回答面试官： Agent 架构模式选型题，考察**能否根据任务结构选模式**，而不是背定义。 **Plan-and-Execute 适用场景**： - 步骤可预先列清单：写研报、数据处理…</p></div>
+<div class="guide-expand"><span class="guide-expand-label">深度扩写</span><p>在标准答案基础上，面试还可以主动补这些「加分项」：</p><p>· 架构：步数上限、停止条件、死循环检测、Plan+ReAct 混合、画拓扑图。</p><p>· 工具：Schema 描述质量、白名单、鉴权、超时重试、危险操作 HITL。</p><p>· 记忆：事实 vs 推断分开存、写入时机、冲突合并、跨会话权限。</p><p>· 工程：模型路由、熔断、缓存、Trace 回放、灰度与回滚。</p><p>· 延伸阅读：Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…、ReAct 和 Plan-and-Execute 在 LangGraph 里怎么选？。</p></div>
+<div class="guide-oral"><span class="guide-oral-label">🗣️ 口播参考</span><p>面试官好，这题我按 STAR 来答。</p><p>Situation：先交代业务背景和系统规模</p><p>Task：说清要优化的目标指标</p><p>Action：我重点做了三件事——LLM 靠描述做路由与填参；描述就是人机接口，直接影响成功率。附录：对比速记表框架/概念关键词典型循环 ReAct 推理+行动交替 Thought→Action→Observation Plan-and-Execute 先计划后执行 Plan→Execute→(Replan) Reflexion 反思记忆 Act→Eval→Reflect→Retry LATS 树搜索 / MCTS Select→Expand→Evaluate→Backprop LangChain Agent Executor 循环 decide→tool→observe LangGraph 图编排 node→conditional edge 多 Agent 角色协作对话/流水线文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p><p>Result：给量化结果，如延迟降 X%、准确率升 Y%</p><p>你也可以补充：本站题库「Agent 架构模式详解：ReAct、Plan-and-Execute、LATS、P…」里有更完整的口播示范，建议对照练一遍。</p><p>附录：对比速记表</p><p>框架/概念           关键词                          典型循环</p><p>ReAct              推理+行动交替            Thought→Action→Observation</p><p>Plan-and-Execute   先计划后执行             Plan→Execute→(Replan)</p><p>Reflexion          反思记忆               Act→Eval→Reflect→Retry</p><p>LATS               树搜索 / MCTS         Select→Expand→Evaluate→Backprop</p><p>LangChain Agent    Executor 循环        decide→tool→observe</p><p>LangGraph          图编排                node→conditional edge</p><p>多 Agent            角色协作               对话/流水线</p><p>文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p></div>
 </div></div>
 </div>

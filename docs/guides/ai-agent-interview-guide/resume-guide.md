@@ -8,7 +8,7 @@ aside: true
 
 <p class="guide-chapter-badge">简历撰写指南</p>
 
-> 阅读本章时建议先画一张心智图，再把每节面试题出声答一遍。
+> 阅读本章时建议：先读标准答案 → 读老师讲解 → 关屏用自己的话讲一遍 → 对照口播修正。
 
 AI Agent 项目简历撰写指南（小白向 · 详细版）
 本指南面向准备投递 AI Agent / LLM 应用 / RAG / 智能客服 等相关岗位的求职者，尤其适合你
@@ -27,7 +27,7 @@ AI Agent 项目简历撰写指南（小白向 · 详细版）
 
 ### 1.1 STAR 法则在简历中的应用
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「STAR 法则在简历中的应用」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「STAR 法则在简历中的应用」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 STAR 是面试常用的表达框架：
 
@@ -65,7 +65,7 @@ STAR 是面试常用的表达框架：
 
 ### 1.2 数字量化的重要性
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「数字量化的重要性」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「数字量化的重要性」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 面试官默认：没有数字 ≈ 没做过、或记不清、或不敢验证。
 量化不必全是「百万 QPS」，以下都算有效数字（按你真实能拿到的数据选用）：
@@ -85,7 +85,7 @@ STAR 是面试常用的表达框架：
 
 ### 1.3 技术深度 > 广度
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「技术深度 &gt; 广度」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「技术深度 &gt; 广度」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 广度：一行里写「会 Python、会 LangChain、会 Milvus、会 K8s」——读者无法区分你和「看
 过教程的人」。
@@ -101,7 +101,7 @@ STAR 是面试常用的表达框架：
 
 ### 1.4 避免的常见错误
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「避免的常见错误」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「避免的常见错误」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 | 错误类型 | 说明 | 改进方向 |
 | --- | --- | --- |
@@ -130,7 +130,7 @@ STAR 是面试常用的表达框架：
 
 ### 2.1 Python 版本的技术栈写法
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版本的技术栈写法」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版本的技术栈写法」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 分组模板（复制后改词）：
 
@@ -163,7 +163,7 @@ PostgreSQL · Docker · OTel
 
 ### 2.2 Java 版本的技术栈写法
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版本的技术栈写法」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版本的技术栈写法」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 ```text
 语言：Java 17+（Record、虚拟线程按实写）
@@ -194,7 +194,7 @@ PostgreSQL · Docker · OTel
 
 ### 2.3 Go 版本的技术栈写法
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版本的技术栈写法」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版本的技术栈写法」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 ```text
 语言：Go 1.22+
@@ -220,7 +220,7 @@ Go · Gin · gRPC · LLM   网关与流式代理 · Redis · PostgreSQL · OTel 
 
 ### 3.1 Python 版项目经历（完整可复制模板）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版项目经历」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Python 版项目经历」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 ```text
 项目名称：企业级 AI Agent 智能助手平台
@@ -261,7 +261,7 @@ Python, FastAPI, LangChain, LangGraph, Milvus, Redis, PostgreSQL
 
 ### 3.2 Java 版项目经历（完整可复制模板）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版项目经历」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Java 版项目经历」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 ```text
 项目名称：企业级智能问答与 Agent 编排服务平台
@@ -301,7 +301,7 @@ Elasticsearch, Redis, PostgreSQL, Kafka   （可选）
 
 ### 3.3 Go 版项目经历（完整可复制模板）
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版项目经历」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Go 版项目经历」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 ```text
 项目名称：高并发 LLM 网关与 Agent 执行引擎
@@ -344,7 +344,7 @@ Kubernetes
 
 ### 4.1 Agent 编排模块怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 编排模块怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「Agent 编排模块怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： 状态机、LangGraph、ReAct、规划、人机协同、防死循环、检查点。
 可直接使用的描述（多选）：
@@ -362,7 +362,7 @@ Kubernetes
 
 ### 4.2 RAG 检索模块怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAG 检索模块怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「RAG 检索模块怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： 解析、分块、Embedding、混合检索、重排、增量索引、评测。
 可直接使用的描述：
@@ -383,7 +383,7 @@ Kubernetes
 
 ### 4.3 记忆系统怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「记忆系统怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「记忆系统怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： 短期记忆、长期记忆、摘要、滑动窗口、TTL、合规。
 可直接使用的描述：
@@ -399,7 +399,7 @@ Kubernetes
 
 ### 4.4 工具系统怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具系统怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「工具系统怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： JSON Schema、OpenAPI、权限、限流、超时、幂等、降级。
 可直接使用的描述：
@@ -415,7 +415,7 @@ Kubernetes
 
 ### 4.5 模型路由与容错怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型路由与容错怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「模型路由与容错怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： 多供应商、主备、熔断、429、退避、缓存、成本。
 可直接使用的描述：
@@ -432,7 +432,7 @@ Kubernetes
 
 ### 4.6 ETL 流水线怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「ETL 流水线怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「ETL 流水线怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： Airflow、队列、批处理、embedding 成本、数据质量。
 可直接使用的描述：
@@ -448,7 +448,7 @@ Kubernetes
 
 ### 4.7 全链路追踪怎么写
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「全链路追踪怎么写」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「全链路追踪怎么写」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 能力点关键词： OpenTelemetry、Trace、Span、LangSmith、SLO、告警。
 可直接使用的描述：
@@ -538,7 +538,7 @@ Agent 与 LLM：LangChain、LangGraph、提示词工程、工具调用（OpenAPI
 
 ### 7.1 应届生 / 小白
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「应届生 / 小白」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「应届生 / 小白」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 侧重点： 学习能力、完整闭环、诚实、可验证（代码/数据集/实验记录）。
 
@@ -560,7 +560,7 @@ Agent 与 LLM：LangChain、LangGraph、提示词工程、工具调用（OpenAPI
 
 ### 7.2 1～3 年经验
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「1～3 年经验」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「1～3 年经验」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 侧重点： ownership、线上结果、协作边界、技术权衡。
  每条经历写清：你负责的模块、与谁协作（前端/算法/运维）、上线后的指标。
@@ -576,7 +576,7 @@ Agent 与 LLM：LangChain、LangGraph、提示词工程、工具调用（OpenAPI
 
 ### 7.3 转行人员
 
-<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「转行人员」时抓住一个关键词，想想对应到你项目里是哪一块；没有项目就用「假如做客服 Agent」来举例。</p></div>
+<div class="guide-tip"><div class="guide-tip-label">💡 通俗理解</div><p>读「转行人员」时抓住一个关键词，联想你的项目或「假如做企业客服 Agent」场景。</p><p>想不出项目经历很正常——用假设场景把流程串起来，同样能答得漂亮。</p></div>
 
 侧重点： 可迁移能力、学习路径、项目与目标岗的重叠度。
 

@@ -65,17 +65,33 @@ function injectQaEnhancements(text, qa, qaList) {
       if (isMajorHeading(lines[i])) break
       if (/^第[一二三四五六七八九十]+类/.test(t)) break
       if (/^附录[：:]/.test(t)) break
-      if (t.startsWith('**口播') || t.startsWith('**扩写')) break
+      if (t.startsWith('**口播') || t.startsWith('**扩写') || t.startsWith('**深度扩写') || t.startsWith('**老师讲解')) break
       block.push(lines[i])
       i++
     }
     const enh = qaList ? qaList[listIdx++] : qa?.[qid]
-    if (enh && block.some((l) => /^\*\*A[：:]/.test(l.trim()) || /^Situation[：:]/.test(l.trim()))) {
-      if (enh.expand) block.push('', `**扩写：** ${enh.expand}`, '')
-      if (enh.oral) block.push(`**口播：** ${enh.oral}`, '')
-    } else if (enh && qaList) {
-      if (enh.expand) block.push('', `**扩写：** ${enh.expand}`, '')
-      if (enh.oral) block.push(`**口播：** ${enh.oral}`, '')
+    const hasAnswer = block.some(
+      (l) => /^\*\*A[：:]/.test(l.trim()) || /^Situation[：:]/.test(l.trim())
+    )
+    if (enh && (hasAnswer || qaList)) {
+      if (enh.teach) {
+        block.push('', '**老师讲解：**', '')
+        for (const para of enh.teach.split('\n\n').map((p) => p.trim()).filter(Boolean)) {
+          block.push(para, '')
+        }
+      }
+      if (enh.expand) {
+        block.push('', '**深度扩写：**', '')
+        for (const para of enh.expand.split('\n').map((p) => p.trim()).filter(Boolean)) {
+          block.push(para, '')
+        }
+      }
+      if (enh.oral) {
+        block.push('**口播参考：**', '')
+        for (const para of enh.oral.split('\n\n').map((p) => p.trim()).filter(Boolean)) {
+          block.push(para, '')
+        }
+      }
     }
     out.push(...block)
   }

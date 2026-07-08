@@ -1709,10 +1709,49 @@ details.answer-reveal summary:hover {
 }
 
 .guide-expand p {
-  margin: 0 !important;
-  font-size: 0.84rem !important;
-  line-height: 1.75 !important;
+  margin: 0 0 8px !important;
+  font-size: 0.88rem !important;
+  line-height: 1.8 !important;
   color: var(--vp-c-text-2) !important;
+}
+
+.guide-expand p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.guide-teach {
+  margin: 14px 0 8px !important;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.04));
+  border-left: 4px solid #10b981;
+}
+
+.guide-teach-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #047857;
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.dark .guide-teach-label {
+  color: #6ee7b7;
+}
+
+.guide-teach p {
+  margin: 0 0 10px !important;
+  font-size: 0.92rem !important;
+  line-height: 1.85 !important;
+  color: var(--vp-c-text-1) !important;
+}
+
+.guide-teach p:last-child {
+  margin-bottom: 0 !important;
 }
 
 .guide-oral {
@@ -1739,11 +1778,15 @@ details.answer-reveal summary:hover {
 }
 
 .guide-oral p {
-  margin: 0 !important;
-  font-size: 0.86rem !important;
+  margin: 0 0 8px !important;
+  font-size: 0.9rem !important;
   font-weight: 500 !important;
-  line-height: 1.75 !important;
+  line-height: 1.85 !important;
   color: var(--vp-c-text-1) !important;
+}
+
+.guide-oral p:last-child {
+  margin-bottom: 0 !important;
 }
 
 .guide-tip {
@@ -1767,10 +1810,14 @@ details.answer-reveal summary:hover {
 }
 
 .guide-tip p {
-  margin: 0 !important;
-  font-size: 0.9rem !important;
-  line-height: 1.75 !important;
+  margin: 0 0 8px !important;
+  font-size: 0.92rem !important;
+  line-height: 1.85 !important;
   color: var(--vp-c-text-2) !important;
+}
+
+.guide-tip p:last-child {
+  margin-bottom: 0 !important;
 }
 
 /* 教程表格 */
