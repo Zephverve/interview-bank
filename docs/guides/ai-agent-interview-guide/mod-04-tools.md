@@ -76,8 +76,10 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
    型填错概率，可适当拆分多个小函数。
 面试 Q2：为什么用 JSON Schema 描述参数？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>三方面——（1）跨语言标准，各 SDK 统一；（2）可自动校验，避免脏参数进业务；（3）作为模型「字段说明」，减少胡编参数名。缺点是 Schema 过长会占 token，需要精简描述或工具路由。追问应对问：必填字段怎么表示？答：在 JSON Schema 里用 required: ["a","b"] ，同时 properties 里声明各字段type 。OpenAI 工具格式与 JSON Schema Draft 兼容（具体以厂商文档为准）。</p>
-</div>
+</div></div>
 ### 1.4 模型如何决定调用哪个函数
 
 概念解释
@@ -91,8 +93,10 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
   部分实现会做两阶段：先小模型/分类器选工具，再大模型填参（见「工具路由」）。
 面试 Q3：模型选错工具怎么办？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>工程上（1）优化 description 与示例边界；（2）工具路由缩小候选集；（3）执行前做规则校验或二次确认；（4）对高风险操作要求人类确认；（5）记录 bad case 做 prompt 迭代。不能假设模型 100% 正确。</p>
-</div>
+</div></div>
 ### 1.5 参数提取与验证
 
 概念解释
@@ -100,18 +104,26 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
 证：用 JSON Schema 校验类型、范围、枚举；业务层再校验权限与资源是否存在。
 原理详解
    模型可能输出不完整 JSON（流式）或多余字段（若你未禁止）；需在服务端
-   additionalProperties: false （若支持）并剥离未知键。
 
-   对数字、日期做规范化（时区）。
-   失败策略：返回错误信息给模型「请重试」或降级为只读工具。
+```text
+additionalProperties: false （若支持）并剥离未知键。
+
+对数字、日期做规范化（时区）。
+失败策略：返回错误信息给模型「请重试」或降级为只读工具。
+```
+
 面试 Q4：如何做参数校验？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分层——语法层 json.loads ；结构层 jsonschema.validate ；语义层业务函数（如用户ID 是否存在）；安全层鉴权与输入清洗（见第 6 节）。</p>
-</div>
+</div></div>
 ### 1.6 完整代码示例（OpenAI API 调用）
 
 下面示例使用 OpenAI 官方 Python SDK 风格（需安装 openai ，并设置环境变量
 OPENAI_API_KEY ）。为便于阅读，省略生产级重试与日志。
+
+```python
 
 ```python
  import json
@@ -119,88 +131,114 @@ OPENAI_API_KEY ）。为便于阅读，省略生产级重试与日志。
 
  from jsonschema import validate, ValidationError
  from openai import OpenAI
+```
 
  #   工具             （
        JSON Schema parameters  ）
+
+```text
  WEATHER_PARAMS = {
-      "type": "object",
-      "properties": {
-                                                    城市名，中文或英文"},
-          "city": {"type": "string", "description": "
-                                                    日期 YYYY-MM-DD"},
-          "date": {"type": "string", "description": "
-      },
-      "required": ["city"],
-      "additionalProperties": False,
+  "type": "object",
+  "properties": {
+                                                城市名，中文或英文"},
+      "city": {"type": "string", "description": "
+                                                日期 YYYY-MM-DD"},
+      "date": {"type": "string", "description": "
+  },
+  "required": ["city"],
+  "additionalProperties": False,
+```
+
  }
 
+```text
  TOOLS = [
-      {
-          "type": "function",
-          "function": {
-              "name": "get_weather",
-              "description": "查询指定城市在某日期的天气。用户只说「今天」时，请换算为
+  {
+      "type": "function",
+      "function": {
+          "name": "get_weather",
+          "description": "查询指定城市在某日期的天气。用户只说「今天」时，请换算为
+```
+
  具体日期再调用。",
-               "parameters": WEATHER_PARAMS,
-          },
-      }
+
+```text
+           "parameters": WEATHER_PARAMS,
+      },
+  }
+```
+
  ]
 
  #   假实现：真实项目里对接      HTTP API
+
+```python
  def get_weather(city: str, date: str | None = None) -> dict[str, Any]:
-                                                                  晴
-     return {"city": city, "date": date or "today", "condition": " ",
+                                                              晴
+ return {"city": city, "date": date or "today", "condition": " ",
+```
+
  "temp_c": 22}
 
+```python
  def run_tool(name: str, arguments: str) -> str:
 
-     args = json.loads(arguments or "{}")
-     validate(instance=args, schema=WEATHER_PARAMS)    #   与 TOOLS 中一致
-     if name == "get_weather":
-         return json.dumps(get_weather(**args), ensure_ascii=False)
-     raise ValueError(f"unknown tool: {name}")
+ args = json.loads(arguments or "{}")
+ validate(instance=args, schema=WEATHER_PARAMS)    #   与 TOOLS 中一致
+ if name == "get_weather":
+     return json.dumps(get_weather(**args), ensure_ascii=False)
+ raise ValueError(f"unknown tool: {name}")
 
 def chat_with_tools(user_message: str) -> str:
-      client = OpenAI()
-      messages: list[dict[str, Any]] = [
-          {"role": "system", "content": "    你是助手，需要数据时调用工具，不要编造天
+  client = OpenAI()
+  messages: list[dict[str, Any]] = [
+      {"role": "system", "content": "    你是助手，需要数据时调用工具，不要编造天
+```
+
 气。   "},
-          {"role": "user", "content": user_message},
-     ]
 
-     for _ in range(5): #  防止死循环
-         resp = client.chat.completions.create(
-             model="gpt-4o-mini",
-             messages=messages,
-             tools=TOOLS,
-             tool_choice="auto",
-         )
-         msg = resp.choices[0].message
-         messages.append(msg.model_dump())
+```text
+      {"role": "user", "content": user_message},
+ ]
 
-         if not msg.tool_calls:
-             return msg.content or ""
+ for _ in range(5): #  防止死循环
+     resp = client.chat.completions.create(
+         model="gpt-4o-mini",
+         messages=messages,
+         tools=TOOLS,
+         tool_choice="auto",
+     )
+     msg = resp.choices[0].message
+     messages.append(msg.model_dump())
 
-         for tc in msg.tool_calls:
-             try:
-                  result = run_tool(tc.function.name, tc.function.arguments)
-             except (json.JSONDecodeError, ValidationError, ValueError) as
+     if not msg.tool_calls:
+         return msg.content or ""
+
+     for tc in msg.tool_calls:
+         try:
+              result = run_tool(tc.function.name, tc.function.arguments)
+         except (json.JSONDecodeError, ValidationError, ValueError) as
+```
+
 e:
-                 result = json.dumps({"error": str(e)}, ensure_ascii=False)
-             messages.append(
-                 {
-                     "role": "tool",
-                     "tool_call_id": tc.id,
-                     "content": result,
-                 }
 
-                )
-            超过最大工具调用轮次"
-     return "
+```text
+             result = json.dumps({"error": str(e)}, ensure_ascii=False)
+         messages.append(
+             {
+                 "role": "tool",
+                 "tool_call_id": tc.id,
+                 "content": result,
+             }
+
+            )
+        超过最大工具调用轮次"
+ return "
 
  if __name__ == "__main__":
-                           北京明天天气怎么样？"))
-     print(chat_with_tools("
+                       北京明天天气怎么样？"))
+ print(chat_with_tools("
+```
 
 追问应对
  问：为什么要循环 for _ in range(5) ？
@@ -218,13 +256,19 @@ e:
 在应用内部，「Tool」= 可执行能力单元：名称、描述、参数规范、处理函数。注册指在 Agent 启
 动时把工具对象加入注册表（字典或列表），运行时由路由器/模型选择并派发。
 原理详解
-  注册表常见结构： name -> callable 或 List[BaseTool] 。
-  与纯 Function Calling 映射：把同一套元数据转成各厂商 API 需要的 tools 格式（适配
-  层）。
+
+```text
+注册表常见结构： name -> callable 或 List[BaseTool] 。
+与纯 Function Calling 映射：把同一套元数据转成各厂商 API 需要的 tools 格式（适配
+层）。
+```
+
 面试 Q5：Tool 与业务里的普通 Python 函数有何不同？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Tool 多了面向模型的元数据（描述、Schema）和统一执行接口（记录日志、超时、权限）。业务函数关注领域逻辑；Tool 是 Agent 可调度的「外壳」。</p>
-</div>
+</div></div>
 ### 2.2 工具描述的最佳实践
 
 概念解释
@@ -259,8 +303,10 @@ description
   二进制内容应转为文本描述或 URL，不要直接塞原始字节。
 面试 Q6：工具返回 10MB 日志怎么办？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不应直接返回。应（1）截断 + 摘要；（2）写入对象存储返回链接；（3）提供 grep_in_log等缩小工具；（4）向量索引仅检索相关片段。</p>
-</div>
+</div></div>
 ### 2.5 错误处理与重试
 
 概念解释
@@ -275,24 +321,31 @@ description
 以下使用 LangChain 1.x 风格（ langchain-core 的 @tool ；版本差异请以官方文档为准）。
 若你环境版本不同，可改为 StructuredTool.from_function 。
 ```python
+
+```python
  from typing import Literal
 
  from langchain_core.tools import tool
+```
 
  @tool
+
+```python
  def search_product(
-     query: str,
-     category: Literal["book", "electronics", ""] = "",
+ query: str,
+ category: Literal["book", "electronics", ""] = "",
  ) -> str:
-       在电商站内搜索商品。用户要找商品、比价、看库存时用；不要用于闲聊。
-     """
+   在电商站内搜索商品。用户要找商品、比价、看库存时用；不要用于闲聊。
+ """
 
-     Args:
+ Args:
 
-           query:搜索关键词
-                   可选类目过滤，不知道则留空
-           category:
-     """
+       query:搜索关键词
+               可选类目过滤，不知道则留空
+       category:
+ """
+```
+
      # 伪实现
      return f"[dummy] results for {query!r} in {category or 'all'}"
 
@@ -331,16 +384,18 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
   接）。
 面试 Q7：MCP 里 Client 和你在 OpenAI 里写的「执行工具的 Python 代码」是什么关系？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>OpenAI 场景下你手写 run_tool ；MCP 下 Client 把远端/子进程 Server 的工具列表拉平，调用时按协议发 RPC，结果再转成 tool 消息。你仍要写 Host 逻辑，但工具实现可独立进程、独立语言。</p>
-</div>
+</div></div>
 ### 3.3 MCP vs Function Calling 的区别
 
-  维度              Function Calling                 MCP
- 层级      多为「单次 API 能力」：模型输出调用指令           系统级协议：如何发现与调用工
-                                          具、资源
- 实现位     通常在应用进程内函数                       常在独立 Server，可远程
- 置
- 复用      每个应用复制粘贴集成                       标准 Server 多 Host 复用
+| 维度 | Function Calling | MCP |
+| --- | --- | --- |
+| 层级 | 多为「单次 API 能力」：模型输出调用指令 | 系统级协议：如何发现与调用工具、资源 |
+| 实现位 | 通常在应用进程内函数 | 常在独立Server，可远程置 |
+| 复用 | 每个应用复制粘贴集成 | 标准 Server 多 Host 复用 |
+
  关系      互补：Host 常把 MCP 工具转成 FC 的
          tools 定义给模型
 标准答案：Function Calling 解决「模型怎么表达调用」；MCP 解决「工具能力怎么暴露与连
@@ -364,15 +419,18 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
  try:
      from mcp.server.fastmcp import FastMCP
  except ImportError:
-     FastMCP = None #     环境未安装时仅作结构说明
+
+```python
+ FastMCP = None #     环境未安装时仅作结构说明
 
  if FastMCP:
-     mcp = FastMCP("demo")
+ mcp = FastMCP("demo")
 
-        @mcp.tool()
-        def add(a: int, b: int) -> int:
-            """ 返回两个整数之和。     """
-            return a + b
+    @mcp.tool()
+    def add(a: int, b: int) -> int:
+        """ 返回两个整数之和。     """
+        return a + b
+```
 
         #   通常以 `mcp.run(transport="stdio")` 由 Host 拉起子进程
 
@@ -395,8 +453,10 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
   合规：在 Server 侧落日志与审批，比散落在每个 Agent 代码里更可控。
 面试 Q8：企业为什么愿意接 MCP 而不是每个业务线自己写 Function？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>降低重复建设、统一安全与观测、加快试点（换模型不换工具链）、利于平台组与业务组分工。</p>
-</div>
+</div></div>
 ## 4. 工具路由（Tool Routing）
 
 ### 4.1 当工具数量多时如何高效选择
@@ -446,31 +506,38 @@ import numpy as np
 from openai import OpenAI
 
 @dataclass
+
+```python
 class ToolSpec:
-    name: str
-    description: str
+name: str
+description: str
 
 def embed_texts(client: OpenAI, model: str, texts: list[str]) ->
+```
+
 np.ndarray:
-    resp = client.embeddings.create(model=model, input=texts)
-    vecs = [np.array(d.embedding, dtype=np.float32) for d in resp.data]
-    mat = np.stack(vecs, axis=0)
-     norms = np.linalg.norm(mat, axis=1, keepdims=True) + 1e-8
-     return mat / norms
+
+```python
+resp = client.embeddings.create(model=model, input=texts)
+vecs = [np.array(d.embedding, dtype=np.float32) for d in resp.data]
+mat = np.stack(vecs, axis=0)
+ norms = np.linalg.norm(mat, axis=1, keepdims=True) + 1e-8
+ return mat / norms
 
 def route_tools(
-     query: str,
-     tools: list[ToolSpec],
-     client: OpenAI,
-     embed_model: str = "text-embedding-3-small",
-     top_k: int = 3,
+ query: str,
+ tools: list[ToolSpec],
+ client: OpenAI,
+ embed_model: str = "text-embedding-3-small",
+ top_k: int = 3,
 ) -> list[ToolSpec]:
-    corpus = [f"{t.name}\n{t.description}" for t in tools]
-    doc_emb = embed_texts(client, embed_model, corpus)
-    q_emb = embed_texts(client, embed_model, [query])[0]
-     scores = doc_emb @ q_emb
-     idx = np.argsort(-scores)[:top_k]
-     return [tools[i] for i in idx]
+corpus = [f"{t.name}\n{t.description}" for t in tools]
+doc_emb = embed_texts(client, embed_model, corpus)
+q_emb = embed_texts(client, embed_model, [query])[0]
+ scores = doc_emb @ q_emb
+ idx = np.argsort(-scores)[:top_k]
+ return [tools[i] for i in idx]
+```
 
 #   使用：仅把 route_tools 返回的子集塞进 chat.completions 的 tools 参数
 
@@ -524,9 +591,13 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
   对长事务用 Saga 或幂等重试；对 AI 步骤用「检查点」持久化状态。
 面试 Q10：并行与串行如何取舍？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>读多且无依赖并行；有写冲突、强一致、或后一步参数必须来自上一步精确字段时串行；可并行读再串行写（Quorum 读/写视业务而定）。</p>
-</div>
+</div></div>
 ### 5.6 代码示例（简单编排：先路由再并行）
+
+```python
 
 ```python
  import concurrent.futures
@@ -536,38 +607,43 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
  ToolFn = Callable[..., Any]
 
 def safe_call(name: str, fn: ToolFn, kwargs: dict[str, Any]) -> dict[str,
+```
+
 Any]:
-    try:
-        return {"tool": name, "ok": True, "result": fn(**kwargs)}
-    except Exception as e:
-        return {"tool": name, "ok": False, "error": str(e)}
+
+```python
+try:
+    return {"tool": name, "ok": True, "result": fn(**kwargs)}
+except Exception as e:
+    return {"tool": name, "ok": False, "error": str(e)}
 
 def run_parallel_tools(
-    calls: list[tuple[str, ToolFn, dict[str, Any]]],
+calls: list[tuple[str, ToolFn, dict[str, Any]]],
 ) -> list[dict[str, Any]]:
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
-        futs = [ex.submit(safe_call, n, f, k) for n, f, k in calls]
-        return [f.result() for f in futs]
+with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+    futs = [ex.submit(safe_call, n, f, k) for n, f, k in calls]
+    return [f.result() for f in futs]
 
 #例：先串行拿      user_id ，再并行查订单与积分（伪函数）
 def lookup_user_id(email: str) -> str:
-    return "u_123"
+return "u_123"
 
 def fetch_orders(uid: str) -> list:
-    return [{"id": 1}]
+return [{"id": 1}]
 
 def fetch_points(uid: str) -> int:
-    return 42
+return 42
 
 def orchestrate(user_email: str) -> str:
-    uid = lookup_user_id(user_email)
-    second = run_parallel_tools(
-        [
-            ("orders", fetch_orders, {"uid": uid}),
-            ("points", fetch_points, {"uid": uid}),
-        ]
-    )
-    return json.dumps(second, ensure_ascii=False)
+uid = lookup_user_id(user_email)
+second = run_parallel_tools(
+    [
+        ("orders", fetch_orders, {"uid": uid}),
+        ("points", fetch_points, {"uid": uid}),
+    ]
+)
+return json.dumps(second, ensure_ascii=False)
+```
 
 6. 安全性
 ```
@@ -604,8 +680,10 @@ def orchestrate(user_email: str) -> str:
 记录：时间、用户、工具名、参数摘要、结果状态、模型请求 ID。用于合规与事后追溯。
 面试 Q11：如何防止模型通过工具泄露敏感数据？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>最小权限、结果脱敏（掩码）、行级权限、禁止把密钥放进工具返回值、敏感字段仅后端可见且不出现在模型上下文。</p>
-</div>
+</div></div>
 ## 7. 常见工具实现
 
 ### 7.1 搜索工具（Web Search）
@@ -615,21 +693,29 @@ def orchestrate(user_email: str) -> str:
 进入上下文。
 Python 示意
 ```python
+
+```python
  import os
  import urllib.parse
  import urllib.request
 
  def web_search(query: str, max_results: int = 5) -> list[dict]:
-     """ 占位：真实环境使用官方搜索         API并处理分页。     """
-     q = urllib.parse.quote(query)
-     url = f"https://duckduckgo.com/html/?q={q}" # 示例仅作结构说明，生产请用合
+ """ 占位：真实环境使用官方搜索         API并处理分页。     """
+ q = urllib.parse.quote(query)
+ url = f"https://duckduckgo.com/html/?q={q}" # 示例仅作结构说明，生产请用合
+```
+
  规 API
      req = urllib.request.Request(url, headers={"User-Agent":
  "AgentBot/1.0"})
-     with urllib.request.urlopen(req, timeout=10) as resp:
-         html = resp.read(200_000)
 
-     return [{"title": "stub", "snippet":
+```text
+ with urllib.request.urlopen(req, timeout=10) as resp:
+     html = resp.read(200_000)
+
+ return [{"title": "stub", "snippet":
+```
+
  html[:200].decode(errors="ignore"), "url": url}]
 
 ```
@@ -642,9 +728,12 @@ Python 示意
  def query_user_orders(conn, user_id: str, limit: int = 20) -> list:
      sql = "SELECT id, amount, created_at FROM orders WHERE user_id = %s
  ORDER BY created_at DESC LIMIT %s"
-     with conn.cursor() as cur:
-         cur.execute(sql, (user_id, limit))
-         return list(cur.fetchall())
+
+```text
+ with conn.cursor() as cur:
+     cur.execute(sql, (user_id, limit))
+     return list(cur.fetchall())
+```
 
 ```
 
@@ -665,16 +754,19 @@ token。
 概念解释
 限制根目录（chroot 或路径规范化），禁止任意路径；写操作需备份或 diff；大文件分块读。
 ```python
+
+```python
  import os
 
  SANDBOX_ROOT = "/var/agent_sandbox"
 
  def safe_read_file(path: str, max_bytes: int = 50_000) -> str:
-     full = os.path.realpath(os.path.join(SANDBOX_ROOT, path))
-     if not full.startswith(os.path.realpath(SANDBOX_ROOT) + os.sep):
-         raise PermissionError("path escapes sandbox")
-     with open(full, "rb") as f:
-         return f.read(max_bytes).decode("utf-8", errors="replace")
+ full = os.path.realpath(os.path.join(SANDBOX_ROOT, path))
+ if not full.startswith(os.path.realpath(SANDBOX_ROOT) + os.sep):
+     raise PermissionError("path escapes sandbox")
+ with open(full, "rb") as f:
+     return f.read(max_bytes).decode("utf-8", errors="replace")
+```
 
 ```
 
@@ -683,33 +775,47 @@ token。
 概念解释
 对数学表达式用 AST 解析或 numexpr ，禁止 eval 任意字符串，以防代码执行。
 ```python
+
+```python
  import ast
  import operator
 
  _ALLOWED = {
-     ast.Add: operator.add,
-     ast.Sub: operator.sub,
-     ast.Mult: operator.mul,
-     ast.Div: operator.truediv,
-     ast.USub: operator.neg,
-     ast.Pow: operator.pow,
+ ast.Add: operator.add,
+ ast.Sub: operator.sub,
+ ast.Mult: operator.mul,
+ ast.Div: operator.truediv,
+ ast.USub: operator.neg,
+ ast.Pow: operator.pow,
+```
+
  }
 
+```python
  def eval_expr(node: ast.AST) -> float:
 
-     if isinstance(node, ast.Constant) and isinstance(node.value, (int,
+ if isinstance(node, ast.Constant) and isinstance(node.value, (int,
+```
+
  float)):
-          return float(node.value)
-     if isinstance(node, ast.BinOp) and type(node.op) in _ALLOWED:
-         return _ALLOWED[type(node.op)](eval_expr(node.left),
+
+```text
+      return float(node.value)
+ if isinstance(node, ast.BinOp) and type(node.op) in _ALLOWED:
+     return _ALLOWED[type(node.op)](eval_expr(node.left),
+```
+
  eval_expr(node.right))
-     if isinstance(node, ast.UnaryOp) and type(node.op) in _ALLOWED:
-         return _ALLOWED[type(node.op)](eval_expr(node.operand))
-     raise ValueError("unsupported expression")
+
+```python
+ if isinstance(node, ast.UnaryOp) and type(node.op) in _ALLOWED:
+     return _ALLOWED[type(node.op)](eval_expr(node.operand))
+ raise ValueError("unsupported expression")
 
  def calculator(expr: str) -> float:
-     tree = ast.parse(expr, mode="eval")
-     return eval_expr(tree.body)
+ tree = ast.parse(expr, mode="eval")
+ return eval_expr(tree.body)
+```
 
 ```
 
@@ -718,110 +824,140 @@ token。
   下列题目覆盖前文各模块，便于系统复习。背诵时建议理解「为什么」，而非死记句子。
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>Function Calling 和「让模型输出 JSON」有什么本质区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">Function Calling 和「让模型输出 JSON」有什么本质区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Function Calling 是厂商提供的结构化工具调用通道（字段名、类型、与对话轮次绑定）；纯JSON 输出依赖 prompt 约束，解析脆弱、易混入闲聊文本。FC 更利于多轮 tool 消息与并行调用ID 对齐。实践中也可结合：FC 负责调度，JSON 负责业务负载。</p>
-</div>
+</div></div>
 </div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>若模型不支持 FC 怎么办？——可用 JSON mode / 约束解码 / 后处理抽取；或用小模型做「动作分类」。</p>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>描述 OpenAI 兼容接口里 tool_calls 与 tool 消息的对应关系。</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">描述 OpenAI 兼容接口里 tool_calls 与 tool 消息的对应关系。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>每条 assistant.tool_calls[] 有唯一 id ；执行后每条结果作为一条 role=tool 消息，且必须带相同 tool_call_id ，保证多并行调用时不错配。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>为什么工具 description 比函数名更重要？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">为什么工具 description 比函数名更重要？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>模型主要依据自然语言描述区分相似工具；函数名更多是给程序路由用。描述应写清边界与反例。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>如何设计 JSON Schema 降低模型填错概率？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">如何设计 JSON Schema 降低模型填错概率？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>减少可选参数模糊性；用 enum ；在 description 给示例；避免深层嵌套；必要时分拆多个函数。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>LangChain Tool 的 docstring 为什么要写「何时不要用」？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">LangChain Tool 的 docstring 为什么要写「何时不要用」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>减少误触发（false positive），尤其在工具功能重叠时，这是线上质量关键。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>MCP 解决的主要痛点是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">MCP 解决的主要痛点是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>工具集成碎片化、重复建设、难以跨产品复用；MCP 提供标准边界（Server）与传输，使工具像外设一样即插即用（在生态支持前提下）。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>MCP 与 Function Calling 是替代关系吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">MCP 与 Function Calling 是替代关系吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不是。FC 是模型侧表达；MCP 是工具侧集成。Host 常将 MCP 工具列表映射为 FC 的tools 。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>工具路由什么时候必须上？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">工具路由什么时候必须上？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>当工具数量导致上下文膨胀、误选率上升或延迟/成本明显增加时；具体阈值依赖模型与描述长度，常见从几十起考虑。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>向量路由的缺陷与改进？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">向量路由的缺陷与改进？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>缺陷：描述不佳则 embedding 不准；OOV 专有名词弱。改进：混合检索、同义词表、用户域特征、日志驱动迭代描述、加轻量分类器。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>并行工具调用要注意什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">并行工具调用要注意什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>幂等性、后端并发限制、数据竞争（写操作）、结果合并顺序、部分失败重试策略。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>什么是工具编排中的「依赖 DAG」？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">什么是工具编排中的「依赖 DAG」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>把工具调用当节点，数据依赖当边；拓扑排序执行，避免环与竞态，便于失败重试与可视化监控。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>敏感操作为什么推荐「两阶段提交」式工具设计？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">敏感操作为什么推荐「两阶段提交」式工具设计？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>第一阶段生成草稿/待确认对象，第二阶段在用户确认后再真正执行，降低模型误触发损失。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>工具返回为什么要尽量结构化（JSON）？</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">工具返回为什么要尽量结构化（JSON）？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>便于模型解析下一步推理、便于程序校验与日志；纯自然语言易产生歧义。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>如何做工具调用的权限控制？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">如何做工具调用的权限控制？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>会话绑定真实用户身份；服务端校验租户与角色；最小权限；敏感操作 HITL；不把长期密钥暴露给模型上下文。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>代码执行工具如何做到基本安全？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">代码执行工具如何做到基本安全？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>沙箱隔离、资源与网络限制、禁用危险模块、超时、只读默认、审计；生产慎用。Q16（加一）：审计日志至少记哪些字段？</p>
 <p>时间、trace/request id、用户/租户、工具名、参数摘要（脱敏）、结果状态、耗时、模型版本；合规场景保留策略与不可篡改存储视要求而定。Q17（加一）：Calculator 为什么禁止 eval ？</p>
 <p>eval 可执行任意 Python，等同于远程代码执行；应使用 AST 白名单或安全数学库。小结Function Calling：模型产出结构化调用意图，应用在本地执行并回传，是 Agent 的「手」。Tool 工程：描述、Schema、返回值与错误模式与路由同样重要。MCP：标准化工具与上下文连接，利于复用与治理。路由与编排：解决规模与依赖问题；安全贯穿权限、输入、确认、限流与审计。建议结合自家业务画一张「用户请求 → 路由 → 工具 → 依赖 → 回传模型」的时序图，面试时能用白板讲清楚，比背诵定义更有说服力。</p>
-</div>
+</div></div>
 </div>

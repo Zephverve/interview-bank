@@ -70,10 +70,13 @@ Concat 再乘 (W_O) 投回 (d_{model})。
 会用三个矩阵，等价于门控 FFN）。
 ### 1.2.6 Layer Normalization：Pre-Norm vs Post-Norm
 
-  Post-Norm（原始 Transformer）：(x \leftarrow x + \text{Sublayer}(x))，再在子层输出上做
-  Norm。
-  Pre-Norm（现代 LLM 常见）：先 Norm 再进子层：(x \leftarrow x + \text{Sublayer}
-  (\text{LN}(x)))。
+```text
+Post-Norm（原始 Transformer）：(x \leftarrow x + \text{Sublayer}(x))，再在子层输出上做
+Norm。
+Pre-Norm（现代 LLM 常见）：先 Norm 再进子层：(x \leftarrow x + \text{Sublayer}
+(\text{LN}(x)))。
+```
+
 Pre-Norm 通常更稳定、更易训练深层网络；Post-Norm 在理论上与残差更「经典」，但深层时
 更难训。
 ### 1.2.7 Residual Connection（残差连接）
@@ -84,9 +87,11 @@ Pre-Norm 通常更稳定、更易训练深层网络；Post-Norm 在理论上与�
 
 Q：Transformer 和 RNN 相比，核心优势是什么？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>自注意力在单步内连接任意两位置，并行计算好、长距离依赖路径短（常数层数内）；RNN 顺序计算且长序列梯度路径长。代价是 (O(n^2)) 注意力内存与时间（相对序列长度）。Q：Decoder 里的 Masked Self-Attention 为什么要 mask？</p>
 <p>训练时一次看到整句，若不 mask，位置 (i) 会看到「未来」token，造成信息泄漏；mask 保证训练和推理（自回归）一致。</p>
-</div>
+</div></div>
 ### 1.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>为什么大模型多是 Decoder-only？</p>
@@ -96,18 +101,25 @@ Q：Transformer 和 RNN 相比，核心优势是什么？
 ### 1.5 代码示例：缩放点积注意力（PyTorch 风格伪代码）
 
 ```python
-  import torch
-  import torch.nn.functional as F
-  import math
 
-  def scaled_dot_product_attention(Q, K, V, attn_mask=None):
+```python
+import torch
+import torch.nn.functional as F
+import math
+
+def scaled_dot_product_attention(Q, K, V, attn_mask=None):
+```
+
       # Q,K,V: (batch, heads, seq_len, d_k)
-      scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(Q.size(-1))
-       if attn_mask is not None:
-           scores = scores.masked_fill(attn_mask == 0, float("-inf"))
 
-       attn = F.softmax(scores, dim=-1)
-       return torch.matmul(attn, V), attn
+```text
+  scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(Q.size(-1))
+   if attn_mask is not None:
+       scores = scores.masked_fill(attn_mask == 0, float("-inf"))
+
+   attn = F.softmax(scores, dim=-1)
+   return torch.matmul(attn, V), attn
+```
 
 ```
 
@@ -154,9 +166,11 @@ Flash Attention 利用 GPU SRAM 快、HBM 慢 的层次结构，把 Q、K、V �
 
 Q：简述 Flash Attention 为什么能快和省显存？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>通过分块在片上完成注意力计算，减少对慢速全局显存的读写；避免存储完整大注意力矩阵（或显著降低峰值），并融合算子提高吞吐。Q：GQA 相对 MHA 推理上主要省在哪里？</p>
 <p>KV Cache 随层缓存的 K、V 体积减小（多组 Query 共享 KV），内存带宽与显存占用下降，decode 阶段受益明显。</p>
-</div>
+</div></div>
 ### 2.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>不用 softmax 可以吗？</p>
@@ -209,9 +223,11 @@ embedding 变为向量。切分方式直接影响序列长度、OOV 处理、多
 
 Q：BPE 和 WordPiece 主要区别？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>都是子词合并思路；BPE 常用高频合并，WordPiece 更强调似然提升；具体实现因库而异，面试答「合并准则不同」即可。Q：为什么 LLM 常用子词而不是纯词？</p>
 <p>控制词表规模、处理 OOV、开放集词汇；纯词级词表巨大且稀疏。</p>
-</div>
+</div></div>
 ### 3.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>字节级 BPE 优缺点？</p>
@@ -257,9 +273,11 @@ Decode（逐个生成新 token）。
 
 Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Prefill 并行度高，计算密集；Decode 每步批量小，常内存带宽受限（读大权重与 KVCache）。实际与 batch、实现有关。Q：KV Cache 为什么能加速？</p>
 <p>避免对历史 token 重复计算各层 K、V，以空间换时间。</p>
-</div>
+</div></div>
 ### 4.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>KV Cache 显存如何估算？</p>
@@ -267,16 +285,19 @@ Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 ### 4.5 代码示例：简单 Greedy + 温度（概念）
 
 ```python
-  import torch
-  import torch.nn.functional as F
 
-  def sample_next_token(logits, temperature=1.0, top_k=50):
-      logits = logits / temperature
-      if top_k > 0:
-          v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-          logits[logits < v[:, [-1]]] = float("-inf")
-      probs = F.softmax(logits, dim=-1)
-      return torch.multinomial(probs, num_samples=1)
+```python
+import torch
+import torch.nn.functional as F
+
+def sample_next_token(logits, temperature=1.0, top_k=50):
+  logits = logits / temperature
+  if top_k > 0:
+      v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+      logits[logits < v[:, [-1]]] = float("-inf")
+  probs = F.softmax(logits, dim=-1)
+  return torch.multinomial(probs, num_samples=1)
+```
 
 ```
 
@@ -329,9 +350,11 @@ BA) 或保持分开。
 
 Q：LoRA 秩 r 怎么选？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>经验值 8–64 常见；越大容量越大但易过拟合、显存略增；需验证集折中。Q：QLoRA 和 LoRA 主要差在哪？</p>
 <p>基座权重 4-bit 量化 + LoRA；大幅降低显存，略有精度损失风险，需配合 NF4 与调参。</p>
-</div>
+</div></div>
 ### 5.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>LoRA 一般接在哪些层？</p>
@@ -380,19 +403,22 @@ DeepSeek 等工作中强调：对同一 prompt 一组输出内做相对奖励归
 从二元反馈（好/坏）出发，用前景理论风格损失做对齐，不必成对偏好，数据收集更灵活。
 ### 6.2.6 RLHF vs DPO 对比
 
-        维度                          RLHF                    DPO
-  奖励模型                 需要                           不需要显式 RM
-  训练复杂度                高（RL + 参考模型）                 相对较低
-  稳定性                  依赖 PPO 调参                    通常更简洁
-  数据                   排序/打分                        偏好对
+| 维度 | RLHF | DPO |
+| --- | --- | --- |
+| 奖励模型 | 需要 | 不需要显式 RM |
+| 训练复杂度 | 高（RL + 参考模型） | 相对较低 |
+| 稳定性 | 依赖 PPO 调参 | 通常更简洁 |
+| 数据 | 排序/打分 | 偏好对 |
 
 ### 6.3 面试问题（Q）与标准答案（A）
 
 Q：RLHF 为什么要 KL 惩罚？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>防止策略为刷高 RM 分数而产生分布外投机行为（reward hacking），保持语言质量与多样性。Q：DPO 相对 RLHF 的主要工程优势？</p>
 <p>无需单独训练 RM 与 RL 采样循环，静态数据上直接优化，pipeline 更简单。</p>
-</div>
+</div></div>
 ### 6.4 追问应对
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>偏好数据噪声大怎么办？</p>
@@ -432,9 +458,11 @@ Q：RLHF 为什么要 KL 惩罚？
 
 Q：INT4 比 INT8 主要风险是什么？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>表示粒度更粗，误差更大；需 group-wise 缩放、混合精度或与更高比特关键层结合。Q：GPTQ 大致在优化什么？</p>
 <p>给定量化约束，最小化权重重构误差（常利用二阶近似信息），逐块贪心求解。</p>
-</div>
+</div></div>
 ## 8. 推理优化
 
 ### 8.1 概念解释
@@ -469,9 +497,11 @@ token 延迟（理想情况），需 draft 与 target 兼容。
 
 Q：vLLM 的 PagedAttention 解决什么问题？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>KV Cache 显存碎片化与浪费（变长序列），通过分页块管理与复用提高吞吐。Q：MoE 为什么「参数多算力少」？</p>
 <p>每 token 只激活部分专家，计算量随激活专家数增长，而总参数量包含所有专家。</p>
-</div>
+</div></div>
 ## 9. 前沿模型与选型
 
 ### 9.1 概念解释
@@ -502,202 +532,260 @@ Q：vLLM 的 PagedAttention 解决什么问题？
 
 Q：选开源 70B 还是闭源 API？
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>看隐私、延迟、成本、定制需求与团队运维能力；高合规本地优先，快速验证可用 API。</p>
 <p class="guide-a-step"><strong>10. 综合面试题库（20+ 题）</strong></p>
 <p>下列题目均附标准答案要点，可与前文章节交叉复习。</p>
-</div>
+</div></div>
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">写出缩放点积注意力的公式，并解释 (\sqrt{d_k})。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>(\text{softmax}(QK^\top/\sqrt{d_k})V)。除 (\sqrt{d_k}) 使点积方差稳定在约 1，避免softmax 饱和与梯度问题。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>多头注意力为什么比单头好？</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">多头注意力为什么比单头好？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>多子空间并行关注不同依赖关系，表达力更强，类似多通道特征。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>Encoder 和 Decoder 的自注意力有何不同？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">Encoder 和 Decoder 的自注意力有何不同？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Encoder 一般为双向；Decoder 用 causal mask 保证自回归；Seq2Seq 中 Decoder 还有Cross-Attention 读 Encoder。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>RoPE 与正弦绝对位置编码各有什么特点？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">RoPE 与正弦绝对位置编码各有什么特点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>RoPE 通过旋转编码相对位置，常用于 Decoder LLM；正弦为固定绝对位置，可外推性讨论较多但现代架构更常选 RoPE/ALiBi。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>Pre-Norm 和 Post-Norm 区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">Pre-Norm 和 Post-Norm 区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Pre-Norm：LN 在子层前；Post-Norm：LN 在子层后。深层网络 Pre-Norm 通常更稳定。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>解释 MQA 与 GQA 的动机。</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">解释 MQA 与 GQA 的动机。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>减少 KV Cache 与带宽；MQA 共享全部 KV，GQA 分组共享以平衡质量。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>Flash Attention 核心优化思想？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">Flash Attention 核心优化思想？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分块、减少 HBM 访问、融合算子；降低注意力显存峰值并提速。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>BPE 如何构建词表？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">BPE 如何构建词表？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>从基础符号迭代合并最高频相邻对（或类似准则），直到目标规模。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>SentencePiece 适合中文的原因？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">SentencePiece 适合中文的原因？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不依赖空格分词，可学习子词；适合无空格语言与多语言统一。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>Tokenizer 不一致会导致什么问题？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">Tokenizer 不一致会导致什么问题？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>id 错位、性能异常；微调与推理必须与基座一致。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>Prefill 和 Decode 阶段特点？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">Prefill 和 Decode 阶段特点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Prefill 并行处理 prompt；Decode 逐步生成，常受带宽与 KV Cache 影响。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>KV Cache 是什么？为什么能加速？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">KV Cache 是什么？为什么能加速？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>缓存历史 K、V；避免重复计算过去 token 的注意力键值。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>Temperature、Top-k、Top-p 各影响什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">Temperature、Top-k、Top-p 各影响什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>随机性/确定性；截断长尾候选；动态 nucleus 截断。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>对话生成为什么少用 Beam Search？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">对话生成为什么少用 Beam Search？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>易重复、不自然；开放域更常用采样类方法。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>LoRA 的低秩假设直觉？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">LoRA 的低秩假设直觉？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>任务适配更新近似落在低秩子空间，用 (BA) 参数高效逼近。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q16</span>QLoRA 为什么省显存？</p>
+<div class="guide-question"><span class="guide-q-label">Q16</span><span class="guide-q-text">QLoRA 为什么省显存？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>基座 4-bit 存权重 + LoRA 训练少量参数；降低显存占用。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q17</span>SFT 损失通常怎么算？</p>
+<div class="guide-question"><span class="guide-q-label">Q17</span><span class="guide-q-text">SFT 损失通常怎么算？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>常对 assistant token 做交叉熵，忽略 user 与 mask。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q18</span>RLHF 三阶段是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q18</span><span class="guide-q-text">RLHF 三阶段是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>SFT → 奖励模型 → PPO（带 KL）强化学习。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q19</span>DPO 相对 RLHF 最大简化是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q19</span><span class="guide-q-text">DPO 相对 RLHF 最大简化是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不显式训练奖励模型与 RL 循环，用偏好直接优化策略。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q20</span>PPO 中 KL 惩罚目的？</p>
+<div class="guide-question"><span class="guide-q-label">Q20</span><span class="guide-q-text">PPO 中 KL 惩罚目的？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>限制偏离参考策略，减轻 reward hacking 与模式崩塌。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q21</span>INT4 量化主要风险？</p>
+<div class="guide-question"><span class="guide-q-label">Q21</span><span class="guide-q-text">INT4 量化主要风险？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>精度损失；需分组缩放、混合精度或算法（GPTQ/AWQ）缓解。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q22</span>GPTQ 大致做什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q22</span><span class="guide-q-text">GPTQ 大致做什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>训练后量化权重，按层/块最小化误差，常用 Hessian 近似。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q23</span>张量并行与流水线并行区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q23</span><span class="guide-q-text">张量并行与流水线并行区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>TP 切分单层张量；PP 切分不同层到不同设备。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q24</span>PagedAttention 解决什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q24</span><span class="guide-q-text">PagedAttention 解决什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>KV Cache 变长导致的浪费与碎片化，提高批处理效率。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q25</span>投机解码如何加速？</p>
+<div class="guide-question"><span class="guide-q-label">Q25</span><span class="guide-q-text">投机解码如何加速？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>小模型提议多 token，大模型并行验证，减少串行步数。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q26</span>MoE 训练难点？</p>
+<div class="guide-question"><span class="guide-q-label">Q26</span><span class="guide-q-text">MoE 训练难点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>负载均衡、通信、路由稳定性；避免专家坍塌。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q27</span>开源模型相对闭源 API 的核心优势场景？</p>
+<div class="guide-question"><span class="guide-q-label">Q27</span><span class="guide-q-text">开源模型相对闭源 API 的核心优势场景？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>数据不出域、可深度定制、长期成本可控（有算力前提）。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q28</span>GRPO / KTO 你了解到什么程度？</p>
+<div class="guide-question"><span class="guide-q-label">Q28</span><span class="guide-q-text">GRPO / KTO 你了解到什么程度？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>诚实答：GRPO 强调组内相对优化、可与特定 RL 基础设施配合；KTO 用二元反馈与前景式损失；细节以论文与最新报告为准，面试可说明「用于改进 RLHF 复杂管线或数据形态」。附录：速查公式与术语符号/术语                      含义(d_{model})     模型隐藏维度(d_k)           每头 Key/Query 维度KV Cache        缓存每步 K、V 以加速自回归PEFT            参数高效微调总称（LoRA、Adapter 等）PTQ             训练后量化TP / PP         张量并行 / 流水线并行文档版本：与「面试八股文」系列一致，可按岗位深度补充论文与源码阅读笔记。</p>
-</div>
+</div></div>
 </div>

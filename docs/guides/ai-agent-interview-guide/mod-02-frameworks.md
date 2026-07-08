@@ -34,32 +34,36 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 「更会想」，而是 想与做的闭环：
 
  用户问题
-   → Thought：拆解子目标
-   → Action：选择工具并执行
-   → Observation：获得外部反馈
-   → Thought：根据观察修正计划
-   → …
-   → Final Answer
+
+```text
+→ Thought：拆解子目标
+→ Action：选择工具并执行
+→ Observation：获得外部反馈
+→ Thought：根据观察修正计划
+→ …
+→ Final Answer
+```
 
 ### 1.2.2 标准工作流程（伪代码）
 
-                                                                        text
- 输入: question, tools, llm, max_steps
- 初始化: trajectory = []
- for step in 1..max_steps:
-     prompt = build_react_prompt(question, tools, trajectory)
-     text = llm.generate(prompt)
+```text
+输入: question, tools, llm, max_steps
+初始化: trajectory = []
+for step in 1..max_steps:
+ prompt = build_react_prompt(question, tools, trajectory)
+ text = llm.generate(prompt)
 
-     if "Final Answer:" in text:
-         return extract_final_answer(text)
+ if "Final Answer:" in text:
+     return extract_final_answer(text)
 
-     thought = parse_thought(text)          #   从 Thought: ... 解析
+ thought = parse_thought(text)          #   从 Thought: ... 解析
 
-     action = parse_action(text)             # 从 Action: tool[arg] 解析
-     obs = tools.execute(action)             # 真实环境反馈
-     trajectory.append((thought, action, obs))
+ action = parse_action(text)             # 从 Action: tool[arg] 解析
+ obs = tools.execute(action)             # 真实环境反馈
+ trajectory.append((thought, action, obs))
 
- return " 达到最大步数仍未结束" 或 强制总结
+return " 达到最大步数仍未结束" 或 强制总结
+```
 
 解析要点（面试常问）：
  Thought / Action / Observation 通常用 固定前缀 或 结构化格式（如 JSON）便于程序解
@@ -70,41 +74,44 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 
 下面是一个 可直接用于教学 的英文模板（业界常用英文工具名；面试时说明「中文任务可把指令
 改为中文」即可）。
-                                                                            text
- You are a helpful assistant that can use tools to answer questions.
 
- You must follow this format strictly:
+```text
+You are a helpful assistant that can use tools to answer questions.
 
- Question: the input question you must answer
- Thought: think step by step about what you should do next
- Action: the action to take, must be one of [{tool_names}]
- Action Input: the input to the action
- Observation: the result of the action
- ... (this Thought/Action/Action Input/Observation can repeat)
- Thought: I now know the final answer
- Final Answer: the final answer to the original question
+You must follow this format strictly:
 
- Begin!
+Question: the input question you must answer
+Thought: think step by step about what you should do next
+Action: the action to take, must be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat)
+Thought: I now know the final answer
+Final Answer: the final answer to the original question
 
- Question: {question}
- Thought: {optional_seed_thought}
+Begin!
+
+Question: {question}
+Thought: {optional_seed_thought}
+```
 
 若采用 单段 Action 行（不少论文与开源实现风格）：
 
-                                                        text
- Use the following format:
+```text
+Use the following format:
 
- Question: ...
- Thought: ...
- Action: Search[query]
- Observation: ...
+Question: ...
+Thought: ...
+Action: Search[query]
+Observation: ...
 
- Thought: ...
- Action: Calculator[expression]
- Observation: ...
+Thought: ...
+Action: Calculator[expression]
+Observation: ...
 
- Thought: ...
- Final Answer: ...
+Thought: ...
+Final Answer: ...
+```
 
 设计要点：
  工具清单与参数格式要写清，减少模型胡写工具名。
@@ -114,17 +121,21 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 ### 1.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>ReAct 和「普通 CoT 提示」有什么本质区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">ReAct 和「普通 CoT 提示」有什么本质区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>普通 CoT 只在模型内部展开推理链，不强制与外部环境交互；ReAct 把推理与 可执行行动绑定，每一步行动后都有 真实 Observation 反馈，从而用工具结果约束生成，降低闭卷幻觉。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>ReAct 为什么要显式写出 Thought？</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">ReAct 为什么要显式写出 Thought？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>显式 Thought 有三类价值：可解释性（便于人类审计）、可调试性（定位哪一步选错工具）、学习信号（可做监督微调或评估中间步骤质量）。在工程上，Thought 也帮助模型在下一步更稳定地选择 Action。</p>
-</div>
+</div></div>
 </div>
 
 ### 1.4 追问及应对
@@ -140,90 +151,112 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 ### 1.5 代码示例（Python，简化版 ReAct 循环）
 
 ```python
+
+```python
  from dataclasses import dataclass
  from typing import Callable, Dict, List, Tuple
+```
 
  @dataclass
+
+```python
  class Tool:
-     name: str
-     run: Callable[[str], str]
+ name: str
+ run: Callable[[str], str]
 
  def build_prompt(question: str, history: List[Tuple[str, str, str]],
  tool_names: str) -> str:
-     lines = [
-         "You solve tasks with tools. Use EXACTLY this format each turn:",
-         "Thought: ...",
-         f"Action: one of {tool_names}",
-         "Action Input: ...",
-         "Stop when you can answer:",
-         "Final Answer: ...",
-         "",
-         f"Tools available: {tool_names}",
-         "",
+ lines = [
+     "You solve tasks with tools. Use EXACTLY this format each turn:",
+     "Thought: ...",
+     f"Action: one of {tool_names}",
+     "Action Input: ...",
+     "Stop when you can answer:",
+     "Final Answer: ...",
+     "",
+     f"Tools available: {tool_names}",
+     "",
 
-         f"Question: {question}",
-         "",
-    ]
-    for thought, action, obs in history:
-         lines += [f"Thought: {thought}", f"Action: {action}",
+     f"Question: {question}",
+     "",
+]
+for thought, action, obs in history:
+     lines += [f"Thought: {thought}", f"Action: {action}",
+```
+
 f"Observation: {obs}", ""]
-    return "\n".join(lines)
+
+```python
+return "\n".join(lines)
 
 def parse_action(text: str) -> Tuple[str | None, str | None]:
+```
+
     #   极简解析：生产环境请用更稳健的正则/JSON
-    action = None
-    action_input = None
-    for line in text.splitlines():
-         if line.startswith("Action:"):
-               action = line.split("Action:", 1)[1].strip()
-         if line.startswith("Action Input:"):
-               action_input = line.split("Action Input:", 1)[1].strip()
-    return action, action_input
+
+```python
+action = None
+action_input = None
+for line in text.splitlines():
+     if line.startswith("Action:"):
+           action = line.split("Action:", 1)[1].strip()
+     if line.startswith("Action Input:"):
+           action_input = line.split("Action Input:", 1)[1].strip()
+return action, action_input
 
 def react_loop(
-    question: str,
-    tools: Dict[str, Tool],
-    llm: Callable[[str], str],
-    max_steps: int = 6,
+question: str,
+tools: Dict[str, Tool],
+llm: Callable[[str], str],
+max_steps: int = 6,
 ) -> str:
-    tool_names = "[" + ", ".join(tools.keys()) + "]"
-    history: List[Tuple[str, str, str]] = []
+tool_names = "[" + ", ".join(tools.keys()) + "]"
+history: List[Tuple[str, str, str]] = []
 
-    for _ in range(max_steps):
-         prompt = build_prompt(question, history, tool_names)
-         out = llm(prompt)
+for _ in range(max_steps):
+     prompt = build_prompt(question, history, tool_names)
+     out = llm(prompt)
 
-         if "Final Answer:" in out:
-               return out.split("Final Answer:", 1)[1].strip()
+     if "Final Answer:" in out:
+           return out.split("Final Answer:", 1)[1].strip()
 
-         thought = ""
-         for line in out.splitlines():
-               if line.startswith("Thought:"):
-                  thought = line.split("Thought:", 1)[1].strip()
+     thought = ""
+     for line in out.splitlines():
+           if line.startswith("Thought:"):
+              thought = line.split("Thought:", 1)[1].strip()
 
-           action, action_input = parse_action(out)
-           if not action or action not in tools:
-                obs = f"ERROR: invalid Action. Must be one of
+       action, action_input = parse_action(out)
+       if not action or action not in tools:
+            obs = f"ERROR: invalid Action. Must be one of
+```
+
  {list(tools.keys())}."
-           else:
-                obs = tools[action].run(action_input or "")
 
-           history.append((thought, f"{action}[{action_input}]", obs))
+```text
+       else:
+            obs = tools[action].run(action_input or "")
 
-      return "Failed: max steps exceeded."
+       history.append((thought, f"{action}[{action_input}]", obs))
+
+  return "Failed: max steps exceeded."
+```
 
  #   用法示例（llm 替换为真实 API 调用）
  if __name__ == "__main__":
       def fake_llm(prompt: str) -> str:
            #   仅演示：真实场景接 OpenAI/Claude/本地模型
-           return (
-                "Thought: I need to add numbers.\n"
-                "Action: calculator\n"
-                "Action Input: 21+21\n"
-           )
 
-      tools = {
-           "calculator": Tool("calculator", lambda s: str(eval(s)) if s else
+```text
+       return (
+            "Thought: I need to add numbers.\n"
+            "Action: calculator\n"
+            "Action Input: 21+21\n"
+       )
+
+  tools = {
+       "calculator": Tool("calculator", lambda s: str(eval(s)) if s else
+```
+
  "NaN"),
       }
       print(react_loop("What is 21+21?", tools, fake_llm))
@@ -244,10 +277,12 @@ def react_loop(
 
 ### 1.7 与 Chain-of-Thought（CoT）的区别
 
-      维度              CoT                      ReAct
- 是否有外部环境        通常无            有（工具/Observation）
- 输出内容           推理文字为主         Thought + Action + Observation 交替
- 纠错方式           主要靠模型自省        主要靠 外部反馈
+| 维度 | CoT | ReAct |
+| --- | --- | --- |
+| 是否有外部环境 | 通常无 | 有（工具/Observation） |
+| 输出内容 | 推理文字为主 | Thought + Action + Observation 交替 |
+| 纠错方式 | 主要靠模型自省 | 主要靠 外部反馈 |
+
  典型目标           提升推理深度         推理 + 行动闭环
 一句话总结： CoT 让模型「更会想」；ReAct 让模型「在想的同时能动手，并用真实结果纠正自
 己」。
@@ -265,14 +300,15 @@ Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执�
 
 ### 2.2.1 两阶段模式
 
-                                                     text
-  输入任务
-    → Planner：输出计划 P = [step1, step2, ...]
-    → Executor：for each step:
-          执行（可调用工具/子 Agent）
-          更新状态 state
-          若失败或信息不足 → 触发 Re-planning
-    → 输出最终结果
+```text
+输入任务
+→ Planner：输出计划 P = [step1, step2, ...]
+→ Executor：for each step:
+      执行（可调用工具/子 Agent）
+      更新状态 state
+      若失败或信息不足 → 触发 Re-planning
+→ 输出最终结果
+```
 
 ### 2.2.2 Planner 组件设计（要点）
 
@@ -280,9 +316,11 @@ Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执�
  输出：结构化计划（步骤列表、每步子目标、依赖、所需工具类型）。
  技巧：计划 粒度适中；过细易 brittle，过粗难执行。
 伪代码：
-                                                     text
-  plan = LLM_planner(task, constraints)
-  validate_plan(plan)   #   可选：检查是否包含非法步骤/循环依赖
+
+```text
+plan = LLM_planner(task, constraints)
+validate_plan(plan)   #   可选：检查是否包含非法步骤/循环依赖
+```
 
 ### 2.2.3 Executor 组件设计（要点）
 
@@ -290,14 +328,16 @@ Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执�
  输出：步骤产物 + 新 state。
  工具路由：每一步可选用不同工具（搜索、代码、数据库）。
 伪代码：
-                                                     text
-  state = {}
-  for step in plan:
-      out = execute_step(step, state, tools)
-      state[step.id] = out
 
-      if needs_replan(state):
-          plan = replanner(task, plan, state)
+```text
+state = {}
+for step in plan:
+  out = execute_step(step, state, tools)
+  state[step.id] = out
+
+  if needs_replan(state):
+      plan = replanner(task, plan, state)
+```
 
 ### 2.2.4 重规划（Re-planning）机制
 
@@ -308,25 +348,31 @@ Plan-and-Execute 是 两阶段：先 制定计划（Planner），再 逐步执�
 Re-planning 做法：
   局部修复：只替换失败步骤之后的子计划；
   全局重规划：回到目标重新生成计划（成本高但更稳）。
-                                                                              text
-  if error or inconsistency:
-      new_plan = LLM_replanner(original_task, old_plan, state, error_trace)
-      continue with new_plan
+
+```text
+if error or inconsistency:
+  new_plan = LLM_replanner(original_task, old_plan, state, error_trace)
+  continue with new_plan
+```
 
 ### 2.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>Plan-and-Execute 相比 ReAct 什么时候更占优？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">Plan-and-Execute 相比 ReAct 什么时候更占优？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>当任务 步骤多、结构清晰、需要全局分解（如多文件代码改动、数据分析流水线、复杂调研提纲）时，Planner 先给出路线图能减少「短视」；ReAct 更擅长 动态工具交互、逐步探索。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>Re-planning 会不会导致「计划抖动」？怎么缓解？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">Re-planning 会不会导致「计划抖动」？怎么缓解？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>会。频繁重规划可能让执行轨迹不稳定。缓解方式包括：限制重规划次数、局部重规划优先、在 state 中保留已验证事实、对计划变更加 一致性检查（新旧计划差异说明）。</p>
-</div>
+</div></div>
 </div>
 
 ### 2.4 追问及应对
@@ -340,55 +386,72 @@ Re-planning 做法：
 ### 2.5 代码示例（Python，极简 Planner + Executor）
 
 ```python
+
+```python
  from typing import Any, Dict, List
 
  def plan(task: str, llm) -> List[str]:
-     prompt = f"""
-     Break the task into 3-7 concrete steps. Return ONE step per line.
-     Task: {task}
-     """
-     text = llm(prompt)
-     steps = [s.strip("- ").strip() for s in text.splitlines() if
+ prompt = f"""
+ Break the task into 3-7 concrete steps. Return ONE step per line.
+ Task: {task}
+ """
+ text = llm(prompt)
+ steps = [s.strip("- ").strip() for s in text.splitlines() if
+```
+
  s.strip()]
-     return steps
+
+```python
+ return steps
 
  def execute_step(step: str, state: Dict[str, Any], tools, llm) -> str:
+```
+
      #   这里可把 ReAct 当作单步执行器
-     prompt = f"Step: {step}\nContext: {state}\nAnswer succinctly."
-     return llm(prompt)
+
+```python
+ prompt = f"Step: {step}\nContext: {state}\nAnswer succinctly."
+ return llm(prompt)
 
  def plan_and_execute(task: str, llm, tools, max_replans: int = 2) -> str:
-     steps = plan(task, llm)
-     state: Dict[str, Any] = {}
+ steps = plan(task, llm)
+ state: Dict[str, Any] = {}
 
-     for _ in range(max_replans + 1):
-           for i, st in enumerate(steps):
+ for _ in range(max_replans + 1):
+       for i, st in enumerate(steps):
 
-             try:
-                  out = execute_step(st, state, tools, llm)
-                  state[f"step_{i}"] = out
-             except Exception as e:
+         try:
+              out = execute_step(st, state, tools, llm)
+              state[f"step_{i}"] = out
+         except Exception as e:
+```
+
                   #   触发重规划（演示）
                   replan_prompt = f"Task: {task}\nFailed step: {st}\nError:
  {e}\nGive a new plan."
-                  text = llm(replan_prompt)
-                  steps = [s.strip("- ").strip() for s in text.splitlines()
- if s.strip()]
-                  break
-         else:
-             return llm(f"Summarize final result based on: {state}")
 
-      return "Failed after replanning."
+```text
+              text = llm(replan_prompt)
+              steps = [s.strip("- ").strip() for s in text.splitlines()
+ if s.strip()]
+              break
+     else:
+         return llm(f"Summarize final result based on: {state}")
+
+  return "Failed after replanning."
+```
 
 ```
 
 ### 2.6 与 ReAct 的对比与适用场景
 
-   维度                     ReAct                    Plan-and-Execute
- 规划              隐式、逐步                       显式、先全局后局部
- 灵活性             高（随时改工具）                    中（依赖重规划机制）
- 成本              步数多时可很高                     规划一次可能省执行盲目性
- 风险              短视                          计划错误会波及全局
+| 维度 | ReAct | Plan-and-Execute |
+| --- | --- | --- |
+| 规划 | 隐式、逐步 | 显式、先全局后局部 |
+| 灵活性 | 高（随时改工具） | 中（依赖重规划机制） |
+| 成本 | 步数多时可很高 | 规划一次可能省执行盲目性 |
+| 风险 | 短视 | 计划错误会波及全局 |
+
 适用场景小结：
  ReAct：工具交互密集、环境反馈关键、路径不确定。
  Plan-and-Execute：任务可分解、流程强、需要可审计的计划书。
@@ -418,31 +481,36 @@ Reflexion 的核心是：做完不等于结束——还要 评估做得好不好
  短期：同一任务多轮尝试中维护 reflections: List[str] 。
  长期：写入向量库/键值库，按任务类型检索相似反思（进阶）。
 使用方式：
-                                                                           text
-  attempt_k:
-    prompt = task + "\nPast reflections:\n" + "\n".join(reflections)
-    output = Actor(prompt)
 
-    score, feedback = Evaluator(output)
-    reflections.append(Reflector(feedback))
+```text
+attempt_k:
+prompt = task + "\nPast reflections:\n" + "\n".join(reflections)
+output = Actor(prompt)
+
+score, feedback = Evaluator(output)
+reflections.append(Reflector(feedback))
+```
 
 ### 3.2.3 工作流程：Action → Evaluation → Reflection → Retry
 
-                                                          text
-  初始化 reflections = []
-  repeat until success or max_trials:
-      Action: 基于任务 + reflections 生成输出（可含工具）
-      Evaluation: 规则/模型评估（可给二元成功或细粒度批评）
-      Reflection: 生成改进建议文本
-      将 reflection 追加到 memory
+```text
+初始化 reflections = []
+repeat until success or max_trials:
+  Action: 基于任务 + reflections 生成输出（可含工具）
+  Evaluation: 规则/模型评估（可给二元成功或细粒度批评）
+  Reflection: 生成改进建议文本
+  将 reflection 追加到 memory
+```
 
 ### 3.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>Reflexion 和「让模型自己检查一遍」有什么不同？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">Reflexion 和「让模型自己检查一遍」有什么不同？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>自检往往是一次性的；Reflexion 把评估与反思 显式化、结构化，并 跨尝试复用 反思文本，形成可累积的「策略记忆」。工程上更易控制与评测。</p>
-</div>
+</div></div>
 </div>
 
 ### 3.4 追问及应对
@@ -455,18 +523,21 @@ Reflexion 的核心是：做完不等于结束——还要 评估做得好不好
 
 ```python
 
+```python
  def reflexion_loop(task: str, actor, evaluator, reflector, max_trials: int
  = 3) -> str:
-     reflections: list[str] = []
+ reflections: list[str] = []
 
-     for t in range(max_trials):
-         mem = "\n".join(f"- {r}" for r in reflections) or "(none)"
-         out = actor(f"Task: {task}\nReflections:\n{mem}\n")
-         score, feedback = evaluator(out)   #   例如 (0.0~1.0, str)
-         if score >= 0.9:
-             return out
+ for t in range(max_trials):
+     mem = "\n".join(f"- {r}" for r in reflections) or "(none)"
+     out = actor(f"Task: {task}\nReflections:\n{mem}\n")
+     score, feedback = evaluator(out)   #   例如 (0.0~1.0, str)
+     if score >= 0.9:
+         return out
 
-         r = reflector(f"Output:\n{out}\nFeedback:\n{feedback}\nWrite
+     r = reflector(f"Output:\n{out}\nFeedback:\n{feedback}\nWrite
+```
+
  concise lessons.")
          reflections.append(r)
 
@@ -501,22 +572,26 @@ LATS 把 Agent 的决策看成在 树 上搜索：每个节点是一种「状态
 ### 4.2.2 MCTS 思想（与 Agent 结合的直觉）
 
 经典 MCTS 四步（可简化为面试版描述）：
-                                                       text
-  while budget remains:
-      Select: 从根沿策略选到叶（UCB 等平衡探索/利用）
-      Expand: 生成若干可能的下一步（语言分支）
-      Simulate/Rollout: 用启发式或模型快速评估结果潜力
-      Backpropagate: 把评估回报回传到路径上的节点统计量
+
+```text
+while budget remains:
+  Select: 从根沿策略选到叶（UCB 等平衡探索/利用）
+  Expand: 生成若干可能的下一步（语言分支）
+  Simulate/Rollout: 用启发式或模型快速评估结果潜力
+  Backpropagate: 把评估回报回传到路径上的节点统计量
+```
 
 在 LATS 中，「扩展」常由 LLM 生成多个候选行动；「模拟」可用更便宜模型或短 rollouts。
 
 ### 4.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>LATS 相比单次 ReAct 多在哪里成本？换来什么收益？</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">LATS 相比单次 ReAct 多在哪里成本？换来什么收益？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>成本主要来自 多分支扩展 与 多次评估/模拟。收益是 更系统的探索，降低「一条路径走到黑」的局部最优风险，适合决策点多的任务。</p>
-</div>
+</div></div>
 </div>
 
 ### 4.4 追问及应对
@@ -529,22 +604,28 @@ LATS 把 Agent 的决策看成在 树 上搜索：每个节点是一种「状态
 ### 4.5 代码示例（Python，极度简化的「多候选一步扩展」）
 
 ```python
+
+```python
  import random
  from typing import List
 
  def expand_candidates(state: str, llm, k: int = 3) -> List[str]:
-     prompt = f"State:\n{state}\nPropose {k} distinct next actions (one
+ prompt = f"State:\n{state}\nPropose {k} distinct next actions (one
+```
+
  line each)."
      text = llm(prompt)
      return [line.strip("- ") for line in text.splitlines() if
  line.strip()][:k]
 
+```python
  def score_action(state: str, action: str, scorer) -> float:
-     return scorer(state, action)   #   可用启发式或小型模型
+ return scorer(state, action)   #   可用启发式或小型模型
  def lats_one_step(state: str, llm, scorer) -> str:
-     cands = expand_candidates(state, llm, k=3)
-     best = max(cands, key=lambda a: score_action(state, a, scorer))
-     return best
+ cands = expand_candidates(state, llm, k=3)
+ best = max(cands, key=lambda a: score_action(state, a, scorer))
+ return best
+```
 
 ```
 
@@ -572,13 +653,14 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
  停止。
 ### 5.2.2 AgentExecutor 工作原理（流程）
 
-                                                                    text
-  inputs → AgentExecutor
-    loop:
-      agent.plan(messages/tools) -> next message / tool_calls
-      if final answer: return
-      else: run tools -> append tool messages
-      (optional) trim memory / handle parsing errors
+```text
+inputs → AgentExecutor
+loop:
+  agent.plan(messages/tools) -> next message / tool_calls
+  if final answer: return
+  else: run tools -> append tool messages
+  (optional) trim memory / handle parsing errors
+```
 
 关键点：停止条件（达到最终答案）、解析错误处理、最大迭代次数。
 ### 5.2.3 自定义 Agent 的步骤（通用 checklist）
@@ -596,17 +678,21 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 ### 5.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>LangChain 里 AgentExecutor 解决的核心问题是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">LangChain 里 AgentExecutor 解决的核心问题是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>把「模型决策 → 工具执行 → 结果回填 → 再决策」的 控制流 标准化，统一处理 迭代限制、错误处理、中间消息结构，让开发者专注工具与提示。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>工具描述为什么重要？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">工具描述为什么重要？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Agent 依赖描述进行 工具选择；描述不清会导致错选工具或参数幻觉。应包含 用途、输入输出、边界条件、示例。</p>
-</div>
+</div></div>
 </div>
 
 ### 5.4 追问及应对
@@ -626,20 +712,24 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
  #   示意代码：突出 AgentExecutor 的“循环本质”
  def simple_agent_executor(llm, tools, user_input: str, max_iterations: int
  = 5):
-      messages = [{"role": "user", "content": user_input}]
 
-      for _ in range(max_iterations):
-         resp = llm.chat(messages, tools=tools)   #   伪 API
-         if resp.final_text and not resp.tool_calls:
-             return resp.final_text
+```text
+  messages = [{"role": "user", "content": user_input}]
 
-         for call in resp.tool_calls:
-             name = call.name
-             args = call.args
-             tool_fn = next(t for t in tools if t.name == name)
-             observation = tool_fn.invoke(args)
-             messages.append({"role": "assistant", "tool_calls": [call]})
-             messages.append({"role": "tool", "name": name, "content":
+  for _ in range(max_iterations):
+     resp = llm.chat(messages, tools=tools)   #   伪 API
+     if resp.final_text and not resp.tool_calls:
+         return resp.final_text
+
+     for call in resp.tool_calls:
+         name = call.name
+         args = call.args
+         tool_fn = next(t for t in tools if t.name == name)
+         observation = tool_fn.invoke(args)
+         messages.append({"role": "assistant", "tool_calls": [call]})
+         messages.append({"role": "tool", "name": name, "content":
+```
+
  observation})
 
       return "Stopped: max iterations."
@@ -667,10 +757,12 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 ### 6.2.3 条件边（Conditional Edge）
 
 根据 state 决定下一步去哪个节点，例如：
-                                                                      text
-  if needs_human_review(state): goto human
-  elif tool_error(state): goto repair
-  else: goto continue
+
+```text
+if needs_human_review(state): goto human
+elif tool_error(state): goto repair
+else: goto continue
+```
 
 ### 6.2.4 状态管理
 
@@ -678,26 +770,31 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
   多个节点可 增量合并 更新（reducer），避免全局覆盖冲突（具体机制依实现）。
 ### 6.2.5 与 LangChain Agent 的区别（面试高频）
 
-     维度            LangChain Agent                    LangGraph
- 控制流            偏固定循环                        显式图、分支/循环更自然
- 可观测性           日志为主                         结构化的节点轨迹
- 人机协同           需要额外封装                       容易加 human 节点
- 适用             标准工具 Agent                   复杂业务流程、审查、重试拓扑
+| 维度 | LangChain Agent | LangGraph |
+| --- | --- | --- |
+| 控制流 | 偏固定循环 | 显式图、分支/循环更自然 |
+| 可观测性 | 日志为主 | 结构化的节点轨迹 |
+| 人机协同 | 需要额外封装 | 容易加 human 节点 |
+| 适用 | 标准工具 Agent | 复杂业务流程、审查、重试拓扑 |
 
 ### 6.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>什么时候选 LangGraph 而不是 AgentExecutor？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">什么时候选 LangGraph 而不是 AgentExecutor？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>当流程不是「单一工具循环」，而是需要 多阶段流水线、条件路由、回环修复、人工审核节点、并行任务 时，用图编排更清晰可维护。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>LangGraph 的状态更新为什么要谨慎设计？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">LangGraph 的状态更新为什么要谨慎设计？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>多节点写入同一字段可能冲突；需要 schema 约束、归约策略（append vs replace）、明确每个节点的写入职责。</p>
-</div>
+</div></div>
 </div>
 
 ### 6.4 追问及应对
@@ -709,22 +806,25 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 ### 6.5 代码示例（Python，最小状态机草图）
 
 ```python
+
+```python
  from typing import TypedDict, Literal
 
  class AgentState(TypedDict):
-     task: str
-     notes: str
-     route: str
+ task: str
+ notes: str
+ route: str
 
  def planner_node(state: AgentState) -> AgentState:
-     return {**state, "notes": "plan: step1...", "route": "exec"}
+ return {**state, "notes": "plan: step1...", "route": "exec"}
 
-  def exec_node(state: AgentState) -> AgentState:
-       return {**state, "notes": state["notes"] + " | executed", "route":
-  "end"}
+def exec_node(state: AgentState) -> AgentState:
+   return {**state, "notes": state["notes"] + " | executed", "route":
+"end"}
 
-  def route_fn(state: AgentState) -> Literal["exec", "end"]:
-       return "exec" if state["route"] == "exec" else "end"
+def route_fn(state: AgentState) -> Literal["exec", "end"]:
+   return "exec" if state["route"] == "exec" else "end"
+```
 
   #   伪代码：LangGraph 中会把 node/route_fn 注册到 StateGraph
   # graph.add_node("planner", planner_node)
@@ -755,34 +855,42 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 
  对话拓扑：一对一、群聊、星型（manager）、分层。
 极简伪代码：
-                                                text
-  agents = [Researcher, Writer, Reviewer]
-  for round in 1..N:
-      msg = Researcher.step(thread)
-      msg = Writer.step(thread)
-      msg = Reviewer.step(thread)
-      if Reviewer.approved: break
+
+```text
+agents = [Researcher, Writer, Reviewer]
+for round in 1..N:
+  msg = Researcher.step(thread)
+  msg = Writer.step(thread)
+  msg = Reviewer.step(thread)
+  if Reviewer.approved: break
+```
 
 ### 7.2.3 适用场景
 
-  内容生产流水线（调研→写作→校对）。
-  软件工程（需求→设计→实现→Code review）。
-  需要 强分工 与 过程质量控制 的组织化任务。
+```text
+内容生产流水线（调研→写作→校对）。
+软件工程（需求→设计→实现→Code review）。
+需要 强分工 与 过程质量控制 的组织化任务。
+```
 
 ### 7.3 面试问题（Q）+ 标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>多 Agent 一定比单 Agent 更强吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">多 Agent 一定比单 Agent 更强吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不一定。更多 Agent 可能带来 协调成本、错误级联、对话冗长。当任务可清晰分工且有评估机制时收益大；否则单 Agent + 强工具可能更简单高效。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>如何避免多 Agent「互相附和」？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">如何避免多 Agent「互相附和」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>引入 独立审查角色、基于规则的检查、外部工具验证（测试、检索），并明确 停止条件 与 异议处理流程。</p>
-</div>
+</div></div>
 </div>
 
 ### 7.4 追问及应对
@@ -795,17 +903,20 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 ### 7.5 代码示例（Python，概念演示：多角色轮询）
 
 ```python
+
+```python
  def run_crew(task: str, roles: dict, llm, rounds: int = 2) -> str:
-     thread = f"Task: {task}\n"
-     order = ["researcher", "writer", "reviewer"]
+ thread = f"Task: {task}\n"
+ order = ["researcher", "writer", "reviewer"]
 
-     for _ in range(rounds):
-        for r in order:
-            prompt = roles[r] + "\n\n" + thread
-            reply = llm(prompt)
-            thread += f"\n[{r}]:\n{reply}\n"
+ for _ in range(rounds):
+    for r in order:
+        prompt = roles[r] + "\n\n" + thread
+        reply = llm(prompt)
+        thread += f"\n[{r}]:\n{reply}\n"
 
-     return thread
+ return thread
+```
 
 ```
 
@@ -813,106 +924,148 @@ LangChain 把 LLM、提示模板、工具、记忆、解析器等拼成可运行
 
  下列题目覆盖全模块，可在复习时自问自答；每题后附 标准答法要点。
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>请用一句话解释 ReAct。</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">请用一句话解释 ReAct。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>让模型交替输出推理与可执行行动，并用工具返回的 Observation 闭环纠错，从而把推理接地到外部环境。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>ReAct 轨迹里，哪一部分必须由系统生成？为什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">ReAct 轨迹里，哪一部分必须由系统生成？为什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Observation 必须由工具/环境生成，防止模型伪造证据导致「看似合理但错误」的答案。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>Plan-and-Execute 的最大风险是什么？如何缓解？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">Plan-and-Execute 的最大风险是什么？如何缓解？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>风险是 错误计划污染全局；缓解是 可验证子步骤、重规划、强 Planner 约束输出 与 执行期监控。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q16</span>Reflexion 的关键产出是什么？它如何提升下一轮？</p>
+<div class="guide-question"><span class="guide-q-label">Q16</span><span class="guide-q-text">Reflexion 的关键产出是什么？它如何提升下一轮？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>关键是 高质量反思文本；它作为记忆进入下一轮提示，指导 Actor 改变策略而非重复错误。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q17</span>LATS 与 ReAct 在「探索能力」上如何对比？</p>
+<div class="guide-question"><span class="guide-q-label">Q17</span><span class="guide-q-text">LATS 与 ReAct 在「探索能力」上如何对比？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>ReAct 通常主路径贪心推进；LATS/MCTS 通过 多分支搜索与价值回传 更系统探索决策空间（成本更高）。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q18</span>LangChain AgentExecutor 中为什么要限制 max_iterations？</p>
+<div class="guide-question"><span class="guide-q-label">Q18</span><span class="guide-q-text">LangChain AgentExecutor 中为什么要限制 max_iterations？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>防止工具循环、解析失败导致的 无限循环，并控制成本与延迟。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q19</span>描述 LangGraph 的条件边解决的业务问题。</p>
+<div class="guide-question"><span class="guide-q-label">Q19</span><span class="guide-q-text">描述 LangGraph 的条件边解决的业务问题。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>根据中间状态动态路由，例如失败重试、需要人工审核、不同客户等级走不同流程。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q20</span>什么时候更建议「单 Agent + 强工具」，而不是多 Agent？</p>
+<div class="guide-question"><span class="guide-q-label">Q20</span><span class="guide-q-text">什么时候更建议「单 Agent + 强工具」，而不是多 Agent？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>任务边界清晰、无需组织化分工、协调成本可能大于收益时；或延迟/成本敏感场景。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q21</span>多 Agent 系统的「评估器」可以有哪些实现？</p>
+<div class="guide-question"><span class="guide-q-label">Q21</span><span class="guide-q-text">多 Agent 系统的「评估器」可以有哪些实现？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>单元测试/静态规则、更强模型评审、人工审核节点、外部检索核对事实等。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q22</span>ReAct Prompt 为什么要给 few-shot 示例？</p>
+<div class="guide-question"><span class="guide-q-label">Q22</span><span class="guide-q-text">ReAct Prompt 为什么要给 few-shot 示例？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>提升模型对 固定格式 的遵从度，降低解析失败率，稳定工具调用。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q23</span>Re-planning 与 Reflexion 都「改正错误」，区别是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q23</span><span class="guide-q-text">Re-planning 与 Reflexion 都「改正错误」，区别是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Re-planning 偏 计划结构 的调整（下一步怎么走）；Reflexion 偏 策略/经验 的语言化总结并跨轮复用。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q24</span>LangGraph 相比普通脚本编排的核心收益？</p>
+<div class="guide-question"><span class="guide-q-label">Q24</span><span class="guide-q-text">LangGraph 相比普通脚本编排的核心收益？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>把流程 显式化 为图，分支/回环/人机节点一等公民，更易维护与观测。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q25</span>如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进？</p>
+<div class="guide-question"><span class="guide-q-label">Q25</span><span class="guide-q-text">如果工具返回噪声很大，ReAct 可能出什么问题？怎么改进？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>模型可能被噪声误导；改进包括 工具侧清洗/结构化输出、二次检索、在 Thought 里强制 引用证据片段、增加 校验工具。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q26</span>你如何为一个企业场景选择 ReAct vs Plan-and-Execute？</p>
+<div class="guide-question"><span class="guide-q-label">Q26</span><span class="guide-q-text">你如何为一个企业场景选择 ReAct vs Plan-and-Execute？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>看任务是否 强流程、是否需要 可审计计划书、是否允许 前期规划成本；需要强工具交互与动态环境用 ReAct，强分解与多步骤交付用 Plan-and-Execute。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q27</span>为什么说「工具描述」是 Agent 的接口设计？</p>
+<div class="guide-question"><span class="guide-q-label">Q27</span><span class="guide-q-text">为什么说「工具描述」是 Agent 的接口设计？</span></div>
 <div class="guide-answer">
-<p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→ObservationPlan-and-Execute   先计划后执行             Plan→Execute→(Replan)Reflexion          反思记忆               Act→Eval→Reflect→RetryLATS               树搜索 / MCTS         Select→Expand→Evaluate→BackpropLangChain Agent    Executor 循环        decide→tool→observeLangGraph          图编排                node→conditional edge多 Agent            角色协作               对话/流水线文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p>
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
+<p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→Observation</p>
+</div></div>
 </div>
-</div>
+
+```text
+ Plan-and-Execute   先计划后执行             Plan→Execute→(Replan)
+ Reflexion          反思记忆               Act→Eval→Reflect→Retry
+ LATS               树搜索 / MCTS         Select→Expand→Evaluate→Backprop
+```
+
+ LangChain Agent    Executor 循环        decide→tool→observe
+ LangGraph          图编排                node→conditional edge
+ 多 Agent            角色协作               对话/流水线
+
+文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。

@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { formatGuideMarkdown } from './format-guide-markdown.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, '..')
@@ -1472,8 +1473,10 @@ function postProcessGuideContent(text) {
   function closeAnswerBlock() {
     if (!answerLines.length) return
     out.push('<div class="guide-answer">')
+    out.push('<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>')
+    out.push('<div class="guide-answer-body">')
     out.push(...answerLines)
-    out.push('</div>')
+    out.push('</div></div>')
     answerLines = []
   }
 
@@ -1545,16 +1548,16 @@ function postProcessGuideContent(text) {
       out.push('<div class="guide-qa">')
       qaOpen = true
       out.push(
-        `<p class="guide-question"><span class="guide-q-label">Q${q.num}</span>${escapeGuideHtml(q.text)}</p>`
+        `<div class="guide-question"><span class="guide-q-label">Q${q.num}</span><span class="guide-q-text">${escapeGuideHtml(q.text)}</span></div>`
       )
-      inAnswer = true
+      inAnswer = false
       continue
     }
 
     const aInline = trimmed.match(/^\*\*A[:：]?\*\*[:：]?\s*(.*)$/)
     if (aInline) {
-      if (aInline[1].trim()) pushAnswerText(aInline[1])
       inAnswer = true
+      if (aInline[1].trim()) pushAnswerText(aInline[1])
       continue
     }
 
@@ -1671,7 +1674,7 @@ function normalizeGuideChapterBody(body, sidebar) {
   if (lead.length) {
     result += `<p class="guide-lead">${lead.join(' ')}</p>\n\n`
   }
-  result += postProcessGuideContent(lines.join('\n'))
+  result += postProcessGuideContent(formatGuideMarkdown(lines.join('\n')))
   return result.trim()
 }
 

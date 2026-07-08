@@ -42,12 +42,15 @@ aside: true
 ### 1.2.2 优先级调度策略
 
 常见策略（可组合）：
-       策略                        含义                 适用
- 固定优先级             列表顺序尝试                     简单可靠
- 成本优先              在满足质量阈值下选最便宜               批处理、非实时
- 延迟优先              SLA 内选最快                   交互式产品
- 负载感知              结合队列深度、429 率动态调整           大规模生产
- 任务分类路由            代码类→A，摘要类→B                提高性价比
+
+| 策略 | 含义 | 适用 |
+| --- | --- | --- |
+| 固定优先级 | 列表顺序尝试 | 简单可靠 |
+| 成本优先 | 在满足质量阈值下选最便宜 | 批处理、非实时 |
+| 延迟优先 | SLA 内选最快 | 交互式产品 |
+| 负载感知 | 结合队列深度、429 率动态调整 | 大规模生产 |
+| 任务分类路由 | 代码类→A，摘要类→B | 提高性价比 |
+
 注意：优先级不是「永远用大模型」，而是在约束下最优化（成本、延迟、质量、可用性）。
 ### 1.2.3 三态熔断器（Circuit Breaker）
 
@@ -82,17 +85,21 @@ aside: true
 ### 1.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>为什么要做模型路由，而不是全量用一个最强模型？</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">为什么要做模型路由，而不是全量用一个最强模型？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>最强模型往往更贵、更慢，且并非所有子任务都需要。路由能在质量、成本、延迟、可用性、合规之间做权衡；同时多供应商提高容灾能力，避免单点故障。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>熔断器和重试分别解决什么问题？一起用时要注意什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">熔断器和重试分别解决什么问题？一起用时要注意什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>熔断防止故障扩散和雪崩；重试提高偶发失败的成功率。一起用时应在熔断 Open 阶段停止对同一下游的盲目重试，改为降级或切换供应商；并对 429 使用限流 + 退避，避免放大拥堵。</p>
-</div>
+</div></div>
 </div>
 
 ### 1.4 可能的追问及应对
@@ -104,95 +111,107 @@ aside: true
 ### 1.5 代码示例：Python 实现简易熔断器 + 指数退避
 
 ```python
+
+```python
  import random
  import time
  from dataclasses import dataclass
  from enum import Enum, auto
 
  class State(Enum):
-     CLOSED = auto()
-     OPEN = auto()
-     HALF_OPEN = auto()
+ CLOSED = auto()
+ OPEN = auto()
+ HALF_OPEN = auto()
+```
 
  @dataclass
+
+```python
  class CircuitBreaker:
-     failure_threshold: int = 5
-     success_threshold: int = 2   #   半开阶段连续成功次数
-     open_seconds: float = 30.0
+ failure_threshold: int = 5
+ success_threshold: int = 2   #   半开阶段连续成功次数
+ open_seconds: float = 30.0
+```
 
 half_open_max_calls: int = 3
 
+```python
 def __post_init__(self):
-   self.state = State.CLOSED
-   self.failures = 0
-   self.successes_half = 0
-   self.open_until = 0.0
-   self.half_open_inflight = 0
+self.state = State.CLOSED
+self.failures = 0
+self.successes_half = 0
+self.open_until = 0.0
+self.half_open_inflight = 0
 
 def _trip(self):
-   self.state = State.OPEN
-   self.open_until = time.time() + self.open_seconds
-   self.failures = 0
-   self.successes_half = 0
-   self.half_open_inflight = 0
+self.state = State.OPEN
+self.open_until = time.time() + self.open_seconds
+self.failures = 0
+self.successes_half = 0
+self.half_open_inflight = 0
 
 def allow(self) -> bool:
-   now = time.time()
-   if self.state == State.OPEN:
-        if now >= self.open_until:
-           self.state = State.HALF_OPEN
-           self.successes_half = 0
-           self.half_open_inflight = 0
-        else:
-           return False
-   if self.state == State.HALF_OPEN:
-        return self.half_open_inflight < self.half_open_max_calls
-   return True
+now = time.time()
+if self.state == State.OPEN:
+    if now >= self.open_until:
+       self.state = State.HALF_OPEN
+       self.successes_half = 0
+       self.half_open_inflight = 0
+    else:
+       return False
+if self.state == State.HALF_OPEN:
+    return self.half_open_inflight < self.half_open_max_calls
+return True
 
 def before_call(self):
-   if self.state == State.HALF_OPEN:
-        self.half_open_inflight += 1
+if self.state == State.HALF_OPEN:
+    self.half_open_inflight += 1
 
 def on_success(self):
-   if self.state == State.HALF_OPEN:
-        self.successes_half += 1
-        if self.successes_half >= self.success_threshold:
-           self.state = State.CLOSED
-           self.successes_half = 0
-   else:
+if self.state == State.HALF_OPEN:
+    self.successes_half += 1
+    if self.successes_half >= self.success_threshold:
+       self.state = State.CLOSED
+       self.successes_half = 0
+else:
 
-               self.failures = 0
-        if self.state == State.HALF_OPEN:
-               self.half_open_inflight = max(0, self.half_open_inflight - 1)
+           self.failures = 0
+    if self.state == State.HALF_OPEN:
+           self.half_open_inflight = max(0, self.half_open_inflight - 1)
 
-    def on_failure(self):
-        self.failures += 1
-        if self.state == State.HALF_OPEN or self.failures >=
+def on_failure(self):
+    self.failures += 1
+    if self.state == State.HALF_OPEN or self.failures >=
+```
+
 self.failure_threshold:
                self._trip()
-        if self.state == State.HALF_OPEN:
-               self.half_open_inflight = max(0, self.half_open_inflight - 1)
+
+```python
+    if self.state == State.HALF_OPEN:
+           self.half_open_inflight = max(0, self.half_open_inflight - 1)
 
 def exponential_backoff(attempt: int, base: float = 0.5, cap: float = 8.0)
 -> float:
-    jitter = random.random() * 0.25
-    return min(cap, base * (2**attempt) + jitter)
+jitter = random.random() * 0.25
+return min(cap, base * (2**attempt) + jitter)
 
 def call_with_breaker_and_retry(fn, breaker: CircuitBreaker, max_retries:
 int = 3):
-    for attempt in range(max_retries):
-        if not breaker.allow():
-               raise RuntimeError("circuit_open")
-        breaker.before_call()
-        try:
-               result = fn()
-               breaker.on_success()
-               return result
-        except Exception:
-               breaker.on_failure()
-               if attempt == max_retries - 1:
-                  raise
-               time.sleep(exponential_backoff(attempt))
+for attempt in range(max_retries):
+    if not breaker.allow():
+           raise RuntimeError("circuit_open")
+    breaker.before_call()
+    try:
+           result = fn()
+           breaker.on_success()
+           return result
+    except Exception:
+           breaker.on_failure()
+           if attempt == max_retries - 1:
+              raise
+           time.sleep(exponential_backoff(attempt))
+```
 
 2. Token 成本控制
 ```
@@ -219,10 +238,11 @@ int = 3):
   消息裁剪：保留 system + 最近 N 轮 + 关键摘要（见记忆模块）。
 ### 2.2.3 缓存策略（含语义缓存）
 
-   类型                  做法               优点            注意
- 精确缓存       请求哈希完全一致命中                 实现简单    命中率低
- 语义缓存       embedding 相似度高于阈值则复用       命中率高    需防「相似但意图不同」
- 结果分层       热问题走缓存，冷问题走模型              省成本     需 TTL 与失效
+| 类型 | 做法 | 优点 | 注意 |
+| --- | --- | --- | --- |
+| 精确缓存 | 请求哈希完全一致命中 | 实现简单 | 命中率低 |
+| 语义缓存 | embedding 相似度高于阈值则复用 | 命中率高 | 需防「相似但意图不同」 |
+| 结果分层 | 热问题走缓存，冷问题走模型 | 省成本 | 需 TTL 与失效 |
 
 语义缓存风险：用户问题措辞不同但意图相同——可用；若敏感场景（医疗法律）语义相近但条件
 不同，复用可能出错，需阈值 + 策略类路由。
@@ -239,17 +259,21 @@ int = 3):
 ### 2.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>为什么说本地 tiktoken 计数只能「估算」？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">为什么说本地 tiktoken 计数只能「估算」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>实际计费依赖服务商的分词器版本、特殊 token、多模态输入等；不同模型与版本可能不一致。本地计数用于预算控制与截断，最终应以 API 返回的 usage 与账单对账。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>语义缓存和精确缓存怎么选？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">语义缓存和精确缓存怎么选？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>低成本、高 QPS 的重复咨询场景适合语义缓存；对强合规与强正确性场景要谨慎，需提高阈值、加业务校验或禁用缓存。精确缓存适合完全幂等的调用（如同参数批处理）。</p>
-</div>
+</div></div>
 </div>
 
 ### 2.4 可能的追问及应对
@@ -259,33 +283,43 @@ int = 3):
 ### 2.5 代码示例：tiktoken 计数 + 简单请求哈希缓存
 
 ```python
+
+```python
  import hashlib
  import json
 
 from functools import lru_cache
+```
 
 try:
        import tiktoken
 except ImportError:
-       tiktoken = None
+
+```python
+   tiktoken = None
 
 def approx_token_count(text: str, model: str = "gpt-4o") -> int:
-       if tiktoken is None:
-          return max(1, len(text) // 4)
-       enc = tiktoken.encoding_for_model(model)
-       return len(enc.encode(text))
+   if tiktoken is None:
+      return max(1, len(text) // 4)
+   enc = tiktoken.encoding_for_model(model)
+   return len(enc.encode(text))
 
 def request_fingerprint(system: str, user: str, model: str) -> str:
-       raw = json.dumps({"system": system, "user": user, "model": model},
+   raw = json.dumps({"system": system, "user": user, "model": model},
 sort_keys=True)
-       return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+   return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+```
 
 #   生产环境请用 Redis；此处演示 LRU
 @lru_cache(maxsize=1024)
+
+```python
 def cached_exact(system: str, user: str, model: str) -> str | None:
-       return None   #   占位：实际应 get from Redis
+   return None   #   占位：实际应 get from Redis
 
 def set_exact_cache(system: str, user: str, model: str, response: str) ->
+```
+
 None:
        key = request_fingerprint(system, user, model)
        # redis.setex(key, ttl, response)
@@ -329,17 +363,21 @@ OpenTelemetry，或写入 Kafka 再由 Flink 聚合。
 ### 3.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>Agent 系统为什么比传统服务更需要 Trace？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">Agent 系统为什么比传统服务更需要 Trace？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>传统服务调用链相对固定；Agent 路径依赖模型决策，分支多、偶现问题多。Trace 能把「哪一步选了哪个工具、参数是什么、返回多长」串起来，否则只能猜 Prompt。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>结构化日志和 Trace 有什么区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">结构化日志和 Trace 有什么区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>结构化日志是事件流，适合检索与告警；Trace 是因果树，适合分析延迟与依赖。二者应通过trace_id 关联，互补而非二选一。</p>
-</div>
+</div></div>
 </div>
 
 ### 3.4 可能的追问及应对
@@ -349,40 +387,46 @@ OpenTelemetry，或写入 Kafka 再由 Flink 聚合。
 ### 3.5 代码示例：简易 Span + 结构化日志
 
 ```python
+
+```python
  import json
  import time
  import uuid
  from contextvars import ContextVar
+```
 
  trace_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
 
+```python
  def new_trace() -> str:
-     tid = str(uuid.uuid4())
-     trace_var.set(tid)
-     return tid
+ tid = str(uuid.uuid4())
+ trace_var.set(tid)
+ return tid
 
  def log_event(level: str, msg: str, **fields):
-     payload = {
+ payload = {
 
-          "level": level,
-          "msg": msg,
-          "trace_id": trace_var.get(),
-          **fields,
-      }
-      print(json.dumps(payload, ensure_ascii=False))
+      "level": level,
+      "msg": msg,
+      "trace_id": trace_var.get(),
+      **fields,
+  }
+  print(json.dumps(payload, ensure_ascii=False))
 
  class Span:
-      def __init__(self, name: str):
-          self.name = name
+  def __init__(self, name: str):
+      self.name = name
 
-      def __enter__(self):
-          self.start = time.perf_counter()
-          log_event("INFO", "span_start", span=self.name)
-          return self
+  def __enter__(self):
+      self.start = time.perf_counter()
+      log_event("INFO", "span_start", span=self.name)
+      return self
 
-      def __exit__(self, exc_type, exc, tb):
-          ms = (time.perf_counter() - self.start) * 1000
-          log_event("INFO", "span_end", span=self.name, latency_ms=round(ms,
+  def __exit__(self, exc_type, exc, tb):
+      ms = (time.perf_counter() - self.start) * 1000
+      log_event("INFO", "span_end", span=self.name, latency_ms=round(ms,
+```
+
  2), error=bool(exc))
           return False
 
@@ -427,17 +471,21 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 ### 4.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>为什么说「永远不信任模型输出的工具调用」？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">为什么说「永远不信任模型输出的工具调用」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>模型可能被诱导产生危险参数。工程上应对工具调用做 schema 校验、权限检查、速率限制，必要时 人工确认，不能把模型当作安全边界。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>Prompt 注入和越狱有什么区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">Prompt 注入和越狱有什么区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>注入侧重篡改指令或上下文以改变行为；越狱侧重绕过安全对齐以输出不应出现的内容。实际攻击常混合出现，防护需多层：输入、模型、工具、输出、审计。</p>
-</div>
+</div></div>
 </div>
 
 ### 4.4 可能的追问及应对
@@ -447,30 +495,36 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 ### 4.5 代码示例：工具参数 JSON Schema 校验（Python）
 
 ```python
+
+```python
  from jsonschema import Draft202012Validator, FormatChecker
 
  TOOL_SCHEMAS = {
-     "send_email": {
-         "type": "object",
-         "properties": {
-              "to": {"type": "string", "format": "email"},
-              "subject": {"type": "string", "maxLength": 200},
-              "body": {"type": "string", "maxLength": 8000},
-         },
-         "required": ["to", "subject", "body"],
-         "additionalProperties": False,
-     }
+ "send_email": {
+     "type": "object",
+     "properties": {
+          "to": {"type": "string", "format": "email"},
+          "subject": {"type": "string", "maxLength": 200},
+          "body": {"type": "string", "maxLength": 8000},
+     },
+     "required": ["to", "subject", "body"],
+     "additionalProperties": False,
+ }
+```
+
  }
 
+```python
  def validate_tool_call(name: str, args: dict) -> None:
-     schema = TOOL_SCHEMAS.get(name)
-     if not schema:
-         raise ValueError("unknown_tool")
-     v = Draft202012Validator(schema, format_checker=FormatChecker())
-     errors = sorted(v.iter_errors(args), key=lambda e: e.path)
+ schema = TOOL_SCHEMAS.get(name)
+ if not schema:
+     raise ValueError("unknown_tool")
+ v = Draft202012Validator(schema, format_checker=FormatChecker())
+ errors = sorted(v.iter_errors(args), key=lambda e: e.path)
 
-      if errors:
-          raise ValueError(errors[0].message)
+  if errors:
+      raise ValueError(errors[0].message)
+```
 
 ```
 
@@ -512,10 +566,12 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 ### 5.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>金丝雀发布要关注哪些指标？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">金丝雀发布要关注哪些指标？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>错误率、P95 延迟、Token 成本、业务指标（任务完成率、用户投诉）。Agent 还应看 工具失败率、重试率、熔断率。</p>
-</div>
+</div></div>
 </div>
 
 ### 5.4 可能的追问及应对
@@ -526,47 +582,53 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 
 Dockerfile（应用镜像骨架）
                                                            dockerfile
-  FROM python:3.12-slim
-  WORKDIR /app
-  ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-  COPY requirements.txt .
-  RUN pip install --no-cache-dir -r requirements.txt
-  COPY . .
-  EXPOSE 8000
-  HEALTHCHECK --interval=30s --timeout=3s CMD curl -fsS
 
-  http://127.0.0.1:8000/health || exit 1
-  CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```text
+FROM python:3.12-slim
+WORKDIR /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8000
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -fsS
+
+http://127.0.0.1:8000/health || exit 1
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+```
 
 deployment.yaml（单副本示意，生产请调 probes 与 resources）
 ```yaml
-  apiVersion: apps/v1
-  kind: Deployment
+
+```text
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: agent-api
+spec:
+replicas: 2
+selector:
+  matchLabels:
+      app: agent-api
+template:
   metadata:
-    name: agent-api
+      labels:
+       app: agent-api
   spec:
-    replicas: 2
-    selector:
-      matchLabels:
-          app: agent-api
-    template:
-      metadata:
-          labels:
-           app: agent-api
-      spec:
-          containers:
-           - name: api
-              image: your-registry/agent-api:v20260401
-              ports:
-                - containerPort: 8000
-              envFrom:
-                - secretRef:
-                      name: llm-keys
-              readinessProbe:
-                httpGet:
-                    path: /health
-                    port: 8000
-                initialDelaySeconds: 5
+      containers:
+       - name: api
+          image: your-registry/agent-api:v20260401
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                  name: llm-keys
+          readinessProbe:
+            httpGet:
+                path: /health
+                port: 8000
+            initialDelaySeconds: 5
+```
 
 6. 性能优化
 ```
@@ -598,10 +660,12 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 6.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>Streaming 会影响计费或日志吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">Streaming 会影响计费或日志吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>计费仍以 Token 为准；日志需 聚合完整响应 再记一条，或记增量 chunk 并关联trace_id   。注意流式中途断开时的部分结果处理。</p>
-</div>
+</div></div>
 </div>
 
 ### 6.4 可能的追问及应对
@@ -611,26 +675,36 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 6.5 代码示例：异步 + 信号量 + 简易双层缓存
 
 ```python
+
+```python
  import asyncio
  import time
 
  class TwoLevelCache:
-     def __init__(self):
-           self.l1 = {}
-           self.redis = None    #   接入 redis.asyncio
-     async def get(self, key: str):
-           if key in self.l1:
-               return self.l1[key]
-           # val = await redis.get(key)
-           return None
+ def __init__(self):
+       self.l1 = {}
+       self.redis = None    #   接入 redis.asyncio
+ async def get(self, key: str):
+       if key in self.l1:
+           return self.l1[key]
+```
 
-     async def set(self, key: str, value: str, ttl: int = 300):
-           self.l1[key] = value
+           # val = await redis.get(key)
+
+```python
+       return None
+
+ async def set(self, key: str, value: str, ttl: int = 300):
+       self.l1[key] = value
+```
+
            # await redis.setex(key, ttl, value)
 
+```python
  async def limited_llm_call(sema: asyncio.Semaphore, fn, *args, **kwargs):
-     async with sema:
-           return await fn(*args, **kwargs)
+ async with sema:
+       return await fn(*args, **kwargs)
+```
 
 7. 评估与测试
 ```
@@ -643,10 +717,12 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 
 ### 7.2.1 Agent 评估维度
 
-   维度                含义                   示例指标
- 准确性       任务是否完成、答案是否正确         人工标注、LLM-as-judge（需谨慎）
- 鲁棒性       噪声、对抗、边界输入            成功率方差、最坏 case
- 效率        步数、延迟、费用              平均工具调用次数、Token
+| 维度 | 含义 | 示例指标 |
+| --- | --- | --- |
+| 准确性 | 任务是否完成、答案是否正确 | 人工标注、LLM-as-judge（需谨慎） |
+| 鲁棒性 | 噪声、对抗、边界输入 | 成功率方差、最坏 case |
+| 效率 | 步数、延迟、费用 | 平均工具调用次数、Token |
+
 ### 7.2.2 自动化测试框架
 
   单元测试：工具参数解析、路由逻辑、熔断状态机。
@@ -669,17 +745,21 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 7.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>用 LLM 给 LLM 打分有什么坑？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">用 LLM 给 LLM 打分有什么坑？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>可能 偏好冗长、格式讨好；与裁判模型强相关。应对：人机混合、多裁判投票、规则评分结合、对抗样本集。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>如何设计 Agent 的回归测试集？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">如何设计 Agent 的回归测试集？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>覆盖主路径、典型失败、工具错误、长上下文、多语言；每条用例含输入、期望工具或期望答案要点、不可出现项；版本化并与 CI 集成。</p>
-</div>
+</div></div>
 </div>
 
 ### 7.4 可能的追问及应对
@@ -689,42 +769,48 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 7.5 代码示例：pytest 集成测试（Mock LLM）
 
 ```python
+
+```python
  import pytest
 
  class FakeLLM:
-     def __init__(self, replies):
-           self.replies = iter(replies)
+ def __init__(self, replies):
+       self.replies = iter(replies)
 
-     def chat(self, messages):
-           return next(self.replies)
+ def chat(self, messages):
+       return next(self.replies)
 
  def run_agent_stub(user_goal: str, tools: dict, llm: FakeLLM) -> str:
-     """ 最小编排：第一轮让模型返回 tool JSON，第二轮返回最终答案。"""
-     first = llm.chat([])
+ """ 最小编排：第一轮让模型返回 tool JSON，第二轮返回最终答案。"""
+ first = llm.chat([])
+```
+
      #   简化：假定 first 就是要调用的 JSON 字符串
 
-      import json
+```python
+  import json
 
-      action = json.loads(first)
-      obs = tools[action["tool"]](**action["args"])
-      second = llm.chat([{"role": "user", "content": str(obs)}])
-      return second
+  action = json.loads(first)
+  obs = tools[action["tool"]](**action["args"])
+  second = llm.chat([{"role": "user", "content": str(obs)}])
+  return second
 
-  def test_agent_calls_tool_once():
-      replies = [
-          '{"tool":"search","args":{"q":"Python"}}',
-          "最终答案基于工具结果。",
-      ]
-      calls = []
+def test_agent_calls_tool_once():
+  replies = [
+      '{"tool":"search","args":{"q":"Python"}}',
+      "最终答案基于工具结果。",
+  ]
+  calls = []
 
-      def search(q: str):
-          calls.append(q)
-          return ["doc1"]
+  def search(q: str):
+      calls.append(q)
+      return ["doc1"]
 
-      tools = {"search": search}
-      out = run_agent_stub("查 Python", tools, FakeLLM(replies))
-      assert calls == ["Python"]
-      assert " 最终" in out
+  tools = {"search": search}
+  out = run_agent_stub("查 Python", tools, FakeLLM(replies))
+  assert calls == ["Python"]
+  assert " 最终" in out
+```
 
 ```
 
@@ -752,17 +838,21 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 8.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>只靠「请诚实回答」能否解决幻觉？</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">只靠「请诚实回答」能否解决幻觉？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不能作为唯一手段。需 RAG/工具/校验 与系统提示结合，并对关键场景 拒答或降级。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>RAG 一定能降幻觉吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">RAG 一定能降幻觉吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不一定。若检索质量差、重排序失败、模型忽略上下文，仍可能错答。需 检索评估、重排序、引用约束、拒答策略。</p>
-</div>
+</div></div>
 </div>
 
 ### 8.4 可能的追问及应对
@@ -771,9 +861,11 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>定义优先级（权威数据库 &gt; 实时工具 &gt; 检索片段）；矛盾时输出不确定并建议人工。</p>
 ### 8.5 代码示例：带引用约束的 Prompt 片段
 
-                                                text
-  你是企业内部助手。仅允许使用「上下文引用」中的事实回答问题。
-  规则：
+```text
+你是企业内部助手。仅允许使用「上下文引用」中的事实回答问题。
+规则：
+```
+
 #### 1. 每一句事实陈述末尾标注引用编号，如 [1][2]。
 
 #### 2. 若上下文不足以回答，输出：
@@ -792,108 +884,138 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 
 下列题目覆盖本篇各模块，答案要点可直接用于面试口述。
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>你会如何设计一个多模型网关的架构？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">你会如何设计一个多模型网关的架构？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>统一 Adapter 抽象；配置中心维护模型能力与配额；入口做鉴权与租户路由；核心做 优先级调度 + 熔断 + 重试退避 + 降级链；全链路 Trace 与 usage 计费；密钥按租户与环境隔离。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q16</span>指数退避为什么要加 jitter？</p>
+<div class="guide-question"><span class="guide-q-label">Q16</span><span class="guide-q-text">指数退避为什么要加 jitter？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>避免大量客户端在同一时刻齐刷刷重试，造成重试风暴；抖动把时间错开，减轻服务端同步压力。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q17</span>语义缓存如何保证安全？</p>
+<div class="guide-question"><span class="guide-q-label">Q17</span><span class="guide-q-text">语义缓存如何保证安全？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分租户隔离、键含模型与 Prompt 版本、相似度阈值保守、敏感任务禁用或二次确认、TTL与主动失效。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q18</span>OpenTelemetry 在 Agent 里一般打哪些 Span？</p>
+<div class="guide-question"><span class="guide-q-label">Q18</span><span class="guide-q-text">OpenTelemetry 在 Agent 里一般打哪些 Span？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>顶层请求 Span；子 Span 包括每次 LLM、检索、工具、重试、降级；记录属性如 model、token、tool.name、error.type 。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q19</span>工具调用的「两步授权」怎么做？</p>
+<div class="guide-question"><span class="guide-q-label">Q19</span><span class="guide-q-text">工具调用的「两步授权」怎么做？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>模型仅生成「意图与参数」→ 策略服务校验角色、资源 ID、速率 → 执行器真正调用；拒绝时把原因反馈给模型或用户。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q20</span>蓝绿与金丝雀如何取舍？</p>
+<div class="guide-question"><span class="guide-q-label">Q20</span><span class="guide-q-text">蓝绿与金丝雀如何取舍？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>蓝绿适合二进制切换、快速回滚、可接受双倍资源；金丝雀适合渐进验证、对错误更敏感的生产流量，资源占用更平滑。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q21</span>K8s 部署 Agent 服务时 HPA 可以按什么指标扩？</p>
+<div class="guide-question"><span class="guide-q-label">Q21</span><span class="guide-q-text">K8s 部署 Agent 服务时 HPA 可以按什么指标扩？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>CPU/内存、自定义指标如 请求队列长度、P95 延迟、429 比例（需 PrometheusAdapter）；注意冷启动与 LLM 长尾延迟。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q22</span>异步一定能提高 Agent 吞吐吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q22</span><span class="guide-q-text">异步一定能提高 Agent 吞吐吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>对 I/O 密集（HTTP、DB）通常能；若受 GPU 或单线程推理限制，需配合 批处理、多副本、队列；还要防止 无界并发 压垮下游。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q23</span>如何监控一次 Agent 任务的「真实成本」？</p>
+<div class="guide-question"><span class="guide-q-label">Q23</span><span class="guide-q-text">如何监控一次 Agent 任务的「真实成本」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>汇总每步 prompt+completion tokens × 单价；加上 检索与向量库费用；分摊 基础设施；按租户与功能维度出报表与预算告警。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q24</span>评估集泄露怎么防？</p>
+<div class="guide-question"><span class="guide-q-label">Q24</span><span class="guide-q-text">评估集泄露怎么防？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>严格版本管理；开发与训练数据隔离；禁止把测试集写进 Prompt 示例；定期 刷新 测试用例。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q25</span>线上发现幻觉率升高，你如何排查？</p>
+<div class="guide-question"><span class="guide-q-label">Q25</span><span class="guide-q-text">线上发现幻觉率升高，你如何排查？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>先看是否 模型/Prompt/RAG 索引 近期变更；抽样 Trace 看 检索命中与引用；检查 工具失败降级 是否变多；对比 离线评估集 与线上 slice。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q26</span>小型团队没有 LangSmith，最小可观测方案是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q26</span><span class="guide-q-text">小型团队没有 LangSmith，最小可观测方案是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>结构化日志 + trace_id + 每次 LLM/工具的耗时与 token；Sentry 捕获异常；用OpenTelemetry 导出到 Jaeger 或云厂商 APM；评估用 CSV 用例 + CI 脚本。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q27</span>如何做「关键路径」与「非关键路径」分级？</p>
+<div class="guide-question"><span class="guide-q-label">Q27</span><span class="guide-q-text">如何做「关键路径」与「非关键路径」分级？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>关键路径（支付、删数据）强模型 + HITL + 审计；非关键（草稿、摘要）小模型 + 宽松超时+ 积极缓存。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q28</span>并发控制 Semaphore 设多大？</p>
+<div class="guide-question"><span class="guide-q-label">Q28</span><span class="guide-q-text">并发控制 Semaphore 设多大？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>结合 供应商 RPM/TPM、本机 CPU、下游工具容量；压测得到 饱和点，略低于饱和并留余量；按租户分桶避免噪声邻居。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q29</span>为什么 Agent 更需要「版本化」的 Prompt 与模型？</p>
+<div class="guide-question"><span class="guide-q-label">Q29</span><span class="guide-q-text">为什么 Agent 更需要「版本化」的 Prompt 与模型？</span></div>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>按阶段取舍：先有日志与 trace_id，再有熔断与预算，再上完整评估平台；原则是 越早埋点成本越低。「这些会不会拖慢响应？」</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>日志异步、Trace 采样、热路径仅记必要字段；观测开销应 可配置、可降级。小结检查清单（面试前自测）[ ] 能画出：路由 → 熔断 → 重试 → 降级 → 计费 的闭环[ ] 能解释 Closed/Open/Half-Open 与探测流量[ ] 能说出 Token 估算与账单对账的差异[ ] 能列举 Trace 上应挂的 Span 类型[ ] 能描述工具调用的权限与校验分层[ ] 能说清金丝雀与蓝绿的适用场景[ ] 能说明 L1/L2 缓存与语义缓存风险[ ] 能口述幻觉治理的事前—事中—事后祝面试顺利。</p>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>行为随 Prompt/模型悄悄变化会导致 线上回归难定位；版本化可与 Trace、评估集、回滚策略一一对应。本篇追问应对（通用话术）「你们规模小也要上这么多吗？」</p>
-</div>
+</div></div>
 </div>

@@ -55,19 +55,20 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 
 ### 1.3 RAG vs 微调 vs 长上下文 的对比
 
- 维度        RAG       微调（Fine-tuning）     长上下文（Long
-                                          Context）
- 知识    更新索引即可，     需重新训练/LoRA，慢        仍需把新内容「放进上下
- 更新    快                               文」或靠记忆机制
- 私域/   文档可本地化部     数据需用于训练，合规要求        长上下文仍可能泄露敏感
- 合规    署           高                   片段到日志
- 成本    检索+小上下文     训练/数据标注成本高          长上下文推理贵、延迟高
-       生成，通常更省
- 适用    事实问答、手      风格、格式、领域「说话方        单文档极长且需全局推理
-       册、客服知识库     式」、小任务专用模型          时
- 典型    检索失败则答案     难频繁追新事实；易过拟合        注意力分散、「中间遗
- 短板    差           小数据                 忘」、费用
-原理简述
+| 维度 | RAG | 微调（Fine-tuning） | 长上下文（LongContext） |
+| --- | --- | --- | --- |
+| 知识 | 更新索引即可， | 需重新训练/LoRA，慢 | 仍需把新内容「放进上下 |
+| 更新 | 快 | 文」或靠记忆机制 |  |
+| 私域/ | 文档可本地化部 | 数据需用于训练，合规要求 | 长上下文仍可能泄露敏感 |
+| 合规 | 署 | 高 | 片段到日志 |
+| 成本 | 检索+小上下文 | 训练/数据标注成本高 | 长上下文推理贵、延迟高生成，通常更省 |
+| 适用 | 事实问答、手 | 风格、格式、领域「说话方 | 单文档极长且需全局推理 |
+| 册、客服知识库 | 式」、小任务专用模型 | 时 |  |
+
+| 典型 | 检索失败则答案 | 难频繁追新事实；易过拟合 | 注意力分散、「中间遗 |
+| --- | --- | --- | --- |
+| 短板 | 差 | 小数据 | 忘」、费用原理简述 |
+
 三者不是互斥：常见做法是 RAG 提供事实依据 + 轻量微调改善领域表达 + 长上下文处理单篇超
 长材料。
 面试 Q3：什么时候优先微调而不是 RAG？
@@ -80,21 +81,27 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 
  [离线流水线]
  原始文件(PDF/Word/HTML/MD/...)
-    → 解析与清洗(去噪、统一编码、元数据)
-    → 结构化分块(Chunking，含重叠/父子块可选)
-    → 文本嵌入(Embedding)
-    → 写入向量索引(+ 可选倒排索引/BM25)
-    → (可选) 版本管理与增量更新
+
+```text
+→ 解析与清洗(去噪、统一编码、元数据)
+→ 结构化分块(Chunking，含重叠/父子块可选)
+→ 文本嵌入(Embedding)
+→ 写入向量索引(+ 可选倒排索引/BM25)
+→ (可选) 版本管理与增量更新
+```
 
  [在线问答]
  用户 Query
-    → (可选) Query 改写 / 子问题分解 / HyDE
-    → 检索：向量相似度 Top-K (+ 可选 BM25 混合)
-    → (可选) Cross-Encoder 重排序
-    → (可选) MMR 去冗余
-    → 拼装 Prompt：系统指令 + 检索上下文 + 用户问题
-    → LLM 生成答案
-    → (可选) 引用出处、拒答策略、日志与评估回流
+
+```text
+→ (可选) Query 改写 / 子问题分解 / HyDE
+→ 检索：向量相似度 Top-K (+ 可选 BM25 混合)
+→ (可选) Cross-Encoder 重排序
+→ (可选) MMR 去冗余
+→ 拼装 Prompt：系统指令 + 检索上下文 + 用户问题
+→ LLM 生成答案
+→ (可选) 引用出处、拒答策略、日志与评估回流
+```
 
 面试 Q4：离线与在线的职责分别是什么？
 标准答案 A： 离线负责 把非结构化知识变成可检索的索引（解析、分块、向量化、建索引、更
@@ -106,24 +113,31 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 Key 与错误处理）。
 ```python
  #   最小概念示例：Embedding + 向量检索 + LLM（需安装 openai 等依赖）
+
+```python
  from typing import List
 
  def embed_texts(texts: List[str], model: str = "text-embedding-3-small") -
+```
+
  > List[List[float]]:
      """将文本列表转为向量；此处用          OpenAI风格接口举例。     """
 
-     import openai
-     resp = openai.embeddings.create(model=model, input=texts)
-     return [d.embedding for d in resp.data]
+```python
+ import openai
+ resp = openai.embeddings.create(model=model, input=texts)
+ return [d.embedding for d in resp.data]
 
  def cosine_sim(a: List[float], b: List[float]) -> float:
-     import math
-     dot = sum(x * y for x, y in zip(a, b))
-     na = math.sqrt(sum(x * x for x in a))
-     nb = math.sqrt(sum(y * y for y in b))
-     return dot / (na * nb + 1e-8)
+ import math
+ dot = sum(x * y for x, y in zip(a, b))
+ na = math.sqrt(sum(x * x for x in a))
+ nb = math.sqrt(sum(y * y for y in b))
+ return dot / (na * nb + 1e-8)
 
  def naive_retrieve(query: str, chunks: List[str], top_k: int = 3) ->
+```
+
  List[str]:
      q = embed_texts([query])[0]
      scores = [(cosine_sim(q, embed_texts([c])[0]), c) for c in chunks]   #
@@ -149,9 +163,10 @@ Key 与错误处理）。
 解析是把 二进制或标记格式 变成 可切分的纯文本（并尽量保留标题层级、表格位置等结构信
 息）。
 常见工具
-   类型                     工具                   说明
- PDF        PyPDF2 / pypdf ，          纯文本 PDF 效果好；扫描版需 OCR
-            pdfplumber （表格友好）
+
+| 类型 | 工具 | 说明 |
+| --- | --- | --- |
+| PDF | PyPDF2 / pypdf ， | 纯文本PDF效果好；扫描版需OCRpdfplumber（表格友好） |
 
  多格式                                  统一分区（标题、列表、表格），适合
             Unstructured
@@ -221,26 +236,32 @@ SQL/结构化检索 或 专用表格问答模型 辅助。
  PII 脱敏（电话、身份证）按合规要求
 代码示例：基础清洗
 ```python
-  import re
-  import unicodedata
 
-  def normalize_text(s: str) -> str:
-      s = unicodedata.normalize("NFKC", s)
-      s = s.replace("\u200b", "") #  零宽字符
-      s = re.sub(r"\s+", " ", s).strip()
-      return s
+```python
+import re
+import unicodedata
+
+def normalize_text(s: str) -> str:
+  s = unicodedata.normalize("NFKC", s)
+  s = s.replace("\u200b", "") #  零宽字符
+  s = re.sub(r"\s+", " ", s).strip()
+  return s
+```
 
 代码示例：PyPDF / Unstructured（按需安装： pip install pypdf unstructured ）
                                                                    python
   # ---方式 ： A pypdf    读取纯文本  PDF ---
-  from pypdf import PdfReader
 
-  def extract_pdf_pypdf(path: str) -> str:
-      reader = PdfReader(path)
-      parts = []
-      for page in reader.pages:
-          parts.append(page.extract_text() or "")
-      return normalize_text("\n".join(parts))
+```python
+from pypdf import PdfReader
+
+def extract_pdf_pypdf(path: str) -> str:
+  reader = PdfReader(path)
+  parts = []
+  for page in reader.pages:
+      parts.append(page.extract_text() or "")
+  return normalize_text("\n".join(parts))
+```
 
   # ---方式 ： B Unstructured 分区（适合后续按类型路由）          ---
   # from unstructured.partition.auto import partition
@@ -319,58 +340,84 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 后送入。
 代码示例：父子块数据结构（最小示意）
 ```python
+
+```python
  from dataclasses import dataclass
  from typing import List
+```
 
  @dataclass
+
+```python
  class ParentChunk:
-     parent_id: str
-     text: str
-     children: List["ChildChunk"]
+ parent_id: str
+ text: str
+ children: List["ChildChunk"]
+```
 
  @dataclass
+
+```python
  class ChildChunk:
-     child_id: str
-     parent_id: str
-      text: str   #   小块，用于 embedding
+ child_id: str
+ parent_id: str
+  text: str   #   小块，用于 embedding
+```
+
  #   索引阶段：只对 ChildChunk.text 做 embed，payload 带 parent_id
  #   检索阶段：命中 child_id -> 查 ParentChunk.text 作为生成上下文
 
 3.8 代码示例：LangChain 各种 TextSplitter
 需安装： pip install langchain langchain-text-splitters
-                                                                            python
-  from langchain_text_splitters import (
-      CharacterTextSplitter,
-      RecursiveCharacterTextSplitter,
-         MarkdownHeaderTextSplitter,
-  )
 
-  text = "   第一段。\n\n第二段更长一些，用于演示递归分割。\n\n第三段。\n"
+```python
+from langchain_text_splitters import (
+  CharacterTextSplitter,
+  RecursiveCharacterTextSplitter,
+     MarkdownHeaderTextSplitter,
+)
+
+text = "   第一段。\n\n第二段更长一些，用于演示递归分割。\n\n第三段。\n"
+```
+
   # 1)   固定字符分块
-  fixed = CharacterTextSplitter(separator="\n\n", chunk_size=40,
-  chunk_overlap=5)
-  print("Fixed:", fixed.split_text(text))
+
+```text
+fixed = CharacterTextSplitter(separator="\n\n", chunk_size=40,
+chunk_overlap=5)
+print("Fixed:", fixed.split_text(text))
+```
 
   # 2)   递归字符分割（推荐作为默认基线）
-  recursive = RecursiveCharacterTextSplitter(
-       chunk_size=60,
-       chunk_overlap=10,
-       separators=["\n\n", "\n", " ", ""],
-  )
-  print("Recursive:", recursive.split_text(text))
+
+```text
+recursive = RecursiveCharacterTextSplitter(
+   chunk_size=60,
+   chunk_overlap=10,
+   separators=["\n\n", "\n", " ", ""],
+)
+print("Recursive:", recursive.split_text(text))
+```
 
   # 3) Markdown 按标题分块
-  md = "# 总则 内容A\n\n## 细则\n内容B\n"
-             \n
-  headers = [("#", "一级"), ("##", "二级")]
-  md_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers)
-  md_docs = md_splitter.split_text(md)
-  print("MD docs metadata:", [d.metadata for d in md_docs])
+
+```text
+md = "# 总则 内容A\n\n## 细则\n内容B\n"
+         \n
+headers = [("#", "一级"), ("##", "二级")]
+md_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers)
+md_docs = md_splitter.split_text(md)
+print("MD docs metadata:", [d.metadata for d in md_docs])
+```
 
   # 4)   语义分块（需 embedding 模型；此处仅展示 API 思路）
-  try:
-         from langchain_experimental.text_splitter import SemanticChunker
-         from langchain_openai import OpenAIEmbeddings
+
+```python
+try:
+     from langchain_experimental.text_splitter import SemanticChunker
+     from langchain_openai import OpenAIEmbeddings
+```
+
       # embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
       # semantic_splitter = SemanticChunker(embeddings,
   breakpoint_threshold_type="percentile")
@@ -424,12 +471,15 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 代码示例：sentence-transformers（本地 BGE）
 ```python
  # pip install sentence-transformers
+
+```python
  from sentence_transformers import SentenceTransformer
 
  model = SentenceTransformer("BAAI/bge-large-zh-v1.5")
  sentences = ["RAG 检索增强生成    ", "大模型需要外部知识库       "]
  emb = model.encode(sentences, normalize_embeddings=True)   #   归一化后余弦=点积
  print(emb.shape) # (2, dim)
+```
 
 ```
 
@@ -445,8 +495,10 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 ### 5.2 主流选型对比
 
-     产品                特点                  适用场景
- FAISS       单机库，非完整数据库；极致性能研         原型、离线实验、嵌入现有服
+| 产品 | 特点 | 适用场景 |
+| --- | --- | --- |
+| FAISS | 单机库，非完整数据库；极致性能研 | 原型、离线实验、嵌入现有服 |
+
  （Meta）      究向                       务
  Milvus      云原生、分布式、可扩展至百亿级          大规模生产、需要分区与多副
                                       本
@@ -484,17 +536,21 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 代码示例：FAISS + sentence-transformers（最小示例）
 ```python
+
+```python
  import faiss
  import numpy as np
  from sentence_transformers import SentenceTransformer
 
  model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
  texts = ["条款 A", "条款      无关内容
-                       B", "      C"]
+                   B", "      C"]
  emb = model.encode(texts, normalize_embeddings=True).astype("float32")
  dim = emb.shape[1]
 
  index = faiss.IndexFlatIP(dim)   #   归一化后内积=余弦相似度
+```
+
  index.add(emb)
 
                     和 相关的查询"],
@@ -524,17 +580,20 @@ BM25 是经典 词频-逆文档频率 加权排序函数，擅长 精确词匹�
 BM25 分数 + 向量分数 线性加权或归一化后融合，兼顾语义与字面。
 代码思路（概念）
 ```python
+
+```python
  def min_max_norm(scores):
-     s_min, s_max = min(scores), max(scores)
-     if s_max == s_min:
-         return [1.0 for _ in scores]
-     return [(s - s_min) / (s_max - s_min) for s in scores]
+ s_min, s_max = min(scores), max(scores)
+ if s_max == s_min:
+     return [1.0 for _ in scores]
+ return [(s - s_min) / (s_max - s_min) for s in scores]
 
  def hybrid_fuse(vec_scores, bm25_scores, alpha=0.5):
-     v = min_max_norm(vec_scores)
+ v = min_max_norm(vec_scores)
 
-       b = min_max_norm(bm25_scores)
-       return [alpha * vi + (1 - alpha) * bi for vi, bi in zip(v, b)]
+   b = min_max_norm(bm25_scores)
+   return [alpha * vi + (1 - alpha) * bi for vi, bi in zip(v, b)]
+```
 
 ```
 
@@ -553,18 +612,21 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
 路是 概率、或分数 不可比 时，RRF 更稳，且少调参（经典 (k=60)）。
 代码示例：RRF 多路排名融合
 ```python
-  from typing import Dict, List, Sequence
 
-  def rrf_fuse(
-      ranked_lists: Sequence[Sequence[str]],
-      k: int = 60,
-  ) -> List[tuple[str, float]]:
-       """ranked_lists:多路检索结果，每路为         doc_id从优到劣的列表。      """
-       scores: Dict[str, float] = {}
-       for ranks in ranked_lists:
-           for rank, doc_id in enumerate(ranks, start=1):
-               scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
-       return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+```python
+from typing import Dict, List, Sequence
+
+def rrf_fuse(
+  ranked_lists: Sequence[Sequence[str]],
+  k: int = 60,
+) -> List[tuple[str, float]]:
+   """ranked_lists:多路检索结果，每路为         doc_id从优到劣的列表。      """
+   scores: Dict[str, float] = {}
+   for ranks in ranked_lists:
+       for rank, doc_id in enumerate(ranks, start=1):
+           scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
+   return sorted(scores.items(), key=lambda x: x[1], reverse=True)
+```
 
   #   示例：向量路 Top-K 与 BM25 路 Top-K 的 doc_id 列表
 
@@ -634,11 +696,14 @@ Step-back 用 更抽象的问题 再检索 原理/背景类 段落。HyDE 更激
 Step-back 相对 克制（仍停留在问题空间）。实践中可 并行检索 后由重排裁决。
 代码示例：Step-back（两次检索拼上下文，示意）
 ```python
-  def step_back_queries(user_question: str) -> tuple[str, str]:
-      """第二步可用    LLM 生成      ；此处用占位演示结构。
-                           abstract_q                  """
-      abstract_q = f"与下列问题相关的背景原理与定义是什么？             {user_question}"
-      return user_question, abstract_q
+
+```python
+def step_back_queries(user_question: str) -> tuple[str, str]:
+  """第二步可用    LLM 生成      ；此处用占位演示结构。
+                       abstract_q                  """
+  abstract_q = f"与下列问题相关的背景原理与定义是什么？             {user_question}"
+  return user_question, abstract_q
+```
 
   # concrete_ctx = retriever.invoke(q1)
   # background_ctx = retriever.invoke(q2)
@@ -680,46 +745,52 @@ S}\text{sim}(d,s)])。
 再生成，平衡延迟与效果。
 代码示例：MMR 贪心选择（向量已归一化时 sim 可用点积）
 ```python
-  import numpy as np
 
-  def mmr_select(query_vec: np.ndarray, doc_vecs: np.ndarray, top_k: int,
-  lambda_mult: float = 0.5):
-      """doc_vecs: shape (n, dim)  ，已归一化。  """
-      sim_to_q = doc_vecs @ query_vec
-      selected: list[int] = []
-      candidates = set(range(len(doc_vecs)))
-      while len(selected) < top_k and candidates:
-          best_idx, best_score = None, -1e9
-          for i in candidates:
-              redundant = 0.0
+```python
+import numpy as np
 
-              if selected:
-                  redundant = max(float(doc_vecs[i] @ doc_vecs[j]) for j in
-  selected)
-              score = lambda_mult * sim_to_q[i] - (1 - lambda_mult) *
-  redundant
-              if score > best_score:
-                  best_score, best_idx = score, i
-          selected.append(best_idx) # type: ignore
-          candidates.remove(best_idx)   # type: ignore
-      return selected
+def mmr_select(query_vec: np.ndarray, doc_vecs: np.ndarray, top_k: int,
+lambda_mult: float = 0.5):
+  """doc_vecs: shape (n, dim)  ，已归一化。  """
+  sim_to_q = doc_vecs @ query_vec
+  selected: list[int] = []
+  candidates = set(range(len(doc_vecs)))
+  while len(selected) < top_k and candidates:
+      best_idx, best_score = None, -1e9
+      for i in candidates:
+          redundant = 0.0
 
-                      问题
+          if selected:
+              redundant = max(float(doc_vecs[i] @ doc_vecs[j]) for j in
+selected)
+          score = lambda_mult * sim_to_q[i] - (1 - lambda_mult) *
+redundant
+          if score > best_score:
+              best_score, best_idx = score, i
+      selected.append(best_idx) # type: ignore
+      candidates.remove(best_idx)   # type: ignore
+  return selected
+
+                  问题
+```
+
   # q = model.encode(["   "], normalize_embeddings=True)[0]
   # d = model.encode(docs, normalize_embeddings=True)
   # idxs = mmr_select(q, d, top_k=3)
 
 代码示例：CrossEncoder 重排（sentence-transformers）
-                                                                          python
-  from sentence_transformers import CrossEncoder
 
-  cross = CrossEncoder("BAAI/bge-reranker-base")
-  query = "员工年假天数    "
-  docs = ["本公司年假为15天...", "报销应提交发票原件..."]
-  pairs = [[query, d] for d in docs]
-  scores = cross.predict(pairs)
-  ranked = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
-  print(ranked)
+```python
+from sentence_transformers import CrossEncoder
+
+cross = CrossEncoder("BAAI/bge-reranker-base")
+query = "员工年假天数    "
+docs = ["本公司年假为15天...", "报销应提交发票原件..."]
+pairs = [[query, d] for d in docs]
+scores = cross.predict(pairs)
+ranked = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+print(ranked)
+```
 
 ```
 
@@ -811,23 +882,26 @@ precision/recall），自动化评估 RAG 管道。
 ```python
   # pip install ragas datasets
   #   以下为结构示意，版本差异请以官方文档为准
-  from ragas import evaluate
-  from ragas.metrics import faithfulness, answer_relevancy,
-  context_precision
-  from datasets import Dataset
 
-  data = {
-                   公司总部在哪？
-       "question": ["           "],
-                  上海。
-       "answer": ["     "],
-                    公司总部位于上海浦东新区……"]],
-       "contexts": [["
-                      上海
-       "ground_truth": ["   "],
-  }
-  ds = Dataset.from_dict(data)
-  result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
+```python
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy,
+context_precision
+from datasets import Dataset
+
+data = {
+               公司总部在哪？
+   "question": ["           "],
+              上海。
+   "answer": ["     "],
+                公司总部位于上海浦东新区……"]],
+   "contexts": [["
+                  上海
+   "ground_truth": ["   "],
+}
+ds = Dataset.from_dict(data)
+result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
+```
 
  context_precision])
  print(result)
@@ -871,182 +945,232 @@ precision/recall），自动化评估 RAG 管道。
 
  下列每题均可作为「概念 + 落地」题；追问应对 见各节括号提示。
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>简述 RAG 两步流水线（离线与在线）。</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">简述 RAG 两步流水线（离线与在线）。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>离线：解析→清洗→分块→嵌入→建索引；在线：Query（可选改写）→检索→（可选重排）→拼 Prompt→生成。追问：增量更新怎么做？（见 10.3）</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>RAG 与微调如何配合？</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">RAG 与微调如何配合？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>微调改善 格式与领域表达，RAG 提供 可更新事实；事实类优先 RAG。追问：何时单独微调？（数据稳定且任务行为化）</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>为什么需要 chunk_overlap？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">为什么需要 chunk_overlap？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>防止关键句被切断在两块边界，检索时丢上下文；代价是存储增加。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>RecursiveCharacterTextSplitter 的分隔符顺序为什么重要？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">RecursiveCharacterTextSplitter 的分隔符顺序为什么重要？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>优先在更大语义单元（段落）断开，再退到句子、空格，减少碎片化。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>语义分块比递归分块更好吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">语义分块比递归分块更好吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不一定；语义分块成本高、阈值敏感。应用数据 A/B 测试。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>父子文档如何存储？</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">父子文档如何存储？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>子块带 parent_id ，检索子块→映射父块文本再生成。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>Embedding 是否需要归一化？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">Embedding 是否需要归一化？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>若用 内积/余弦 且框架假设归一化向量，应归一化以稳定相似度。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>FAISS IndexFlatIP 与 IndexHNSW 区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">FAISS IndexFlatIP 与 IndexHNSW 区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Flat 精确但慢；HNSW 近似快，适合大规模。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>混合检索权重 alpha 怎么定？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">混合检索权重 alpha 怎么定？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>验证集网格搜索；或 RRF 避免调权。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>RRF 为什么鲁棒？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">RRF 为什么鲁棒？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>只用排名融合，规避不同路分数尺度问题。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>HyDE 的风险如何缓解？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">HyDE 的风险如何缓解？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>重排序、引用约束、拒答、对比多条检索结果。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>BM25 在中文要不要分词？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">BM25 在中文要不要分词？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>依赖引擎；中文常需 分词或 n-gram，否则粒度不当影响效果。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>Cross-Encoder 为何不能替代向量索引？</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">Cross-Encoder 为何不能替代向量索引？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>需对 每个 doc 与 query 运行，复杂度高，无法对百万级全库实时扫描。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>MMR 的 lambda 参数含义？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">MMR 的 lambda 参数含义？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>调节 相关性 vs 多样性；lambda 大更偏相关。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>GraphRAG 解决普通 RAG 的什么痛点？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">GraphRAG 解决普通 RAG 的什么痛点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>多跳关系与部分 全局聚合类 问题。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q16</span>Agentic RAG 与一次性 RAG 差异？</p>
+<div class="guide-question"><span class="guide-q-label">Q16</span><span class="guide-q-text">Agentic RAG 与一次性 RAG 差异？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>多步工具决策与再检索，更灵活更高成本。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q17</span>Self-RAG 核心思想？</p>
+<div class="guide-question"><span class="guide-q-label">Q17</span><span class="guide-q-text">Self-RAG 核心思想？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>生成中 自我评估 是否需要检索与证据是否充分。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q18</span>Corrective RAG 触发条件？</p>
+<div class="guide-question"><span class="guide-q-label">Q18</span><span class="guide-q-text">Corrective RAG 触发条件？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>检索置信度低或证据矛盾时 改查或换源。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q19</span>RAGAS 的局限？</p>
+<div class="guide-question"><span class="guide-q-label">Q19</span><span class="guide-q-text">RAGAS 的局限？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>依赖裁判模型，可能有 偏好与盲区。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q20</span>如何做低成本在线评估？</p>
+<div class="guide-question"><span class="guide-q-label">Q20</span><span class="guide-q-text">如何做低成本在线评估？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>采样 + 用户反馈（点赞/纠错）+ 弱监督信号（是否点击引用）。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q21</span>索引频繁更新如何保持一致性？</p>
+<div class="guide-question"><span class="guide-q-label">Q21</span><span class="guide-q-text">索引频繁更新如何保持一致性？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>版本号、双写切换、后台重建与灰度；读写分离。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q22</span>如何防止 Prompt 注入污染 RAG？</p>
+<div class="guide-question"><span class="guide-q-label">Q22</span><span class="guide-q-text">如何防止 Prompt 注入污染 RAG？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>文档清洗、权限隔离、输出引用限制、检测异常指令模式。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q23</span>长上下文模型出现后 RAG 会消失吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q23</span><span class="guide-q-text">长上下文模型出现后 RAG 会消失吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不会；私域数据规模与成本、检索聚焦证据、合规审计仍需要 RAG 范式。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q24</span>多模态 RAG 要点？</p>
+<div class="guide-question"><span class="guide-q-label">Q24</span><span class="guide-q-text">多模态 RAG 要点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>图像/表格编码、跨模态对齐、与文本混合索引与路由。附录：LangChain 向量存储检索（LCEL 示意）</p>
-</div>
+</div></div>
 </div>
 
 ```python
  # pip install langchain langchain-openai langchain-community faiss-cpu
+
+```python
  from langchain_community.vectorstores import FAISS
  from langchain_openai import OpenAIEmbeddings
  from langchain_text_splitters import RecursiveCharacterTextSplitter
  from langchain_core.documents import Document
 
  docs = [Document(page_content="公司年假 天，需提前申请。
-                                       15             ")]
+                                   15             ")]
  splitter = RecursiveCharacterTextSplitter(chunk_size=200,
  chunk_overlap=20)
  chunks = splitter.split_documents(docs)
@@ -1057,6 +1181,7 @@ precision/recall），自动化评估 RAG 管道。
 
  found = retriever.invoke("年假天数")
  print(found)
+```
 
 小结
 RAG 的本质是 用检索把「可更新证据」接到生成模型上；落地胜负手常在 解析与分块、混合检

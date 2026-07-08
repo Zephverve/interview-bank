@@ -15,26 +15,28 @@ aside: true
 ### 1.1 STAR 法则在简历中的应用
 
 STAR 是面试常用的表达框架：
- 字母      英文                       含义
- S     Situation   情境：业务背景、用户是谁、数据/流量规模
- T     Task        任务：要达成的目标、要解决的矛盾（延迟、成本、准确率等）
- A     Action      行动：你具体做了什么技术决策与实现
- R     Result      结果：可验证的指标、上线效果、复盘结论
+
+| 字母 | 英文 | 含义 |
+| --- | --- | --- |
+| S | Situation | 情境：业务背景、用户是谁、数据/流量规模 |
+| T | Task | 任务：要达成的目标、要解决的矛盾（延迟、成本、准确率等） |
+| A | Action | 行动：你具体做了什么技术决策与实现 |
+| R | Result | 结果：可验证的指标、上线效果、复盘结论 |
+
 简历与面试的区别：
  面试可以按 STAR 慢慢讲「当时团队情况是……」。
  简历篇幅极短，通常把 STAR 压缩成 1～3 句话，不出现「STAR」字样，也不写小说式前因后
  果。
 
 在简历里的推荐压缩方式：
-  STAR 要              简历里怎么写                     劣质写法
-    素
- S         半句到一句：场景 + 规模（用户/请求量/文档          「做了一个系统」
-           量）
- T         嵌入动词：为降低/为提升/为满足 SLA             「负责开发」
- A         关键技术名 + 你的动作（设计/实现/推动/排          「使用各种技术」
-           障）
- R         数字或前后对比                          「效果很好」「显著提
-                                            升」
+
+| STAR 要 | 简历里怎么写 | 劣质写法素 |
+| --- | --- | --- |
+| S | 半句到一句：场景 + 规模（用户/请求量/文档 | 「做了一个系统」量） |
+| T | 嵌入动词：为降低/为提升/为满足 SLA | 「负责开发」 |
+| A | 关键技术名 + 你的动作（设计/实现/推动/排 | 「使用各种技术」障） |
+| R | 数字或前后对比 | 「效果很好」「显著提升」 |
+
 万能句式（可直接套用）：
   在 [场景与规模] 下，为 [目标指标]，采用 [方案 A + 关键技术名]，[你本人主导的动作]，最
   终实现 [量化结果 / 明确对比]。
@@ -51,17 +53,14 @@ STAR 是面试常用的表达框架：
 面试官默认：没有数字 ≈ 没做过、或记不清、或不敢验证。
 量化不必全是「百万 QPS」，以下都算有效数字（按你真实能拿到的数据选用）：
 
-  类别                   可写内容                     备注
- 性能       QPS、RPS、P95/P99 延迟、首字延迟（TTFT）、   压测结果、监控截图
-          单次请求成本                           可备查
- 质量       准确率、召回率、F1、MRR、nDCG、用户评分、        离线评测集要写清规
-          bad case 占比                      模
- 规模       文档条数、向量维度、索引分片、日活、会话轮次、          体现你处理过真实复
-          工具调用次数                           杂度
- 效率与成     Token 消耗下降 %、GPU 占用、人力节省、迭代周     Agent 岗很吃香
- 本        期缩短
- 稳定性      可用性 99.X%、错误率、熔断次数、事故复盘后的        偏工程岗必写
-          改进
+| 类别 | 可写内容 | 备注 |
+| --- | --- | --- |
+| 性能 | QPS、RPS、P95/P99延迟、首字延迟（TTFT）、单次请求成本 | 压测结果、监控截图可备查 |
+| 质量 | 准确率、召回率、F1、MRR、nDCG、用户评分、badcase占比 | 离线评测集要写清规模 |
+| 规模 | 文档条数、向量维度、索引分片、日活、会话轮次、工具调用次数 | 体现你处理过真实复杂度 |
+| 效率与成本 | Token 消耗下降 %、GPU 占用、人力节省、迭代周 | Agent岗很吃香期缩短 |
+| 稳定性 | 可用性 99.X%、错误率、熔断次数、事故复盘后的 | 偏工程岗必写改进 |
+
 若暂时没有线上指标，可以诚实写：
  「在自建 200 条 问答集上，F1 从 0.61 → 0.79」；
  「压测单机 X req/s 时 P95 Y ms（环境：……）」。
@@ -83,20 +82,15 @@ STAR 是面试常用的表达框架：
 
 ### 1.4 避免的常见错误
 
- 错误类型           说明                    改进方向
- 泛泛动词     「参与」「协助」「熟悉」     改为「设计并实现」「将 X 从 A 优化到 B」「推
-          无下文              动上线」
- 只堆名词     只写技术栈，不写动作       每个技术栈词后面跟「用来解决了什么问题」
- 抢功       把团队成果全写成「我」      写清「在 X 人团队中负责 Y 子系统」，面试可
-                           自洽
- 无关堆砌     大段传统 CRUD，与      Agent 岗优先：编排、工具、RAG、评测、成
-          Agent 无关         本、延迟、可观测
- 泄密       写真实客户名、未公开数      用「某金融客户」「Top3 互联网」；数字用区间
-          据                或同比
- 口语与      「很厉害」「🔥 」        全文书面语，专业、克制
- emoji
- 过长段落     HR 10 秒扫一份简历     多用短句、分号列表；核心数字加粗（若投递
-                           系统支持）
+| 错误类型 | 说明 | 改进方向 |
+| --- | --- | --- |
+| 泛泛动词 | 「参与」「协助」「熟悉」无下文 | 改为「设计并实现」「将X从A优化到B」「推动上线」 |
+| 只堆名词 | 只写技术栈，不写动作 | 每个技术栈词后面跟「用来解决了什么问题」 |
+| 抢功 | 把团队成果全写成「我」 | 写清「在X人团队中负责Y子系统」，面试可自洽 |
+| 无关堆砌 | 大段传统CRUD，与Agent无关 | Agent岗优先：编排、工具、RAG、评测、成本、延迟、可观测 |
+| 泄密 | 写真实客户名、未公开数据 | 用「某金融客户」「Top3互联网」；数字用区间或同比 |
+| 口语与 | 「很厉害」「🔥 」 | 全文书面语，专业、克制emoji |
+| 过长段落 | HR 10 秒扫一份简历 | 多用短句、分号列表；核心数字加粗（若投递系统支持） |
 
 #### 2. 技术栈展示
 
@@ -113,68 +107,83 @@ STAR 是面试常用的表达框架：
 ### 2.1 Python 版本的技术栈写法
 
 分组模板（复制后改词）：
-                                                                       text
- 语言与运行时：Python 3.11+（类型注解 / asyncio）
- Web 与 API：FastAPI、Uvicorn、Pydantic v2
- Agent 与编排：LangChain、LangGraph（或 AutoGen、自研状态机）
- 模型与网关：OpenAI 兼容 API、vLLM / Ollama（按需）、提示词与工具 Schema 治理
- 检索与向量：Milvus / Qdrant / Weaviate（三选一写实）、Elasticsearch（BM25）、混合检
- 索、bge-reranker 等重排模型
- 数据与缓存：PostgreSQL、Redis（会话 / 缓存 / 限流计数）
- 异步与消息（如有）：Celery、Kafka、RabbitMQ
- 可观测：OpenTelemetry、LangSmith 或 Langfuse、结构化日志
- 部署与工程：Docker、Kubernetes、GitHub Actions / GitLab CI
+
+```text
+语言与运行时：Python 3.11+（类型注解 / asyncio）
+Web 与 API：FastAPI、Uvicorn、Pydantic v2
+Agent 与编排：LangChain、LangGraph（或 AutoGen、自研状态机）
+模型与网关：OpenAI 兼容 API、vLLM / Ollama（按需）、提示词与工具 Schema 治理
+检索与向量：Milvus / Qdrant / Weaviate（三选一写实）、Elasticsearch（BM25）、混合检
+索、bge-reranker 等重排模型
+数据与缓存：PostgreSQL、Redis（会话 / 缓存 / 限流计数）
+异步与消息（如有）：Celery、Kafka、RabbitMQ
+可观测：OpenTelemetry、LangSmith 或 Langfuse、结构化日志
+部署与工程：Docker、Kubernetes、GitHub Actions / GitLab CI
+```
 
 简历「一句话技术栈」（放摘要或项目标题下）：
-                                                                       text
-                                  （
- Python · FastAPI · LangGraph · RAG Milvus + ES   混合检索）· Redis ·
- PostgreSQL · Docker · OTel
+
+```text
+                              （
+Python · FastAPI · LangGraph · RAG Milvus + ES   混合检索）· Redis ·
+PostgreSQL · Docker · OTel
+```
 
 小白可加的诚实备注（可选，一行）：
-                                                                       text
- 个人项目：完整链路在本地/云主机跑通，使用自建评测集与离线指标（无线上流量数据）。
+
+```text
+个人项目：完整链路在本地/云主机跑通，使用自建评测集与离线指标（无线上流量数据）。
+```
 
 ### 2.2 Java 版本的技术栈写法
 
-                                                                          text
- 语言：Java 17+（Record、虚拟线程按实写）
- 框架：Spring Boot 3、Spring WebFlux 或 Spring MVC
- 集成与韧性：OpenFeign、Resilience4j（熔断 / 限流 / 重试）
- 检索：Elasticsearch Java API、Milvus/Qdrant 客户端（或 HTTP 调用向量服务）
- 数据：Spring Data JPA / MyBatis、PostgreSQL、Redis（Lettuce）
- 消息：Kafka / RocketMQ（如有）
- 可观测：Micrometer、Prometheus、Grafana
- 构建与部署：Maven / Gradle、Docker、Kubernetes
+```text
+语言：Java 17+（Record、虚拟线程按实写）
+框架：Spring Boot 3、Spring WebFlux 或 Spring MVC
+集成与韧性：OpenFeign、Resilience4j（熔断 / 限流 / 重试）
+检索：Elasticsearch Java API、Milvus/Qdrant 客户端（或 HTTP 调用向量服务）
+数据：Spring Data JPA / MyBatis、PostgreSQL、Redis（Lettuce）
+消息：Kafka / RocketMQ（如有）
+可观测：Micrometer、Prometheus、Grafana
+构建与部署：Maven / Gradle、Docker、Kubernetes
+```
 
 与 Python Agent 服务协作时，务必写清边界（避免面试穿帮）：
-                                                                          text
-    侧负责会话、鉴权、网关、B 端编排与检索结果合并；Python 侧负责 LangGraph 与重模
+
+```text
+侧负责会话、鉴权、网关、B 端编排与检索结果合并；Python 侧负责 LangGraph 与重模
+```
+
 ```java
  型推理（如实调整）。
 
 一句话技术栈：
-                                                                          text
- Java 17 · Spring Boot 3 · WebFlux/SSE · OpenFeign · Resilience4j ·
- Elasticsearch · Redis · PostgreSQL · K8s
+
+```text
+Java 17 · Spring Boot 3 · WebFlux/SSE · OpenFeign · Resilience4j ·
+Elasticsearch · Redis · PostgreSQL · K8s
+```
 
 ```
 
 ### 2.3 Go 版本的技术栈写法
 
-                                                                          text
- 语言：Go 1.22+
- Web 与 RPC：Gin / Fiber / Echo、gRPC、protobuf
- Agent 相关：高性能 LLM 代理、流式 chunk 转发、工具执行器、连接池与背压
- 检索与存储：Redis（go-redis）、PostgreSQL（pgx）、Elasticsearch 客户端
- 可观测：OpenTelemetry Go、Prometheus、Grafana、zap / slog 日志
- 部署：Docker、Kubernetes、健康检查与优雅退出
+```text
+语言：Go 1.22+
+Web 与 RPC：Gin / Fiber / Echo、gRPC、protobuf
+Agent 相关：高性能 LLM 代理、流式 chunk 转发、工具执行器、连接池与背压
+检索与存储：Redis（go-redis）、PostgreSQL（pgx）、Elasticsearch 客户端
+可观测：OpenTelemetry Go、Prometheus、Grafana、zap / slog 日志
+部署：Docker、Kubernetes、健康检查与优雅退出
+```
 
 一句话技术栈：
-                                                                          text
 
- Go · Gin · gRPC · LLM   网关与流式代理 · Redis · PostgreSQL · OTel · Prometheus
- · K8s
+```text
+
+Go · Gin · gRPC · LLM   网关与流式代理 · Redis · PostgreSQL · OTel · Prometheus
+· K8s
+```
 
 #### 3. 项目经历模板（三个版本）
 
@@ -183,15 +192,17 @@ STAR 是面试常用的表达框架：
 
 ### 3.1 Python 版项目经历（完整可复制模板）
 
-                                                                        text
- 项目名称：企业级 AI Agent 智能助手平台
- 项目描述：
- 基于大模型的企业级智能客服与知识助手系统，支持多轮对话、知识库检索、工具调用与人工兜底；
- 面向内部员工或外部客户，对接企业文档与工单系统，满足合规与审计要求。
- 技术栈：
- Python, FastAPI, LangChain, LangGraph, Milvus, Redis, PostgreSQL
+```text
+项目名称：企业级 AI Agent 智能助手平台
+项目描述：
+基于大模型的企业级智能客服与知识助手系统，支持多轮对话、知识库检索、工具调用与人工兜底；
+面向内部员工或外部客户，对接企业文档与工单系统，满足合规与审计要求。
+技术栈：
+Python, FastAPI, LangChain, LangGraph, Milvus, Redis, PostgreSQL
 
- 核心职责：
+核心职责：
+```
+
 #### 1. 设计并实现 Agent 多步编排与状态持久化，支持工具失败重试与人工介入节点，日均稳定处理
 
  X 万轮对话。
@@ -220,16 +231,18 @@ STAR 是面试常用的表达框架：
 
 ### 3.2 Java 版项目经历（完整可复制模板）
 
-                                                                        text
- 项目名称：企业级智能问答与 Agent 编排服务平台
- 项目描述：
- 基于 Spring Boot 的企业级 LLM 应用平台，提供同步/流式问答、会话管理、工具编排及与企业
- SSO、审计日志集成；
- 检索层对接 Elasticsearch 与向量检索服务，支撑知识库与工单检索场景。
- 技术栈：
- Java 17, Spring Boot 3, Spring WebFlux, OpenFeign, Resilience4j,
- Elasticsearch, Redis, PostgreSQL, Kafka   （可选）
- 核心职责：
+```text
+项目名称：企业级智能问答与 Agent 编排服务平台
+项目描述：
+基于 Spring Boot 的企业级 LLM 应用平台，提供同步/流式问答、会话管理、工具编排及与企业
+SSO、审计日志集成；
+检索层对接 Elasticsearch 与向量检索服务，支撑知识库与工单检索场景。
+技术栈：
+Java 17, Spring Boot 3, Spring WebFlux, OpenFeign, Resilience4j,
+Elasticsearch, Redis, PostgreSQL, Kafka   （可选）
+核心职责：
+```
+
 #### 1. 设计并实现模型网关调用层：流式 SSE、超时重试、熔断与配额，保障大促期间核心链路可用性
 
  达 X%。
@@ -256,16 +269,18 @@ STAR 是面试常用的表达框架：
 
 ### 3.3 Go 版项目经历（完整可复制模板）
 
-                                                                         text
- 项目名称：高并发 LLM 网关与 Agent 执行引擎
- 项目描述：
- 面向高 QPS 场景的 LLM 代理与工具执行服务，负责请求路由、流式转发、计费与限流；
- 下游对接多家模型供应商与自托管推理集群，上游对接业务方与统一鉴权。
- 技术栈：
- Go, Gin（或 Fiber）, gRPC, Redis, PostgreSQL, OpenTelemetry, Prometheus,
- Kubernetes
+```text
+项目名称：高并发 LLM 网关与 Agent 执行引擎
+项目描述：
+面向高 QPS 场景的 LLM 代理与工具执行服务，负责请求路由、流式转发、计费与限流；
+下游对接多家模型供应商与自托管推理集群，上游对接业务方与统一鉴权。
+技术栈：
+Go, Gin（或 Fiber）, gRPC, Redis, PostgreSQL, OpenTelemetry, Prometheus,
+Kubernetes
 
- 核心职责：
+核心职责：
+```
+
 #### 1. 实现高性能流式代理：chunk 转发、连接复用、优雅关闭，单机压测支撑 X k QPS（写明环
 
  境）。
@@ -402,15 +417,17 @@ STAR 是面试常用的表达框架：
 
 目标： 让 HR 与面试官在 10 秒内 判断「是否匹配 JD」，并给你 面试追问入口。
 推荐结构（复制后改词）：
-                                                               text
- 编程语言：Python（主力）、SQL、Shell
- Agent 与 LLM：LangChain、LangGraph、提示词工程、工具调用（OpenAPI/JSON Schema）、
- 简单评测与 bad case 分析
- 检索与 RAG：Milvus、Elasticsearch、混合检索、重排序、Embedding 模型选型与切块实验
- 后端：FastAPI、异步 IO、REST/SSE、鉴权与多租户（按实写）
- 数据：PostgreSQL、Redis、缓存与一致性经验（按实写）
- 工程化：Docker、CI/CD、单元测试/集成测试、基础 K8s
- 其他：英语读写（CET-6）、技术博客/开源（如有）
+
+```text
+编程语言：Python（主力）、SQL、Shell
+Agent 与 LLM：LangChain、LangGraph、提示词工程、工具调用（OpenAPI/JSON Schema）、
+简单评测与 bad case 分析
+检索与 RAG：Milvus、Elasticsearch、混合检索、重排序、Embedding 模型选型与切块实验
+后端：FastAPI、异步 IO、REST/SSE、鉴权与多租户（按实写）
+数据：PostgreSQL、Redis、缓存与一致性经验（按实写）
+工程化：Docker、CI/CD、单元测试/集成测试、基础 K8s
+其他：英语读写（CET-6）、技术博客/开源（如有）
+```
 
 排序技巧：
 #### 1. JD 出现的关键词往前放（岗位写「LangGraph」就显眼写 LangGraph）。
@@ -482,12 +499,14 @@ STAR 是面试常用的表达框架：
  没有线上数据： 明确写「自建 N 条评测集」「离线 F1 / Recall@k」「本地/云主机压测」，不要
  装成大规模生产。
  可写进简历的诚实表述：
-                                                         text
- 应届，在校期间完成基于 LangChain 的 RAG 问答项目：实现文档解析、Milvus 索引与混合检
- 索；
- 在自建 200 条问答集上 F1 达 0.78，代码与实验记录已开源于 GitHub（可附链接）。
 
- 避免： 空泛「热爱 AI」、罗列十几门网课、虚构大厂实习。
+```text
+应届，在校期间完成基于 LangChain 的 RAG 问答项目：实现文档解析、Milvus 索引与混合检
+索；
+在自建 200 条问答集上 F1 达 0.78，代码与实验记录已开源于 GitHub（可附链接）。
+
+避免： 空泛「热爱 AI」、罗列十几门网课、虚构大厂实习。
+```
 
 ### 7.2 1～3 年经验
 
@@ -497,9 +516,11 @@ STAR 是面试常用的表达框架：
  权衡示例：「在延迟敏感场景放弃重型重排模型，改用轻量双塔 + 规则后处理，P95 达标且
  Recall@5 仅降 2 个点，业务接受。」
 摘要句模板：
-                                                         text
- 2年后端经验，近 1 年聚焦 LLM 应用：独立负责检索与评测闭环，推动混合检索与重排上线，
- 核心业务场景 Top-3 命中率提升 15%，P95 延迟下降 40%。
+
+```text
+2年后端经验，近 1 年聚焦 LLM 应用：独立负责检索与评测闭环，推动混合检索与重排上线，
+核心业务场景 Top-3 命中率提升 15%，P95 延迟下降 40%。
+```
 
 ### 7.3 转行人员
 
@@ -510,10 +531,12 @@ STAR 是面试常用的表达框架：
  简历上写清投入： 例如「6 个月系统学习 + 2 个完整项目」，减少「只培训过」印象。
  传统行业项目可压缩为一行背景，篇幅留给 Agent/RAG/网关 相关经历。
 摘要句模板：
-                                                        text
- X年 Java 后端，系统学习 LLM 应用开发并完成生产级 RAG 项目：
- 负责 Spring 侧网关与检索编排对接，流式链路 P95 达标；自学 Python 评测脚本与提示词迭
- 代，离线指标与线上一致性按月对齐。
+
+```text
+X年 Java 后端，系统学习 LLM 应用开发并完成生产级 RAG 项目：
+负责 Spring 侧网关与检索编排对接，流式链路 P95 达标；自学 Python 评测脚本与提示词迭
+代，离线指标与线上一致性按月对齐。
+```
 
 结语 · 投递前三问自检
 #### 1. 这条经历能否在面试里展开讲满 8～10 分钟？（背景、方案、取舍、数据、复盘）

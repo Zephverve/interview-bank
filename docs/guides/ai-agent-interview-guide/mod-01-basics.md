@@ -27,9 +27,12 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 
 #### 1. 与「普通 LLM 单次调用」的区别
 
-     普通调用：输入 Prompt → 模型输出文本，没有与外部环境闭环。
-     Agent：输出往往是 「下一步动作」（例如：调用某工具、更新记忆、结束），环境返回
-     Observation（观察结果），再进入下一轮推理，形成 多轮控制循环。
+```text
+ 普通调用：输入 Prompt → 模型输出文本，没有与外部环境闭环。
+ Agent：输出往往是 「下一步动作」（例如：调用某工具、更新记忆、结束），环境返回
+ Observation（观察结果），再进入下一轮推理，形成 多轮控制循环。
+```
+
 #### 2. 自主决策能力体现在哪里
 
      在动作空间中选下一步（选哪个工具、传什么参数、是否结束）。
@@ -37,24 +40,31 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
      在失败时重试、换策略或请求人工介入（视系统设计而定）。
 #### 3. 核心循环（典型 ReAct / Tool-use 范式）
 
-   抽象为：Thought（推理）→ Action（行动）→ Observation（观察）→ … → Final
-   Answer。
-   实现上常由「编排层（Orchestrator）」驱动：解析模型输出、执行工具、把结果写回上下文，
-   直到满足停止条件。
+```text
+抽象为：Thought（推理）→ Action（行动）→ Observation（观察）→ … → Final
+Answer。
+实现上常由「编排层（Orchestrator）」驱动：解析模型输出、执行工具、把结果写回上下文，
+直到满足停止条件。
+```
+
 ### 1.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q1</span>一句话说明什么是 AI Agent？</p>
+<div class="guide-question"><span class="guide-q-label">Q1</span><span class="guide-q-text">一句话说明什么是 AI Agent？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>AI Agent 是以大模型为认知核心，结合规划、记忆与工具调用，能在多步交互中根据环境反馈持续决策并完成任务的系统；其本质是 闭环的感知—思考—行动 循环，而不仅是单次文本生成。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q2</span>为什么说 Agent = LLM + Planning + Memory + Tools？缺一块会怎样？</p>
+<div class="guide-question"><span class="guide-q-label">Q2</span><span class="guide-q-text">为什么说 Agent = LLM + Planning + Memory + Tools？缺一块会怎样？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>缺 Planning：容易变成「只会接话」的聊天，长任务易跑偏或一步登天完不成。缺 Memory：长对话会丢线索，多会话无法延续用户偏好与任务状态。缺 Tools：只能「空谈」，无法查实时信息、执行代码、改系统状态。LLM 仍是中枢，但单靠 LLM 没有外环则不是完整 Agent。</p>
-</div>
+</div></div>
 </div>
 
 ### 1.4 可能的追问及应对
@@ -66,18 +76,21 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 1.5 代码示例：最小「思考—行动—观察」循环（Python 伪代码）
 
 ```python
+
+```python
  def run_agent(user_goal: str, tools: dict, llm, max_steps: int = 8):
-     messages = [{"role": "system", "content": "  你是可调用工具的 Agent。"},
-                {"role": "user", "content": user_goal}]
-     for _ in range(max_steps):
-        plan = llm.chat(messages)   #模型决定：结束 or 调用某工具
-        action = parse_tool_call(plan) # 从模型输出解析结构化动作
-        if action.name == "finish":
-            return action.args["answer"]
-        obs = tools[action.name](**action.args)
-        messages.append({"role": "assistant", "content": plan})
-        messages.append({"role": "user", "content": f" 工具结果：{obs}"})
-     return "超过最大步数，未完成。"
+ messages = [{"role": "system", "content": "  你是可调用工具的 Agent。"},
+            {"role": "user", "content": user_goal}]
+ for _ in range(max_steps):
+    plan = llm.chat(messages)   #模型决定：结束 or 调用某工具
+    action = parse_tool_call(plan) # 从模型输出解析结构化动作
+    if action.name == "finish":
+        return action.args["answer"]
+    obs = tools[action.name](**action.args)
+    messages.append({"role": "assistant", "content": plan})
+    messages.append({"role": "user", "content": f" 工具结果：{obs}"})
+ return "超过最大步数，未完成。"
+```
 
 ```
 
@@ -93,30 +106,34 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
  试、可换工具。
 ### 2.2 原理详解（技术细节）
 
- 维度       ChatBot       LLM Chain         Agent
- 控制    多为线性对话        开发者定义的 DAG/序    模型驱动的分支与循环
- 流                   列
- 工具    可有可无          可嵌入固定节点         动态选择与多轮调用
- 状态    主要会话上下文       链各节点显式传递        记忆 + 环境观察
- 适用    问答、闲聊、简单引     ETL 式固定流程       开放问题、研究、自动化任
-       导                             务
+| 维度 | ChatBot | LLM Chain | Agent |
+| --- | --- | --- | --- |
+| 控制流 | 多为线性对话 | 开发者定义的DAG/序列 | 模型驱动的分支与循环 |
+| 工具 | 可有可无 | 可嵌入固定节点 | 动态选择与多轮调用 |
+| 状态 | 主要会话上下文 | 链各节点显式传递 | 记忆 + 环境观察 |
+| 适用 | 问答、闲聊、简单引导 | ETL 式固定流程 | 开放问题、研究、自动化任务 |
+
 本质区别一句话：
  Chain：控制流在代码里。
  Agent：控制流在模型决策 + 环境反馈里（仍可由代码设边界）。
 ### 2.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q3</span>Agent 和 Prompt Chain 有什么本质区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q3</span><span class="guide-q-text">Agent 和 Prompt Chain 有什么本质区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Prompt Chain 的拓扑与顺序主要由工程侧固定；Agent 在运行时在动作空间中做选择，并依赖 Observation 更新信念，适合输入与路径不确定的任务。二者可结合：链负责稳定流程，Agent 负责链内某段的灵活分支。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q4</span>ChatBot 加上插件是不是就变成 Agent 了？</p>
+<div class="guide-question"><span class="guide-q-label">Q4</span><span class="guide-q-text">ChatBot 加上插件是不是就变成 Agent 了？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不一定。若插件调用由固定规则触发（例如关键词路由），更像「带工具的 Bot」。若由模型在多步推理中自主选择工具与参数，并形成闭环迭代，则更贴近 Agent。关键在是否具备多步自主决策与反馈闭环。</p>
-</div>
+</div></div>
 </div>
 
 ### 2.4 可能的追问及应对
@@ -127,35 +144,50 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 
  用户]
  [
-     │
-     ▼
+
+```text
+ │
+ ▼
  ┌──────────────────────────────────────┐
+```
+
        ：对话管理 +（可选）知识检索
+
+```text
  │ ChatBot                          │
  │ 输出：自然语言回复                            │
  └──────────────────────────────────────┘
+```
 
  用户]
  [
-     │
-     ▼
+
+```text
+ │
+ ▼
  ┌───步骤1 ───►┌─── 步骤2 ───►┌─── 步骤3 ───► 输出
  │ LLM/解析    │ LLM/转换     │ 工具/API     │
  └─────────────┴─────────────┴──────────────┘
+```
+
                    （控制流在代码中编排）
            LLM Chain
 
  用户]
  [
-     │
-     ▼
+
+```text
+ │
+ ▼
  ┌──────────────────────────────────────┐
  │ Agent   编排器                              │
  │   loop: LLM规划 → 选工具 → 环境反馈           │
  │         → 写入记忆 → 直到终止条件              │
  └──────────────────────────────────────┘
-     │                  ▲
-     ▼                  │
+ │                  ▲
+ ▼                  │
+```
+
  工具/API/数据库/浏览器/代码执行环境]
  [
 
@@ -194,17 +226,21 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 3.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q5</span>Agent 的记忆一般怎么设计？</p>
+<div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">Agent 的记忆一般怎么设计？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分层设计最常见：工作记忆（当前轨迹与关键结论）+ 会话记忆（摘要滚动）+ 长期记忆（向量检索/结构化库）。写入要区分「事实」与「推断」，并带时间戳与来源，便于更新与撤销。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q6</span>规划和执行要不要拆开两个模型？</p>
+<div class="guide-question"><span class="guide-q-label">Q6</span><span class="guide-q-text">规划和执行要不要拆开两个模型？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>视任务而定。Planner-Executor 拆分可提升可控性（强模型规划、快模型执行）；单模型端到端更简单但易在长链路漂移。可混合：规划用强模型，执行层做确定性校验。</p>
-</div>
+</div></div>
 </div>
 
 ### 3.4 可能的追问及应对
@@ -214,22 +250,26 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 3.5 代码示例：工具 Schema（OpenAI 风格示意）
 
 ```python
+
+```text
  tools = [
-     {
-         "type": "function",
-         "function": {
-             "name": "search_kb",
-             "description": "     在公司知识库中按关键词搜索",
-             "parameters": {
-                 "type": "object",
-                 "properties": {
-                      "query": {"type": "string"},
-                      "top_k": {"type": "integer", "default": 5}
-                 },
-                 "required": ["query"]
-             }
+ {
+     "type": "function",
+     "function": {
+         "name": "search_kb",
+         "description": "     在公司知识库中按关键词搜索",
+         "parameters": {
+             "type": "object",
+             "properties": {
+                  "query": {"type": "string"},
+                  "top_k": {"type": "integer", "default": 5}
+             },
+             "required": ["query"]
          }
      }
+ }
+```
+
  ]
 
 4. Agent 的工作流程
@@ -258,10 +298,12 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 4.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q7</span>如何避免 Agent 在工具调用间「迷失」？</p>
+<div class="guide-question"><span class="guide-q-label">Q7</span><span class="guide-q-text">如何避免 Agent 在工具调用间「迷失」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>明确 停止条件 与 最大步数；维护 任务清单（todo） 与 当前子目标；对每步输出要求 结构化（JSON）；关键步骤 强制验证（单元测试式检查、二次 LLM 审核）。</p>
-</div>
+</div></div>
 </div>
 
 ### 4.4 可能的追问及应对
@@ -271,14 +313,18 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 4.5 代码示例：简单「任务清单」状态
 
 ```python
+
+```text
  state = {
-     "goal": "  生成上季度销售报告",
-     "todos": [
-          {"id": 1, "task": "拉取销售数据", "done": False},
-          {"id": 2, "task": "计算同比", "done": False},
-          {"id": 3, "task": "写成摘要", "done": False},
-     ],
-     "notes": []
+ "goal": "  生成上季度销售报告",
+ "todos": [
+      {"id": 1, "task": "拉取销售数据", "done": False},
+      {"id": 2, "task": "计算同比", "done": False},
+      {"id": 3, "task": "写成摘要", "done": False},
+ ],
+ "notes": []
+```
+
  }
 
 ```
@@ -304,17 +350,21 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 5.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q8</span>基于效用的 Agent 和基于目标的有什么区别？</p>
+<div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">基于效用的 Agent 和基于目标的有什么区别？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>目标型关注「是否达成」；效用型在多个冲突目标间做权衡（成本、时延、风险、用户偏好），选综合最优而非单点达成。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q9</span>反应式 Agent 有什么优缺点？</p>
+<div class="guide-question"><span class="guide-q-label">Q9</span><span class="guide-q-text">反应式 Agent 有什么优缺点？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>优点：快、可解释、易测试。缺点：对长程依赖与复杂推理弱；遇到未见输入可能失效。常与分层架构结合。</p>
-</div>
+</div></div>
 </div>
 
 ### 5.4 可能的追问及应对
@@ -347,10 +397,12 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 ### 6.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q10</span>企业内部落地 Agent，你最先关心哪三个非功能需求？</p>
+<div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">企业内部落地 Agent，你最先关心哪三个非功能需求？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>安全与合规（权限、审计）、可控性（人在回路、工具白名单）、可观测性（轨迹、指标、回放）。</p>
-</div>
+</div></div>
 </div>
 
 ### 6.4 可能的追问及应对
@@ -384,17 +436,21 @@ Agent 把能力做强的同时，把 错误放大 到多步；工程上要「限
 ### 7.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q11</span>怎么评估一个 Agent 的好坏？</p>
+<div class="guide-question"><span class="guide-q-label">Q11</span><span class="guide-q-text">怎么评估一个 Agent 的好坏？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分层评估：任务成功率、平均步数/成本、工具错误率、用户满意度、安全事件数；基准可包括静态数据集 + 仿真环境 + 线上 A/B。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q12</span>Agent 的最大风险是什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q12</span><span class="guide-q-text">Agent 的最大风险是什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>复合错误与权限滥用——单步小错在多步放大，或工具被诱导执行高危操作；因此必须 最小权限 + 强审计 + 人在回路。</p>
-</div>
+</div></div>
 </div>
 
 ### 7.4 可能的追问及应对
@@ -407,109 +463,139 @@ Agent 把能力做强的同时，把 错误放大 到多步；工程上要「限
 下列题目覆盖定义、对比、架构、工程与治理；每题含 标准答案 与 追问提示。
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q13</span>请用你自己的话定义 LLM Agent，并说明与单次调用的差异。</p>
+<div class="guide-question"><span class="guide-q-label">Q13</span><span class="guide-q-text">请用你自己的话定义 LLM Agent，并说明与单次调用的差异。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>LLM Agent 是以大语言模型为推理核心，在 多轮 中与外部环境交互，通过 规划、记忆与工具 完成复杂任务的系统。与单次调用的差异在于：单次调用是 开环生成；Agent 是 闭环决策，每步可依据工具返回更新状态，直到终止条件。</p>
-</div>
+</div></div>
 </div>
 
 <p class="guide-followup"><span class="guide-followup-label">追问</span>若没有外部工具，还能叫 Agent 吗？</p>
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>可称为「弱环境」Agent，仅有对话记忆与推理；但仍可有 内环多步 CoT 与 **自我验证」。面试中强调 是否存在「行动—观察」循环 更清晰。</p>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q14</span>ReAct 框架里三个字母代表什么？解决什么问题？</p>
+<div class="guide-question"><span class="guide-q-label">Q14</span><span class="guide-q-text">ReAct 框架里三个字母代表什么？解决什么问题？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Reasoning + Acting：在生成中交替进行 推理（Thought） 与 行动（Action），并接收 观察（Observation）。它解决的是：模型仅「空想」容易偏离事实；通过 显式推理 + 工具反馈 把推理锚定在真实环境上。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q15</span>你会如何设计 Agent 的停止条件？</p>
+<div class="guide-question"><span class="guide-q-label">Q15</span><span class="guide-q-text">你会如何设计 Agent 的停止条件？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>组合使用：模型声明 finish、任务清单全部完成、达到步数/预算上限、超时、连续无进展检测、外部成功信号（如测试通过）。生产环境必须有 硬上限 防止死循环。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q16</span>工具描述（tool description）为什么非常重要？</p>
+<div class="guide-question"><span class="guide-q-label">Q16</span><span class="guide-q-text">工具描述（tool description）为什么非常重要？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>模型靠描述做 工具选择；描述不清会导致 选错工具、参数幻觉。好的描述包含：何时用、何时不用、参数含义、错误示例、返回格式。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q17</span>Memory 用向量库就够了吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q17</span><span class="guide-q-text">Memory 用向量库就够了吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>不够。向量检索擅长相似度，但弱于精确约束与关系推理。工程上常见 向量 + 关键词/结构化库 + 图谱（按需），并维护 元数据与权限。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q18</span>多 Agent 协作和单 Agent 多工具怎么选？</p>
+<div class="guide-question"><span class="guide-q-label">Q18</span><span class="guide-q-text">多 Agent 协作和单 Agent 多工具怎么选？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>单 Agent 多工具：实现简单、延迟低，适合任务边界清晰。多 Agent：角色分工、并行探索、对抗审查（如「批评者 Agent」）；但带来 协调成本与一致性问题。选型看 任务分解结构、组织边界、延迟与成本。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q19</span>如何做「人在回路」又不打断体验？</p>
+<div class="guide-question"><span class="guide-q-label">Q19</span><span class="guide-q-text">如何做「人在回路」又不打断体验？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>分级：低风险自动执行；中风险 异步审批；高风险 实时确认。产品上 预授权（例如仅本次会话可读某目录）、可撤销、默认最小权限。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q20</span>Agent 日志应记录什么？</p>
+<div class="guide-question"><span class="guide-q-label">Q20</span><span class="guide-q-text">Agent 日志应记录什么？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>用户输入（脱敏）、模型原始输出、解析后的工具调用、工具返回摘要、耗时与 Token、版本号（模型与 Prompt）、追踪 ID，便于复盘与合规审计。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q21</span>为什么「让模型自己选工具」可能不如「路由器 + 规则」？</p>
+<div class="guide-question"><span class="guide-q-label">Q21</span><span class="guide-q-text">为什么「让模型自己选工具」可能不如「路由器 + 规则」？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>在 域窄、路径稳定 的场景，路由器更 省成本、可测试、行为确定；全模型路由在 开放域 更灵活。最佳实践常是 混合：易分类走规则，难例走模型。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q22</span>简述 Planner-Executor 架构及优缺点。</p>
+<div class="guide-question"><span class="guide-q-label">Q22</span><span class="guide-q-text">简述 Planner-Executor 架构及优缺点。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Planner 产出步骤或 DAG；Executor 逐步执行并可把结果反馈给 Planner 重规划。优点：结构清晰、易加校验；缺点：规划一次可能不准，需 迭代重规划；两阶段可能增加延迟。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q23</span>Agent 如何做版本管理与灰度？</p>
+<div class="guide-question"><span class="guide-q-label">Q23</span><span class="guide-q-text">Agent 如何做版本管理与灰度？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>Prompt/工具/schema 版本化；影子模式（只记录建议不执行）；金丝雀 用户群；关键指标对比（成功率、成本、违规数）；一键回滚。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q24</span>举一个「不是 Agent 但常被误认为 Agent」的例子。</p>
+<div class="guide-question"><span class="guide-q-label">Q24</span><span class="guide-q-text">举一个「不是 Agent 但常被误认为 Agent」的例子。</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>固定三步的 RAG 流水线（query 改写 → 检索 → 生成），若无 基于观察的再决策循环，更像Chain；若加入 多轮检索策略与失败分支 则接近 Agent。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q25</span>你如何向非技术经理解释 Agent 的风险？</p>
+<div class="guide-question"><span class="guide-q-label">Q25</span><span class="guide-q-text">你如何向非技术经理解释 Agent 的风险？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>用 「能办事的实习生」 类比：能力强但可能 记错、被误导、误操作；所以我们要 权限卡、审批、监控录像（日志），重要操作 双人复核——对应最小权限、人在回路、审计。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q26</span>上下文窗口越来越大，还需要外部记忆吗？</p>
+<div class="guide-question"><span class="guide-q-label">Q26</span><span class="guide-q-text">上下文窗口越来越大，还需要外部记忆吗？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>需要。长窗口 ≠ 低成本，也不等于 可检索、可治理、可遗忘。外部记忆解决 跨会话持久化、结构化权限、版本与溯源；窗口内更适合 热工作集。</p>
-</div>
+</div></div>
 </div>
 
 <div class="guide-qa">
-<p class="guide-question"><span class="guide-q-label">Q27</span>如何测试 Agent？</p>
+<div class="guide-question"><span class="guide-q-label">Q27</span><span class="guide-q-text">如何测试 Agent？</span></div>
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>单元测工具、模拟环境、回归集（固定任务与期望轨迹范围）、对抗用例（注入、越权）、线上金丝雀；避免只测最终答案而忽略 过程正确性。附：知识点速查表主题                     一句话定义           LLM + 规划 + 记忆 + 工具，闭环决策vs Chain     控制流在代码 vs 在模型+环境反馈vs ChatBot   对话为主 vs 任务闭环与工具编排组成           感知、规划、记忆、工具、执行、反思流程           输入→分解→调用→整合→输出分类           反应式、模型、目标、效用、学习场景           客服、代码、数据、运维、知识管理挑战           幻觉、安全、成本、可解释、评估学习建议： 读完本文后，尝试用 200 行内实现一个「带假工具」的循环 Agent，并刻意制造 工具失败 与 注入攻击 用例，观察系统行为，再对照本文的治理手段逐项加约束。</p>
-</div>
+</div></div>
 </div>

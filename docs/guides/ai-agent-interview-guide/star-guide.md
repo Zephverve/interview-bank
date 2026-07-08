@@ -18,10 +18,13 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 ### 1.1 S（Situation）：项目背景，怎么说
 
 你要交代什么：
-   维度                说什么                 反面例子（避免）
- 业务场景     谁在用、解决什么痛点                   从公司历史讲起
- 约束条件     时间、人力、合规、成本、遗留系统             只说「很难」不说难在哪
- 技术上下文    单体/微服务、语言栈、数据量级（量级即可）        堆砌十个技术名词无主线
+
+| 维度 | 说什么 | 反面例子（避免） |
+| --- | --- | --- |
+| 业务场景 | 谁在用、解决什么痛点 | 从公司历史讲起 |
+| 约束条件 | 时间、人力、合规、成本、遗留系统 | 只说「很难」不说难在哪 |
+| 技术上下文 | 单体/微服务、语言栈、数据量级（量级即可） | 堆砌十个技术名词无主线 |
+
 怎么说更加分：
  用 一两句 点出「为什么现在要做」，体现业务意识。
  控制在 20～40 秒：背景讲清即可，不要「故事片头」。
@@ -81,11 +84,14 @@ Result（结果）。技术项目里，面试官想听的不是「我懂很多�
 ### 1.5 时间控制：每个部分说多久
 
 以下按 「一段完整项目经历」约 2.5～3.5 分钟 分配（可按面试节奏微调）：
-     部分      建议时长                   说明
- S        20～40 秒     背景清楚即可
- T        20～40 秒     目标与职责一笔说清
- A        90～150 秒    主战场，讲 2～4 个关键点，有细节
- R        20～40 秒     结果 + 一句复盘或下一步
+
+| 部分 | 建议时长 | 说明 |
+| --- | --- | --- |
+| S | 20～40 秒 | 背景清楚即可 |
+| T | 20～40 秒 | 目标与职责一笔说清 |
+| A | 90～150 秒 | 主战场，讲 2～4 个关键点，有细节 |
+| R | 20～40 秒 | 结果 + 一句复盘或下一步 |
+
 项目整体介绍（单独一题）： often 要求 1 分钟 或 3 分钟，见第 2 节专用话术。
 自检：
  若 A 少于 60 秒，往往显得「空」。
@@ -229,8 +235,10 @@ T：
 Execute 等）的 智能切换与组合，并在 延迟与成本预算 内稳定运行，同时保证会话 可追踪、可
 回放。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>我设计了一个 两层编排架构：第一层是 路由与意图层：结合轻量分类器或规则，以及可选的小模型，把请求分到不同「策略通道」，并给出本轮的 工具权限与最大步数 预算。第二层是 执行编排层：把一次对话拆成可观测的「步骤」，每步包含：思考、工具选择、工具执行、结果合并。工程上我重点做了四件事：统一状态机，避免 if-else 散落；并发与超时，工具调用全链路带deadline；可插拔，新模式以插件注册；观测，每步生成 trace span，便于复盘「为什么选这个模式」。迭代中遇到过 路由误判，后来通过 线上采样评估与阈值调参 改善。R：系统能够 自动选择更合适的 Agent 模式，我们观测到 复杂问题解决率提升约 30%（以业务侧「一次解决」或标注集为准），同时平均 步数与 Token 消耗 更可控；排障时借助 trace，「卡在哪一步」的定位时间明显缩短。</p>
-</div>
+</div></div>
 ### 3.2 ReAct Agent
 
 S：
@@ -241,8 +249,10 @@ T：
 我负责实现 ReAct Agent 的完整执行闭环：在既定工具集合与权限下，让模型按「思考—行动—
 观察」循环运行，并保证 可停止、可降级、可审计。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>我定义了严格的 停止条件：达到最大步数、拿到符合 schema 的最终答案、或触发熔断。每一步把 工具 schema 结构化提供给模型，减少误选。对工具调用做 幂等与超时；对 observation 做 摘要压缩，避免上下文爆炸。针对 循环，增加 重复检测（同工具同参数、连续相同 observation），以及 人工兜底或策略切换 开关。用典型工单离线回放，对比步数、成功率、工具错误率。R：真实流量采样评估里，工具误用率下降，平均步数下降，线上 因循环导致的超时 明显减少；客服侧反馈复杂场景处理更稳定。</p>
-</div>
+</div></div>
 ### 3.3 多路 RAG 检索引擎
 
 S：
@@ -252,8 +262,10 @@ T：
 我负责建设 多路 RAG 检索引擎：融合 关键词、向量、结构化查询 等多路召回，并做 重排与引
 用约束，让生成阶段 有据可查、可定位到 chunk。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>检索拆成 召回—融合—重排—上下文组装 四段。召回侧 多路并行；融合侧用 RRF 或加权融合；重排侧用 交叉编码器或轻量模型（视资源而定）。工程关键点：chunk 策略（标题、表格、代码块区分）、元数据过滤（租户、权限、时间）、引用对齐（答案绑定 chunk id）。建立 badcase 集，对不准样本归因到切分、embedding、权限或重排，再分别优化。R：引用正确率 与 首轮解决率 提升；通过监控 空召回率、TopK 分数、重排耗时，调参过程 数据化，而不是凭感觉。</p>
-</div>
+</div></div>
 ### 3.4 记忆系统
 
 S：
@@ -263,8 +275,10 @@ T：
 我负责设计 记忆系统：在 可控成本 下保存对后续决策有用的信息，支持 会话级/用户级 策略，
 并满足审计与合规。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>记忆分为 短期工作记忆 与 长期摘要记忆：短期放本轮关键事实与工具结果摘要；长期用周期性摘要加 结构化槽位（偏好、工单号等）。写入采用 触发式总结（步数阈值、话题切换），而非每轮都总结。安全上：敏感字段脱敏、租户隔离、可配置 保留周期。检索式注入：先检索记忆再注入，减少噪声。R：多轮对话 重复提问率下降，平均 上下文长度更稳定；运维可按策略调整记忆配置而少改业务代码。</p>
-</div>
+</div></div>
 ### 3.5 工具系统与 MCP
 
 S：
@@ -274,8 +288,10 @@ T：
 我负责建设 工具系统，并引入 MCP（Model Context Protocol） 等标准化接入方式，使工具 可
 发现、可授权、可观测 地接入编排层。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>抽象工具三要素：schema、执行器、审计日志。每个工具声明输入输出、权限域、超时与幂等策略。对 MCP：客户端连接管理、工具列表同步、调用隔离，每次调用映射到 trace。对旧系统用 适配层 统一成同一工具接口。安全：最小权限，写操作默认需二次确认或走审批链。R：工具接入周期从 周级 缩短到 天级；线上问题可快速区分 工具失败还是模型误判；工具调用成功率提升，人工回退减少。</p>
-</div>
+</div></div>
 ### 3.6 模型路由与熔断降级
 
 S：
@@ -285,8 +301,10 @@ T：
 我负责 模型路由与熔断降级：在预算内选择合适模型，异常时 快速失败或降级 到轻量模型、模板
 化回答等，保证核心路径可用。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>路由策略：按租户、任务类型、敏感度、成本选择模型与参数；配置 并发与队列。熔断：以错误率、延迟为信号，触发后半开探测；降级 包括缩小上下文、换小模型、只检索不生成、返回固定指引等，均可配置。策略侧有 观测面板：降级原因、次数、影响租户。R：尖峰时段 P99 更可控，可用性 提升；简单任务走小模型，单位会话成本 下降。</p>
-</div>
+</div></div>
 ### 3.7 文档 ETL 流水线
 
 S：
@@ -296,8 +314,10 @@ T：
 我负责搭建 文档 ETL 流水线：从多源同步、清洗解析、切分、向量化到索引构建，形成 可回
 放、可重跑 的数据链路。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>流水线：采集（增量/全量）→ 解析（PDF/HTML/表）→ 清洗 → chunk → embedding → 索引更新。失败重试与死信队列，避免单文件阻塞全量；解析失败进入人工复核队列。索引更新采用 双缓冲或蓝绿 思路，减少读到半成品。质量监控：解析成功率、chunk 分布、空文本率。R：知识更新从 T+N 天 缩短到 小时级（按实际改）；因「文档过期/未入库」导致的 badcase 占比下降；研发可快速重跑评估。</p>
-</div>
+</div></div>
 ### 3.8 全链路追踪
 
 S：
@@ -307,10 +327,12 @@ T：
 我负责落地 全链路追踪：把一次用户请求映射为完整 trace，关联日志与指标，支撑 性能优化与
 事故复盘。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>trace id 在网关、编排、检索、工具、模型网关间传递；关键步骤建 span，记录耗时、输入输出摘要（脱敏）、错误码。trace 与 会话 id、租户 id 关联，支持按租户抽样。流式输出记录 首token 时间、总时长、截断原因。R：平均定位时间从 小时级 降到 分钟级（按实际改）；并推动多轮针对性优化（如某工具超时策略、某检索路径）。</p>
 <p class="guide-a-step"><strong>4. 技术难点 STAR 话术（5 个完整故事）</strong></p>
 <p>每个故事都按 STAR 完整准备；面试时可根据时长压缩 A，但 不要省略 R。</p>
-</div>
+</div></div>
 ### 4.1 模型调用超时和不稳定
 
 S：
@@ -320,8 +342,10 @@ T：
 目标是在 不牺牲核心体验 的前提下，让系统对抖动 有韧性：用户侧可感知为「稳定可完成」，并
 避免重试雪崩。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>先用 trace 区分 慢在模型首 token、工具、检索还是网关排队。发现主要矛盾是 缺少统一deadline 与 重试过激。措施：（1）全链路传递 timeout，模型调用设 首 token 预算 + 总预算；（2）重试仅对 幂等且安全 的环节，指数退避 + 上限；（3）流式输出 让用户先看到进度；（4）长尾请求走 降级路径。持续看 P95/P99、超时率、重试次数。R：超时失败率显著下降，P99 更平滑；客服侧「卡住」投诉减少。复盘：早期 观测不足、预算意识弱，后来把 timeout 当成一等公民。</p>
-</div>
+</div></div>
 ### 4.2 RAG 检索结果不准确的优化
 
 S：
@@ -332,8 +356,10 @@ T：
 把优化从「凭感觉调参」变成 可度量迭代：建立评测集与线上采样，优先解决 最高频 badcase
 类型。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>与业务定义 正确性标准（引用必须来自哪类文档、表格字段是否必答）。构建 离线评测集（脱敏），分类统计：空召回、召回不相关、重排错、生成胡编。针对性优化 chunk、元数据过滤、重排、生成侧 无依据则拒答/追问。每轮改动用 同一套评测集对比。R：引用正确率与满意度提升；迭代可对照指标解释收益，避免「改了 A 坏了 B」却不知道。</p>
-</div>
+</div></div>
 ### 4.3 Agent 死循环的排查与解决
 
 S：
@@ -341,8 +367,10 @@ S：
 T：
 工程上要 检测并终止 不良循环，同时不误杀「多步必要」的复杂任务。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>循环分三类：工具返回无效、模型策略漂移、状态未更新导致重复。落地：重复动作检测（同工具同参数、连续相同 observation）；工具返回 结构化错误码；编排层步数预算 与 强制切换策略（如改走摘要模式）；trace 标记循环类型。离线回放复现，确认不是简单调小步数能根治。R：线上因循环导致的失败与超时明显下降；复杂任务仍可跑足够步数，误杀率可接受。</p>
-</div>
+</div></div>
 ### 4.4 Token 成本失控的治理
 
 S：
@@ -351,8 +379,10 @@ S：
 T：
 建立 成本治理机制：让「效果—成本」可权衡、可按租户/场景运营，而不是不可控上涨。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>（1）分层路由：简单意图走轻链路，复杂再走重链路；（2）上下文压缩：检索截断与重排、工具结果摘要、记忆摘要策略；（3）预算与告警：单会话 token 上限、租户配额、异常突增告警。用数据看 哪些场景 ROI 高，避免一刀切。R：单会话平均成本下降，核心业务指标无明显回退；运营可按租户分级配置，「账单惊吓」风险降低。</p>
-</div>
+</div></div>
 ### 4.5 高并发下的性能瓶颈
 
 S：
@@ -360,10 +390,12 @@ S：
 T：
 在 不牺牲正确性 前提下做性能治理：找到瓶颈，优先解决 放大效应最大 的环节。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>压测 + profiling + trace：压测看吞吐上限，profiling 看热点，trace 看长尾。手段：检索并发控制、连接池、缓存热点、embedding 批处理、水平扩容。引入 背压：网关限流、排队、必要时优先级（按实际）。先排除 N+1 查询、锁竞争 再单纯加机器。R：容量提升后高峰 P95 改善，错误率下降；建立容量基线，大促可提前扩容与演练。</p>
 <p class="guide-a-step"><strong>5. 行为面试 STAR 话术</strong></p>
 <p>每题一篇完整稿；正式面试可缩到 1.5～2 分钟，但结构保持 STAR。</p>
-</div>
+</div></div>
 ### 5.1 「你在项目中遇到的最大挑战是什么？」
 
 S：
@@ -372,8 +404,10 @@ S：
 T：
 在 资源有限 情况下保证核心场景稳定，让优化 可解释、可复盘，而不是到处救火。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>推动 指标体系（效果/成本/延迟）、badcase 复盘、灰度发布。技术上优先解决放大效应大的问题：路由分层、超时预算、检索与工具热点。协作上 用数据周同步，让业务理解「在可控成本内加能力」。R：稳定性提升，关键指标改善；团队从「感觉优化」转向 数据驱动。我个人收获是在复杂系统里做权衡与沟通。</p>
-</div>
+</div></div>
 ### 5.2 「你是如何做技术选型的？」
 
 S：
@@ -381,8 +415,10 @@ S：
 T：
 在候选方案里做 可落地对比，输出团队能执行的结论，而不是只堆对比表。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>维度：团队熟悉度、社区与风险、性能与成本、运维复杂度、扩展性。每个选项写清 适用边界与不适用场景。向量库看规模、过滤、延迟、运维；观测看现有基础设施。小 POC 用真实链路样本压关键路径。R：选型能支撑 半年到一年 演进；关键约束上迁移成本可控。</p>
-</div>
+</div></div>
 ### 5.3 「你和团队成员有没有技术分歧？怎么解决的？」
 
 S：
@@ -391,8 +427,10 @@ S：
 T：
 把分歧变成 可验证决策，而不是立场之争。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>用同一批评测样本加 小流量灰度 对比：强模型直出 vs 分层路由 + 中等模型。指标含准确率、P95 延迟、单会话成本。数据证明多数企业场景下 分层路由 ROI 更高，强模型留给少数复杂通道。R：方案落地更稳，团队对「为什么这样做」达成共识。我学到 用事实对齐 比争论概念有效。</p>
-</div>
+</div></div>
 ### 5.4 「项目中你最自豪的贡献是什么？」
 
 S：
@@ -400,8 +438,10 @@ S：
 T：
 希望交付的不只是一个模块，而是 可运营 的能力。
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>主导或深度参与 全链路追踪、关键指标面板、降级策略 落地，把「黑盒对话」变成可观测系统。推动 trace id 规范 与 可配置熔断降级。带动 线上问题复盘 习惯。R：排障效率显著提升，重大故障风险下降。我更自豪的是团队开始用 同一套数据语言 沟通。</p>
-</div>
+</div></div>
 ### 5.5 「如果重新做这个项目，你会有什么改进？」
 
 S：
@@ -410,8 +450,10 @@ T：
 若重来，会在 早期 前置几件事，减少后期返工。
 
 <div class="guide-answer">
+<div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
+<div class="guide-answer-body">
 <p>更早建立 评测体系与黄金集；更早定义 多租户隔离与安全模型；更早把 成本预算 当一等需求。协作上更早固定 API/工具 schema 契约与版本管理，减少联调损耗。R：不改变总体方向，但能降低中后期风险。系统演进必然迭代，关键是 技术债可控、可还。</p>
-</div>
+</div></div>
 ## 6. 面试禁忌和注意事项
 
 ### 6.1 不要只说技术，要说业务价值
