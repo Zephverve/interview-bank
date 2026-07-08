@@ -476,10 +476,11 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
  from sentence_transformers import SentenceTransformer
 
  model = SentenceTransformer("BAAI/bge-large-zh-v1.5")
+```
+
  sentences = ["RAG 检索增强生成    ", "大模型需要外部知识库       "]
  emb = model.encode(sentences, normalize_embeddings=True)   #   归一化后余弦=点积
  print(emb.shape) # (2, dim)
-```
 
 ```
 

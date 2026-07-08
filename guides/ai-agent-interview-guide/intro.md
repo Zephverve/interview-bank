@@ -15,22 +15,24 @@ AI Agent 面试全攻略 -- 从零到 Offer
 目录导航
 
 文档区
-        目录               内容                     说明
- 00-学习路线图          从零开始的学习路线        6 个阶段，约 7-9 个月完整路径
- 01-面试八股文          9 大模块分类面试题       概念、原理、Q&A、代码示例
- 02-企业招聘分析         大厂岗位需求汇总         腾讯/小红书/字节等岗位分析
- 03-开源项目学习笔记       优秀开源项目剖析         Claude Code、ragent 等
- 04-简历模板           AI Agent 简历写法    STAR 法则模板，可直接复制
- 05-STAR 面试稿       面试话术准备           可朗读练习的完整面试稿
- 06-面试问答集          项目面试问答           100+ 道项目面试题及 STAR 回答
+
+| 目录 | 内容 | 说明 |
+| --- | --- | --- |
+| 00-学习路线图 | 从零开始的学习路线 | 6 个阶段，约 7-9 个月完整路径 |
+| 01-面试八股文 | 9 大模块分类面试题 | 概念、原理、Q&A、代码示例 |
+| 02-企业招聘分析 | 大厂岗位需求汇总 | 腾讯/小红书/字节等岗位分析 |
+| 03-开源项目学习笔记 | 优秀开源项目剖析 | Claude Code、ragent 等 |
+| 04-简历模板 | AI Agent 简历写法 | STAR 法则模板，可直接复制 |
+| 05-STAR 面试稿 | 面试话术准备 | 可朗读练习的完整面试稿 |
+| 06-面试问答集 | 项目面试问答 | 100+ 道项目面试题及 STAR 回答 |
 
 实战项目
-     版本                        技术栈                           目标人群
- Python     FastAPI + LangChain + Milvus + Redis         AI/算法岗、Python 后
- 版                                                       端
- Java 版     Spring Boot 3 + Spring AI + MyBatis Plus +   Java 后端开发
-            Milvus
- Go 版       Gin + 自研框架 + Milvus + Redis                  Go 后端、云原生岗
+
+| 版本 | 技术栈 | 目标人群 |
+| --- | --- | --- |
+| Python 版 | FastAPI + LangChain + Milvus + Redis | AI/算法岗、Python 后端 |
+| Java 版 | Spring Boot 3 + Spring AI + MyBatis Plus + Milvus | Java 后端开发 |
+| Go 版 | Gin + 自研框架 + Milvus + Redis | Go 后端、云原生岗 |
 
 快速开始
 
@@ -92,15 +94,14 @@ Go 版：
 
 面试八股文速览
 
-   模块                         核心知识点                      面试题数
-基础概念        Agent 定义、组成、分类、应用场景                          27 题
-核心框架        ReAct、Plan-and-Execute、Reflexion、LangGraph   27 题
-RAG 技术      分块策略、向量数据库、混合检索、重排序                          24+ 题
-工具调用        Function Calling、MCP、工具路由、安全                 17+ 题
-记忆系统        短期/长期记忆、摘要压缩、记忆检索                            20 题
-多智能体        协作模式、通信机制、冲突解决                               20 题
-大模型基础       Transformer、Attention、KV Cache、LoRA、RLHF     28 题
-工程化实践       熔断器、Token 优化、可观测性、部署                         29+ 题
-Prompt 工程   CoT、Few-shot、ReAct 模板、注入防御                   28 题
-
-```
+| 模块 | 核心知识点 | 面试题数 |
+| --- | --- | --- |
+| 基础概念 | Agent 定义、组成、分类、应用场景 | 27 题 |
+| 核心框架 | ReAct、Plan-and-Execute、Reflexion、LangGraph | 27 题 |
+| RAG 技术 | 分块策略、向量数据库、混合检索、重排序 | 24+ 题 |
+| 工具调用 | Function Calling、MCP、工具路由、安全 | 17+ 题 |
+| 记忆系统 | 短期/长期记忆、摘要压缩、记忆检索 | 20 题 |
+| 多智能体 | 协作模式、通信机制、冲突解决 | 20 题 |
+| 大模型基础 | Transformer、Attention、KV Cache、LoRA、RLHF | 28 题 |
+| 工程化实践 | 熔断器、Token 优化、可观测性、部署 | 29+ 题 |
+| Prompt 工程 | CoT、Few-shot、ReAct 模板、注入防御 | 28 题 |

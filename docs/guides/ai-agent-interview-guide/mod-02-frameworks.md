@@ -618,9 +618,10 @@ while budget remains:
      return [line.strip("- ") for line in text.splitlines() if
  line.strip()][:k]
 
-```python
  def score_action(state: str, action: str, scorer) -> float:
- return scorer(state, action)   #   可用启发式或小型模型
+     return scorer(state, action)   #   可用启发式或小型模型
+
+```python
  def lats_one_step(state: str, llm, scorer) -> str:
  cands = expand_candidates(state, llm, k=3)
  best = max(cands, key=lambda a: score_action(state, a, scorer))

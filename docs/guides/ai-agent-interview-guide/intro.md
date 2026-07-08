@@ -32,12 +32,12 @@ aside: true
 | 06-面试问答集 | 项目面试问答 | 100+ 道项目面试题及 STAR 回答 |
 
 实战项目
-     版本                        技术栈                           目标人群
- Python     FastAPI + LangChain + Milvus + Redis         AI/算法岗、Python 后
- 版                                                       端
- Java 版     Spring Boot 3 + Spring AI + MyBatis Plus +   Java 后端开发
-            Milvus
- Go 版       Gin + 自研框架 + Milvus + Redis                  Go 后端、云原生岗
+
+| 版本 | 技术栈 | 目标人群 |
+| --- | --- | --- |
+| Python 版 | FastAPI + LangChain + Milvus + Redis | AI/算法岗、Python 后端 |
+| Java 版 | Spring Boot 3 + Spring AI + MyBatis Plus + Milvus | Java 后端开发 |
+| Go 版 | Gin + 自研框架 + Milvus + Redis | Go 后端、云原生岗 |
 
 快速开始
 
@@ -115,7 +115,4 @@ go build -o agent-server ./cmd/server
 | 多智能体 | 协作模式、通信机制、冲突解决 | 20 题 |
 | 大模型基础 | Transformer、Attention、KV Cache、LoRA、RLHF | 28 题 |
 | 工程化实践 | 熔断器、Token 优化、可观测性、部署 | 29+ 题 |
-
-Prompt 工程   CoT、Few-shot、ReAct 模板、注入防御                   28 题
-
-```
+| Prompt 工程 | CoT、Few-shot、ReAct 模板、注入防御 | 28 题 |

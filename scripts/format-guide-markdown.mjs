@@ -7,8 +7,9 @@ const STANDALONE_LANG_RE = new RegExp(`^\\s{6,}(${LANGS})\\s*$`, 'i')
 const SECTION_RE = /^#{1,4}\s/
 const Q_RE = /^\*\*Q\d+[：:]/
 const ASCII_RE = /[┌┐└┘│─├┤▼►◄═╔╗╚╝║]/
-const TABLE_HEADER_RE = /维度|对比项|特性|框架|维度\s/
-const ROW_LABEL_RE = /^(控制|工具|状态|适用|流|维度|对比|特性|模块|优点|缺点)/
+const TABLE_HEADER_RE =
+  /维度|对比项|特性|框架|序号|模块|文件|核心|面试|目录|版本|技术栈|STAR|字母|类别|格式|指标|场景|索引|模型|ChatBot|错误类型|要\s/i
+const ROW_LABEL_RE = /^(控制|工具|状态|适用|流|维度|对比|特性|模块|优点|缺点|S|T|A|R)$/
 const PROSE_START_RE =
   /^(解析要点|设计要点|下面是一|本质区别|若采用|Few-shot|面试|注意|总结|说明|推荐|常见|典型|例如|比如|因此|所以|综上)/
 const CODE_LINE_RE =
@@ -57,6 +58,7 @@ function isCodeLikeLine(line) {
 
 function isTableStart(line) {
   const cols = splitTableCols(line)
+  if (cols.length >= 3 && TABLE_HEADER_RE.test(line)) return true
   if (cols.length >= 3 && TABLE_HEADER_RE.test(cols[0])) return true
   if (cols.length >= 3 && /ChatBot|LLM Chain|Agent|ReAct|LangGraph/i.test(line)) return true
   return false
@@ -69,6 +71,117 @@ function looksLikeCodeLine(line) {
   if (/[=(){}[\];]|->|#\s+\w|\w+\(/.test(t)) return true
   if (/^\s{2,}\S/.test(line) && /[:=]|->|→/.test(t)) return true
   return false
+}
+
+function isMarkdownTableLine(line) {
+  const t = line.trim()
+  return /^\|.+\|$/.test(t) && t.includes('|')
+}
+
+function isMarkdownTableSeparator(line) {
+  return /^\|[\s\-:|]+\|$/.test(line.trim())
+}
+
+function tryExtractMarkdownTable(lines, start) {
+  if (!isMarkdownTableLine(lines[start])) return null
+  const block = [lines[start]]
+  let i = start + 1
+  while (i < lines.length) {
+    const line = lines[i]
+    if (isMarkdownTableLine(line) || isMarkdownTableSeparator(line)) {
+      block.push(line)
+      i++
+      continue
+    }
+    break
+  }
+  if (block.length < 2) return null
+  return { md: block.join('\n'), next: i }
+}
+
+function isDataRowStart(line) {
+  return /^\s*\d{2}\s/.test(line)
+}
+
+function isStarRowStart(line) {
+  return /^\s*[STARS]\s{2,}\S/.test(line.trim())
+}
+
+function isNamedModuleRow(line) {
+  const cols = splitTableCols(line)
+  if (cols.length < 3) return false
+  return /^(基础概念|核心框架|RAG|工具调用|记忆系统|多智能体|大模型|工程化|Prompt|Python|Java|Go|\d{2}-)/.test(
+    cols[0]
+  )
+}
+
+function isTableRowStart(line) {
+  if (isDataRowStart(line)) return true
+  if (isStarRowStart(line)) return true
+  if (isNamedModuleRow(line)) return true
+  return isTableRowLine(line)
+}
+
+function isHeaderContinuation(line, rows) {
+  if (rows.length !== 1) return false
+  const cols = splitTableCols(line)
+  if (!cols.length) return false
+  return cols.every((c) => c.length <= 2)
+}
+
+function isDataContinuation(line) {
+  if (isDataRowStart(line) || isStarRowStart(line) || isNamedModuleRow(line)) return false
+  const cols = splitTableCols(line)
+  if (!cols.length) return false
+  // 完整宽表格行（≥3 列）一定是新行，不是续行
+  if (cols.length >= 3) return false
+  if (/^\s{4,}/.test(line)) return true
+  if (cols.length <= 2 && cols.every((c) => c.length <= 4)) return true
+  return false
+}
+
+function mergeColsIntoRow(row, cols, offset = 0) {
+  for (let j = 0; j < cols.length; j++) {
+    const idx = offset + j
+    while (row.length <= idx) row.push('')
+    row[idx] = (row[idx] + cols[j]).replace(/\s+/g, '')
+  }
+}
+
+function mergeRowContinuation(last, cols, line) {
+  if (cols.length === 2 && cols[0].length <= 2 && cols[1].length <= 4) {
+    if (/^\s{4,}/.test(line) && !ROW_LABEL_RE.test(cols[0])) {
+      if (last[1] !== undefined) last[1] = (last[1] + cols[0]).replace(/\s+/g, '')
+      if (last.length > 3 && cols[1]) last[3] = (last[3] + cols[1]).replace(/\s+/g, '')
+      else if (cols[1] && last[2] !== undefined) last[2] = (last[2] + cols[1]).replace(/\s+/g, '')
+    } else {
+      last[0] = (last[0] + cols[0]).replace(/\s+/g, '')
+      if (last.length > 2 && cols[1]) last[2] = (last[2] + cols[1]).replace(/\s+/g, '')
+      else if (last[1] !== undefined) last[1] = (last[1] + cols[1]).replace(/\s+/g, '')
+    }
+    return
+  }
+
+  if (cols.length === 1) {
+    let targetIdx = last.length - 1
+    for (let k = last.length - 1; k >= 0; k--) {
+      if (last[k] && !/\d+\s*题$/.test(last[k])) {
+        targetIdx = k
+        break
+      }
+    }
+    last[targetIdx] = (last[targetIdx] + cols[0]).replace(/\s+/g, '')
+    return
+  }
+
+  const numericFirst = /^\d{2}$/.test(String(last[0] || '').trim())
+  const offset =
+    numericFirst && (cols[0].length <= 3 || /^\s{4,}/.test(line))
+      ? 1
+      : /^[STARS]$/.test(String(last[0] || '').trim())
+        ? 1
+        : 0
+  mergeColsIntoRow(last, cols, offset)
 }
 
 function isTableRowLine(line) {
@@ -85,14 +198,7 @@ function isTableRowLine(line) {
 }
 
 function isTableWrapLine(line) {
-  const cols = splitTableCols(line)
-  if (!cols.length) return false
-  if (looksLikeCodeLine(line)) return false
-  if (cols.length >= 3) return false
-  if (cols.every((c) => c.length <= 4)) return true
-  if (cols.length === 1 && cols[0].length <= 6) return true
-  if (/^\s{4,}/.test(line) && cols.length <= 2) return true
-  return false
+  return isDataContinuation(line)
 }
 
 function mergeTableRows(rawRows) {
@@ -106,29 +212,18 @@ function mergeTableRows(rawRows) {
       continue
     }
 
-    if (isTableWrapLine(line)) {
-      const last = rows[rows.length - 1]
-      if (cols.length === 2 && cols[0].length <= 2 && cols[1].length <= 4) {
-        if (/^\s{4,}/.test(line) && !ROW_LABEL_RE.test(cols[0])) {
-          if (last[1] !== undefined) last[1] = (last[1] + cols[0]).replace(/\s+/g, '')
-          if (last.length > 3 && cols[1]) last[3] = (last[3] + cols[1]).replace(/\s+/g, '')
-          else if (cols[1] && last[2] !== undefined) last[2] = (last[2] + cols[1]).replace(/\s+/g, '')
-        } else {
-          last[0] = (last[0] + cols[0]).replace(/\s+/g, '')
-          if (last.length > 2 && cols[1]) last[2] = (last[2] + cols[1]).replace(/\s+/g, '')
-          else if (last[1] !== undefined) last[1] = (last[1] + cols[1]).replace(/\s+/g, '')
-        }
-      } else if (cols.length === 1) {
-        const idx = last.length - 1
-        last[idx] = (last[idx] + cols[0]).replace(/\s+/g, '')
-      } else {
-        for (let j = 0; j < cols.length; j++) {
-          const idx = last.length - cols.length + j
-          if (idx >= 0 && idx < last.length) {
-            last[idx] = (last[idx] + cols[j]).replace(/\s+/g, '')
-          }
-        }
-      }
+    if (isHeaderContinuation(line, rows)) {
+      mergeColsIntoRow(rows[0], cols, 0)
+      continue
+    }
+
+    if (isDataContinuation(line) || isTableWrapLine(line)) {
+      mergeRowContinuation(rows[rows.length - 1], cols, line)
+      continue
+    }
+
+    if (isTableRowStart(line)) {
+      rows.push([...cols])
       continue
     }
 
@@ -159,7 +254,8 @@ function rowsToMarkdownTable(rows) {
 }
 
 function tryExtractTable(lines, start) {
-  if (!isTableStart(lines[start]) && !isTableRowLine(lines[start])) return null
+  if (isMarkdownTableLine(lines[start])) return null
+  if (!isTableStart(lines[start]) && !isTableRowStart(lines[start])) return null
 
   const rawRows = [lines[start]]
   let i = start + 1
@@ -172,7 +268,13 @@ function tryExtractTable(lines, start) {
     if (STANDALONE_LANG_RE.test(line)) break
     if (isProseLine(line)) break
     if (isAsciiLine(line)) break
-    if (isTableRowLine(line) || isTableWrapLine(line)) {
+    if (isMarkdownTableLine(line)) break
+    if (
+      isTableRowStart(line) ||
+      isDataContinuation(line) ||
+      (rawRows.length === 1 && isHeaderContinuation(line, [[]])) ||
+      isTableRowLine(line)
+    ) {
       rawRows.push(line)
       i++
       continue
@@ -313,6 +415,13 @@ export function formatGuideMarkdown(text) {
     if (line.trim().startsWith('```') || line.includes('class="guide-')) {
       out.push(line)
       i++
+      continue
+    }
+
+    const mdTable = tryExtractMarkdownTable(lines, i)
+    if (mdTable) {
+      out.push('', mdTable.md, '')
+      i = mdTable.next
       continue
     }
 

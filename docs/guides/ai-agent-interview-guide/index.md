@@ -23,8 +23,8 @@ aside: true
 <GuideChapterGrid
   base="/guides/ai-agent-interview-guide/"
   :chapters="[
-    { slug: 'intro', title: '00 · 从零到 Offer', desc: '约 3.1k 字' },
-    { slug: 'interview-toc', title: '面试八股文 · 总目录', desc: '约 1.9k 字' },
+    { slug: 'intro', title: '00 · 从零到 Offer', desc: '约 2.7k 字' },
+    { slug: 'interview-toc', title: '面试八股文 · 总目录', desc: '约 1.4k 字' },
     { slug: 'mod-01-basics', title: '01 · Agent 基础概念', desc: '约 11k 字' },
     { slug: 'mod-02-frameworks', title: '02 · 核心框架', desc: '约 23k 字' },
     { slug: 'mod-03-rag', title: '03 · RAG 技术', desc: '约 24k 字' },
