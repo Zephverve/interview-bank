@@ -161,11 +161,9 @@ PostgreSQL · Docker · OTel
  型推理（如实调整）。
 
 一句话技术栈：
-
-```text
-Java 17 · Spring Boot 3 · WebFlux/SSE · OpenFeign · Resilience4j ·
-Elasticsearch · Redis · PostgreSQL · K8s
-```
+                                                                          text
+ Java 17 · Spring Boot 3 · WebFlux/SSE · OpenFeign · Resilience4j ·
+ Elasticsearch · Redis · PostgreSQL · K8s
 
 ```
 

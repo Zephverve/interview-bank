@@ -68,40 +68,34 @@ Python 版（推荐首选）：
   uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Java 版：
-
-```bash
-cd project-java
-mvn clean package -DskipTests
-java -jar target/agent-platform-1.0.0.jar
-```
+                                                                  bash
+  cd project-java
+  mvn clean package -DskipTests
+  java -jar target/agent-platform-1.0.0.jar
 
 Go 版：
-
-```bash
-cd project-go
-go build -o agent-server ./cmd/server
-./agent-server
-```
+                                                                  bash
+  cd project-go
+  go build -o agent-server ./cmd/server
+  ./agent-server
 
 技术架构概览
 本项目实现了一个企业级智能客服/知识助手 Agent 平台，核心架构：
 
-```text
-用户请求 → API 网关 → 意图识别 → Agent 编排器
-                                               （思考-行动-观察循环）
-                                 ├── ReAct Agent
-                                 ├── 规划 Agent（任务分解与执行）
-                                 ├── RAG Agent（知识检索与生成）
-                                 └── 反思 Agent（质量校验）
+  用户请求 → API 网关 → 意图识别 → Agent 编排器
+                                                   （思考-行动-观察循环）
+                                     ├── ReAct Agent
+                                     ├── 规划 Agent（任务分解与执行）
+                                     ├── RAG Agent（知识检索与生成）
+                                     └── 反思 Agent（质量校验）
 
-支撑层：
-├── 多路检索引擎（向量 + BM25 + 混合检索 + RRF 融合）
-├── 记忆系统（短期：Redis 滑窗 + 长期：向量数据库）
-├── 工具系统（搜索、计算器、数据库查询 + MCP）
-├── 模型路由（多模型候选 + 三态熔断器 + 自动降级）
-├── 全链路追踪（每步操作的 Trace 记录）
-└── 文档 ETL（PDF/Word 解析 → 分块 → 向量化 → 入库）
-```
+  支撑层：
+  ├── 多路检索引擎（向量 + BM25 + 混合检索 + RRF 融合）
+  ├── 记忆系统（短期：Redis 滑窗 + 长期：向量数据库）
+  ├── 工具系统（搜索、计算器、数据库查询 + MCP）
+  ├── 模型路由（多模型候选 + 三态熔断器 + 自动降级）
+  ├── 全链路追踪（每步操作的 Trace 记录）
+  └── 文档 ETL（PDF/Word 解析 → 分块 → 向量化 → 入库）
 
 面试八股文速览
 

@@ -27,12 +27,9 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
 
 #### 1. 与「普通 LLM 单次调用」的区别
 
-```text
- 普通调用：输入 Prompt → 模型输出文本，没有与外部环境闭环。
- Agent：输出往往是 「下一步动作」（例如：调用某工具、更新记忆、结束），环境返回
- Observation（观察结果），再进入下一轮推理，形成 多轮控制循环。
-```
-
+     普通调用：输入 Prompt → 模型输出文本，没有与外部环境闭环。
+     Agent：输出往往是 「下一步动作」（例如：调用某工具、更新记忆、结束），环境返回
+     Observation（观察结果），再进入下一轮推理，形成 多轮控制循环。
 #### 2. 自主决策能力体现在哪里
 
      在动作空间中选下一步（选哪个工具、传什么参数、是否结束）。
@@ -40,13 +37,10 @@ AI Agent（智能体）可以类比为：一位能上网、能记笔记、会拆
      在失败时重试、换策略或请求人工介入（视系统设计而定）。
 #### 3. 核心循环（典型 ReAct / Tool-use 范式）
 
-```text
-抽象为：Thought（推理）→ Action（行动）→ Observation（观察）→ … → Final
-Answer。
-实现上常由「编排层（Orchestrator）」驱动：解析模型输出、执行工具、把结果写回上下文，
-直到满足停止条件。
-```
-
+   抽象为：Thought（推理）→ Action（行动）→ Observation（观察）→ … → Final
+   Answer。
+   实现上常由「编排层（Orchestrator）」驱动：解析模型输出、执行工具、把结果写回上下文，
+   直到满足停止条件。
 ### 1.3 面试问题（Q）与标准答案（A）
 
 <div class="guide-qa">
@@ -76,21 +70,18 @@ Answer。
 ### 1.5 代码示例：最小「思考—行动—观察」循环（Python 伪代码）
 
 ```python
-
-```python
  def run_agent(user_goal: str, tools: dict, llm, max_steps: int = 8):
- messages = [{"role": "system", "content": "  你是可调用工具的 Agent。"},
-            {"role": "user", "content": user_goal}]
- for _ in range(max_steps):
-    plan = llm.chat(messages)   #模型决定：结束 or 调用某工具
-    action = parse_tool_call(plan) # 从模型输出解析结构化动作
-    if action.name == "finish":
-        return action.args["answer"]
-    obs = tools[action.name](**action.args)
-    messages.append({"role": "assistant", "content": plan})
-    messages.append({"role": "user", "content": f" 工具结果：{obs}"})
- return "超过最大步数，未完成。"
-```
+     messages = [{"role": "system", "content": "  你是可调用工具的 Agent。"},
+                {"role": "user", "content": user_goal}]
+     for _ in range(max_steps):
+        plan = llm.chat(messages)   #模型决定：结束 or 调用某工具
+        action = parse_tool_call(plan) # 从模型输出解析结构化动作
+        if action.name == "finish":
+            return action.args["answer"]
+        obs = tools[action.name](**action.args)
+        messages.append({"role": "assistant", "content": plan})
+        messages.append({"role": "user", "content": f" 工具结果：{obs}"})
+     return "超过最大步数，未完成。"
 
 ```
 
@@ -142,54 +133,40 @@ Answer。
 <p class="guide-followup guide-followup-a"><span class="guide-followup-label">应对</span>单次检索再回答，偏「增强型 Chat」。若有多轮检索策略（查不到换查询、分解子问题、交叉验证），则具备 Agent 特征。名称不重要，讲清架构即可。</p>
 ### 2.5 架构差异图（文字描述）
 
- 用户]
- [
-
 ```text
- │
- ▼
- ┌──────────────────────────────────────┐
+[用户]
+   │
+   ▼
+┌──────────────────────────────────────┐
+│ ChatBot：对话管理 +（可选）知识检索        │
+│ 输出：自然语言回复                        │
+└──────────────────────────────────────┘
 ```
 
-       ：对话管理 +（可选）知识检索
-
 ```text
- │ ChatBot                          │
- │ 输出：自然语言回复                            │
- └──────────────────────────────────────┘
+[用户]
+   │
+   ▼
+┌───步骤1 ───►┌─── 步骤2 ───►┌─── 步骤3 ───► 输出
+│ LLM/解析    │ LLM/转换     │ 工具/API     │
+└─────────────┴─────────────┴──────────────┘
+            （控制流在代码中编排）
+            LLM Chain
 ```
 
- 用户]
- [
-
 ```text
- │
- ▼
- ┌───步骤1 ───►┌─── 步骤2 ───►┌─── 步骤3 ───► 输出
- │ LLM/解析    │ LLM/转换     │ 工具/API     │
- └─────────────┴─────────────┴──────────────┘
+[用户]
+   │
+   ▼
+┌──────────────────────────────────────┐
+│ Agent 编排器                          │
+│   loop: LLM规划 → 选工具 → 环境反馈     │
+│         → 写入记忆 → 直到终止条件          │
+└──────────────────────────────────────┘
+   │                  ▲
+   ▼                  │
+[工具/API/数据库/浏览器/代码执行环境]
 ```
-
-                   （控制流在代码中编排）
-           LLM Chain
-
- 用户]
- [
-
-```text
- │
- ▼
- ┌──────────────────────────────────────┐
- │ Agent   编排器                              │
- │   loop: LLM规划 → 选工具 → 环境反馈           │
- │         → 写入记忆 → 直到终止条件              │
- └──────────────────────────────────────┘
- │                  ▲
- ▼                  │
-```
-
- 工具/API/数据库/浏览器/代码执行环境]
- [
 
 ## 3. Agent 的核心组成
 
@@ -250,30 +227,27 @@ Answer。
 ### 3.5 代码示例：工具 Schema（OpenAI 风格示意）
 
 ```python
-
-```text
  tools = [
- {
-     "type": "function",
-     "function": {
-         "name": "search_kb",
-         "description": "     在公司知识库中按关键词搜索",
-         "parameters": {
-             "type": "object",
-             "properties": {
-                  "query": {"type": "string"},
-                  "top_k": {"type": "integer", "default": 5}
-             },
-             "required": ["query"]
+     {
+         "type": "function",
+         "function": {
+             "name": "search_kb",
+             "description": "     在公司知识库中按关键词搜索",
+             "parameters": {
+                 "type": "object",
+                 "properties": {
+                      "query": {"type": "string"},
+                      "top_k": {"type": "integer", "default": 5}
+                 },
+                 "required": ["query"]
+             }
          }
      }
- }
-```
-
  ]
 
-4. Agent 的工作流程
 ```
+
+### 4. Agent 的工作流程
 
 ### 4.1 概念解释
 
@@ -313,18 +287,14 @@ Answer。
 ### 4.5 代码示例：简单「任务清单」状态
 
 ```python
-
-```text
  state = {
- "goal": "  生成上季度销售报告",
- "todos": [
-      {"id": 1, "task": "拉取销售数据", "done": False},
-      {"id": 2, "task": "计算同比", "done": False},
-      {"id": 3, "task": "写成摘要", "done": False},
- ],
- "notes": []
-```
-
+     "goal": "  生成上季度销售报告",
+     "todos": [
+          {"id": 1, "task": "拉取销售数据", "done": False},
+          {"id": 2, "task": "计算同比", "done": False},
+          {"id": 3, "task": "写成摘要", "done": False},
+     ],
+     "notes": []
  }
 
 ```

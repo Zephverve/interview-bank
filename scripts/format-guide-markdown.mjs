@@ -23,13 +23,32 @@ export function splitTableCols(line) {
     .filter(Boolean)
 }
 
+function isDiagramLine(line) {
+  return /[┌┐└┘│─├┤▼▲►◄═╔╗╚╝║]/.test(line) || /^\s*[│▼▲]/.test(line)
+}
+
 function isAsciiLine(line) {
-  return ASCII_RE.test(line)
+  return isDiagramLine(line)
+}
+
+function isChineseProseLine(line) {
+  const t = line.trim()
+  if (!t) return false
+  const chinese = (t.match(/[\u4e00-\u9fff]/g) || []).length
+  if (chinese < 4) return false
+  const compact = t.replace(/\s/g, '')
+  if (chinese / compact.length < 0.2) return false
+  if (/[：；，。！？、]/.test(t)) return true
+  if ((t.includes('→') || t.includes('->')) && chinese >= 4) return true
+  if (/^[\u4e00-\u9fff]/.test(t) || /^\s{2,}[\u4e00-\u9fff]/.test(line)) return true
+  return false
 }
 
 function isFlowDiagramLine(line) {
   const t = line.trim()
-  return (t.includes('→') || t.includes('->')) && t.length < 120
+  if (!((t.includes('→') || t.includes('->')) && t.length < 120)) return false
+  const chinese = (t.match(/[\u4e00-\u9fff]/g) || []).length
+  return chinese < t.length * 0.25
 }
 
 function isProseLine(line) {
@@ -46,6 +65,7 @@ function isProseLine(line) {
 function isCodeLikeLine(line) {
   const t = line.trim()
   if (!t) return false
+  if (isChineseProseLine(line)) return false
   if (SECTION_RE.test(t)) return false
   if (Q_RE.test(t)) return false
   if (STANDALONE_LANG_RE.test(line)) return false
@@ -54,6 +74,19 @@ function isCodeLikeLine(line) {
   if (CODE_LINE_RE.test(line)) return true
   if (/^\s{2,}\S/.test(line) && /[:=]|->|→|\.\.|in |#|\{|\}/.test(t)) return true
   return false
+}
+
+function countCodeSignals(block) {
+  return block.filter((l) => {
+    const t = l.trim()
+    if (!t) return false
+    return (
+      /^(def |class |import |from |for |if |return |async |function |\w+\s*=\s*[\{\[])/.test(t) ||
+      /^\s*(def |class |import |for |if |return )/.test(l) ||
+      /"[\w_]+"\s*:/.test(l) ||
+      /^\s*[\{\[]/.test(l)
+    )
+  }).length
 }
 
 function isTableStart(line) {
@@ -377,21 +410,35 @@ function tryExtractIndentedCodeBlock(lines, start) {
   }
 
   if (block.length < 3) return null
+  const proseLines = block.filter((l) => isChineseProseLine(l)).length
+  const codeLines = countCodeSignals(block)
+  if (codeLines < 1 || proseLines >= codeLines) return null
   const lang = block.some((l) => /def |import |class /.test(l)) ? 'python' : 'text'
   return { md: '```' + lang + '\n' + block.join('\n').trimEnd() + '\n```', next: i }
 }
 
 function tryExtractAsciiBlock(lines, start) {
-  if (!isAsciiLine(lines[start])) return null
+  if (!isDiagramLine(lines[start]) && !/^\s*[│▼▲]/.test(lines[start])) return null
 
   const block = []
   let i = start
   while (i < lines.length) {
     const line = lines[i]
-    if (!line.trim()) break
     if (SECTION_RE.test(line.trim())) break
     if (Q_RE.test(line.trim())) break
-    if (isAsciiLine(line) || /^\s*[\[{(│─└┌]/.test(line)) {
+    if (isMarkdownTableLine(line)) break
+
+    if (!line.trim()) {
+      const j = i + 1
+      if (j < lines.length && (isDiagramLine(lines[j]) || /^\s{2,}[│▼▲┌└（(]/.test(lines[j]))) {
+        block.push('')
+        i++
+        continue
+      }
+      break
+    }
+
+    if (isDiagramLine(line) || /^\s*[\[{(│─└┌]/.test(line) || /^\s{2,}(LLM|Agent|ChatBot|控制流)/.test(line)) {
       block.push(line.replace(/^\s{2,4}/, ''))
       i++
       continue
@@ -408,11 +455,20 @@ export function formatGuideMarkdown(text) {
   const lines = text.split('\n')
   const out = []
   let i = 0
+  let inFence = false
 
   while (i < lines.length) {
     const line = lines[i]
+    const trimmed = line.trim()
 
-    if (line.trim().startsWith('```') || line.includes('class="guide-')) {
+    if (trimmed.startsWith('```')) {
+      inFence = !inFence
+      out.push(line)
+      i++
+      continue
+    }
+
+    if (inFence || line.includes('class="guide-')) {
       out.push(line)
       i++
       continue

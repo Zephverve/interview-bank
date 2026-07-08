@@ -120,66 +120,50 @@ aside: true
 
 下面示例展示：会话缓冲 + 滑动窗口 + tiktoken 计数（示意）。
 ```python
-
-```python
-from dataclasses import dataclass
-from typing import List, Dict, Literal
+  from dataclasses import dataclass
+  from typing import List, Dict, Literal
 
 import tiktoken
 
 Role = Literal["system", "user", "assistant"]
-```
 
 @dataclass
-
-```python
 class ChatMessage:
-role: Role
-content: str
+    role: Role
+    content: str
 
 class WindowedConversationMemory:
-"""滑动窗口    + Token预算（示意）。     """
+    """滑动窗口    + Token预算（示意）。     """
 
-def __init__(self, model: str = "gpt-4o", max_tokens: int = 3000,
-```
-
+    def __init__(self, model: str = "gpt-4o", max_tokens: int = 3000,
 window_messages: int = 20):
         self.max_tokens = max_tokens
         self.window_messages = window_messages
         # 不同模型请换对应      encoding
+        self.enc = tiktoken.encoding_for_model(model)
+        self.messages: List[ChatMessage] = []
 
-```python
-    self.enc = tiktoken.encoding_for_model(model)
-    self.messages: List[ChatMessage] = []
-
-def add(self, role: Role, content: str) -> None:
-    self.messages.append(ChatMessage(role=role, content=content))
-```
-
+    def add(self, role: Role, content: str) -> None:
+        self.messages.append(ChatMessage(role=role, content=content))
         # 先限制消息条数
         if len(self.messages) > self.window_messages:
             self.messages = self.messages[-self.window_messages :]
         # 再按  token  预算从尾部往前保留
         self._shrink_to_budget()
 
-```python
-def _count_tokens(self, messages: List[ChatMessage]) -> int:
-    text = "\n".join(f"{m.role}: {m.content}" for m in messages)
-    return len(self.enc.encode(text))
+    def _count_tokens(self, messages: List[ChatMessage]) -> int:
+        text = "\n".join(f"{m.role}: {m.content}" for m in messages)
+        return len(self.enc.encode(text))
 
-def _shrink_to_budget(self) -> None:
-    while self.messages and self._count_tokens(self.messages) >
-```
-
+    def _shrink_to_budget(self) -> None:
+        while self.messages and self._count_tokens(self.messages) >
 self.max_tokens:
             #  简单策略：丢弃最早一条（生产可改为优先丢             tool    大     ）
                                                         payload
             self.messages.pop(0)
 
-```python
-def as_openai_messages(self) -> List[Dict[str, str]]:
-    return [{"role": m.role, "content": m.content} for m in
-```
+    def as_openai_messages(self) -> List[Dict[str, str]]:
+        return [{"role": m.role, "content": m.content} for m in
 
  self.messages]
 
@@ -264,8 +248,6 @@ def as_openai_messages(self) -> List[Dict[str, str]]:
 
 下面用 内存版伪向量库演示流程；生产可替换为 FAISS、Milvus、Qdrant、pgvector 等。
 ```python
-
-```python
  from dataclasses import dataclass
  from typing import List, Optional, Dict, Any
  import math
@@ -273,113 +255,97 @@ def as_openai_messages(self) -> List[Dict[str, str]]:
  import hashlib
 
  def fake_embed(text: str, dim: int = 8) -> List[float]:
- """仅用于演示的确定性伪向量；真实项目请调用                           。
-                                      embedding API """
- h = hashlib.sha256(text.encode("utf-8")).digest()
- vec = [((h[i % len(h)] + i) % 97) / 97.0 for i in range(dim)]
- norm = math.sqrt(sum(x * x for x in vec)) or 1.0
- return [x / norm for x in vec]
+     """仅用于演示的确定性伪向量；真实项目请调用                           。
+                                          embedding API """
+     h = hashlib.sha256(text.encode("utf-8")).digest()
+     vec = [((h[i % len(h)] + i) % 97) / 97.0 for i in range(dim)]
+     norm = math.sqrt(sum(x * x for x in vec)) or 1.0
+     return [x / norm for x in vec]
 
  def cosine_sim(a: List[float], b: List[float]) -> float:
- return sum(x * y for x, y in zip(a, b))
-```
+     return sum(x * y for x, y in zip(a, b))
 
  @dataclass
-
-```python
  class MemoryItem:
- id: str
- user_id: str
- text: str
- vector: List[float]
- importance: float # 0~1
- created_at: float
- last_accessed: float
+     id: str
+     user_id: str
+     text: str
+     vector: List[float]
+     importance: float # 0~1
+     created_at: float
+     last_accessed: float
 
  class SimpleLongTermMemoryStore:
 
-   def __init__(self, dim: int = 8):
-       self.dim = dim
-       self.items: Dict[str, MemoryItem] = {}
+       def __init__(self, dim: int = 8):
+           self.dim = dim
+           self.items: Dict[str, MemoryItem] = {}
 
-   def add(self, user_id: str, text: str, importance: float = 0.5) ->
-```
-
+       def add(self, user_id: str, text: str, importance: float = 0.5) ->
 str:
         mem_id = hashlib.md5(f"{user_id}:{text}:
 {time.time()}".encode("utf-8")).hexdigest()[:12]
+           now = time.time()
+           vec = fake_embed(text, self.dim)
+           self.items[mem_id] = MemoryItem(
+               id=mem_id,
+               user_id=user_id,
+               text=text,
+               vector=vec,
+               importance=max(0.0, min(1.0, importance)),
+               created_at=now,
+               last_accessed=now,
+           )
+           return mem_id
 
-```python
-       now = time.time()
-       vec = fake_embed(text, self.dim)
-       self.items[mem_id] = MemoryItem(
-           id=mem_id,
-           user_id=user_id,
-           text=text,
-           vector=vec,
-           importance=max(0.0, min(1.0, importance)),
-           created_at=now,
-           last_accessed=now,
-       )
-       return mem_id
+       def delete(self, mem_id: str) -> None:
+           self.items.pop(mem_id, None)
 
-   def delete(self, mem_id: str) -> None:
-       self.items.pop(mem_id, None)
+       def update_text(self, mem_id: str, new_text: str) -> None:
+           if mem_id not in self.items:
+               return
+           it = self.items[mem_id]
+           self.items[mem_id] = MemoryItem(
+               id=it.id,
+               user_id=it.user_id,
+               text=new_text,
+               vector=fake_embed(new_text, self.dim),
+               importance=it.importance,
+               created_at=it.created_at,
+               last_accessed=time.time(),
+           )
 
-   def update_text(self, mem_id: str, new_text: str) -> None:
-       if mem_id not in self.items:
-           return
-       it = self.items[mem_id]
-       self.items[mem_id] = MemoryItem(
-           id=it.id,
-           user_id=it.user_id,
-           text=new_text,
-           vector=fake_embed(new_text, self.dim),
-           importance=it.importance,
-           created_at=it.created_at,
-           last_accessed=time.time(),
-       )
+       def search(
+           self,
 
-   def search(
-       self,
-
-     user_id: str,
-     query: str,
-     top_k: int = 5,
-     decay_lambda: float = 2e-7, #       时间衰减系数（示意）
- ) -> List[tuple[float, MemoryItem]]:
-     q = fake_embed(query, self.dim)
-     now = time.time()
-     scored: List[tuple[float, MemoryItem]] = []
-     for it in self.items.values():
-         if it.user_id != user_id:
-             continue
-         rel = cosine_sim(q, it.vector)
-         age_sec = max(0.0, now - it.last_accessed)
-         recency = math.exp(-decay_lambda * age_sec)   # decay_lambda   越
-```
-
+         user_id: str,
+         query: str,
+         top_k: int = 5,
+         decay_lambda: float = 2e-7, #       时间衰减系数（示意）
+     ) -> List[tuple[float, MemoryItem]]:
+         q = fake_embed(query, self.dim)
+         now = time.time()
+         scored: List[tuple[float, MemoryItem]] = []
+         for it in self.items.values():
+             if it.user_id != user_id:
+                 continue
+             rel = cosine_sim(q, it.vector)
+             age_sec = max(0.0, now - it.last_accessed)
+             recency = math.exp(-decay_lambda * age_sec)   # decay_lambda   越
  大，遗忘越快
              # 综合得分：相关性 重要性 近期性（权重可调）
                              +       +
-
-```text
-         score = 0.6 * rel + 0.2 * it.importance + 0.2 * recency
-         scored.append((score, it))
-     scored.sort(key=lambda x: x[0], reverse=True)
-     return scored[:top_k]
+             score = 0.6 * rel + 0.2 * it.importance + 0.2 * recency
+             scored.append((score, it))
+         scored.sort(key=lambda x: x[0], reverse=True)
+         return scored[:top_k]
 
  store = SimpleLongTermMemoryStore()
  mid = store.add("u1", "用户偏好：沟通风格简洁。", importance=0.9)
-```
-
  store.update_text(mid, "用户偏好：沟通风格简洁；禁用表情。")
-
-```text
  hits = store.search("u1", "他喜欢怎么说话？")
  for s, it in hits:
- print(round(s, 4), it.text)
-```
+     print(round(s, 4), it.text)
 
 ```
 
@@ -437,29 +403,26 @@ str:
   机制」比背 API 更重要。
 ```python
   # pip install langchain langchain-openai
+  from langchain.memory import ConversationSummaryMemory
+  from langchain_openai import ChatOpenAI
+  import os
 
-```python
-from langchain.memory import ConversationSummaryMemory
-from langchain_openai import ChatOpenAI
-import os
+  llm = ChatOpenAI(model="gpt-4o-mini", temperature=0,
+  api_key=os.environ.get("OPENAI_API_KEY"))
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0,
-api_key=os.environ.get("OPENAI_API_KEY"))
+  memory = ConversationSummaryMemory(
+      llm=llm,
+      memory_key="history",
+      return_messages=False, #  返回字符串摘要；True 则消息列表
+  )
 
-memory = ConversationSummaryMemory(
-  llm=llm,
-  memory_key="history",
-  return_messages=False, #  返回字符串摘要；True 则消息列表
-)
-
-#模拟多轮写入
-memory.save_context({"input": "我在做电商客服项目。"}, {"output": "好的，需要我
-帮你梳理架构吗？     "})
-memory.save_context({"input": "我们使用向量库存 FAQ。"}, {"output": "明白，可再
-加一层重排。"})
-print(memory.buffer) #当前累积的摘要文本（不同版本字段名可能为
-moving_summary_buffer等）
-```
+  #模拟多轮写入
+  memory.save_context({"input": "我在做电商客服项目。"}, {"output": "好的，需要我
+  帮你梳理架构吗？     "})
+  memory.save_context({"input": "我们使用向量库存 FAQ。"}, {"output": "明白，可再
+  加一层重排。"})
+  print(memory.buffer) #当前累积的摘要文本（不同版本字段名可能为
+  moving_summary_buffer等）
 
 若你使用的版本将 ConversationSummaryMemory 标为 deprecated，面试话术可以是：「我会改
 用 MessagesPlaceholder + 显式 summarize 链，或迁移到 LangGraph 状态里的 summary 字
@@ -503,45 +466,31 @@ moving_summary_buffer等）
 ### 5.5 代码示例（Python）：情景与语义的分表模型
 
 ```python
-
-```python
  from dataclasses import dataclass
  from typing import List, Optional
-```
 
  @dataclass
-
-```python
  class EpisodicRecord:
- """情景：具体发生过什么（个人化、带时间）。"""
- id: str
- user_id: str
- ts: float
- summary: str            #   例如「2026-04-01 用户要求关闭自动续费」
- embedding_id: str       #   指向向量库中的向量
-```
-
+     """情景：具体发生过什么（个人化、带时间）。"""
+     id: str
+     user_id: str
+     ts: float
+     summary: str            #   例如「2026-04-01 用户要求关闭自动续费」
+     embedding_id: str       #   指向向量库中的向量
  @dataclass
-
-```python
  class SemanticFact:
- """语义：可共享或较稳定的事实/规则。"""
- key: str      # 例如 "billing.autorenew.policy"
- value: str
-```
-
+     """语义：可共享或较稳定的事实/规则。"""
+     key: str      # 例如 "billing.autorenew.policy"
+     value: str
      source: str             #   文档版本、政策编号
-
-```python
- confidence: float
+     confidence: float
 
  def route_query(intent: str) -> str:
- """示意：不同意图走不同记忆库（真实系统可用分类器）。"""
- if "上次         刚才
-        " in intent or "    " in intent:
-     return "episodic"
- return "semantic"
-```
+     """示意：不同意图走不同记忆库（真实系统可用分类器）。"""
+     if "上次         刚才
+            " in intent or "    " in intent:
+         return "episodic"
+     return "semantic"
 
 6. 记忆检索策略
 ```
@@ -603,54 +552,49 @@ moving_summary_buffer等）
 ### 6.4 代码示例（Python）：三因子打分骨架
 
 ```python
-
-```python
  from dataclasses import dataclass
  import math
  import time
  from typing import List
-```
 
  @dataclass
 
-```python
 class Mem:
-id: str
-text: str
-importance: float       # 0~1
-last_access_ts: float   # 上次被访问/发生时间
+    id: str
+    text: str
+    importance: float       # 0~1
+    last_access_ts: float   # 上次被访问/发生时间
 def norm_minmax(values: List[float]) -> List[float]:
-if not values:
-    return []
-lo, hi = min(values), max(values)
-if hi - lo < 1e-9:
-    return [1.0 for _ in values]
-return [(v - lo) / (hi - lo) for v in values]
+    if not values:
+        return []
+    lo, hi = min(values), max(values)
+    if hi - lo < 1e-9:
+        return [1.0 for _ in values]
+    return [(v - lo) / (hi - lo) for v in values]
 
 def generative_agent_style_scores(
-rel_scores: List[float],
-memories: List[Mem],
-w_rel: float = 0.5,
-w_rec: float = 0.3,
-w_imp: float = 0.2,
-decay_per_hour: float = 0.2,
+    rel_scores: List[float],
+    memories: List[Mem],
+    w_rel: float = 0.5,
+    w_rec: float = 0.3,
+    w_imp: float = 0.2,
+    decay_per_hour: float = 0.2,
 ) -> List[float]:
-"""演示：相关性 指数近期性 重要性 的加权融合。"""
-              +          +
-now = time.time()
-recency_raw = []
-for m in memories:
-    hours = max(0.0, (now - m.last_access_ts) / 3600.0)
-    recency_raw.append(math.exp(-decay_per_hour * hours))
+    """演示：相关性 指数近期性 重要性 的加权融合。"""
+                  +          +
+    now = time.time()
+    recency_raw = []
+    for m in memories:
+        hours = max(0.0, (now - m.last_access_ts) / 3600.0)
+        recency_raw.append(math.exp(-decay_per_hour * hours))
 
-rel_n = norm_minmax(rel_scores)
-rec_n = norm_minmax(recency_raw)
-imp_n = [m.importance for m in memories]   #   已 0~1
-out = []
-for i in range(len(memories)):
-    out.append(w_rel * rel_n[i] + w_rec * rec_n[i] + w_imp * imp_n[i])
-return out
-```
+    rel_n = norm_minmax(rel_scores)
+    rec_n = norm_minmax(recency_raw)
+    imp_n = [m.importance for m in memories]   #   已 0~1
+    out = []
+    for i in range(len(memories)):
+        out.append(w_rel * rel_n[i] + w_rec * rec_n[i] + w_imp * imp_n[i])
+    return out
 
 7. 高级记忆框架
 ```
@@ -674,15 +618,12 @@ return out
   + 调度」一脉，名称随论文/开源项目演进，面试重点在思想而非单一产品版本。
 ### 7.2.2 Mem0 框架
 
-```text
-定位：面向应用的 记忆层（memory layer），把「从对话中抽取可复用记忆 → 更新 → 检索」
-做成可集成组件，常与 向量检索、图结构、用户画像 组合使用。
-价值：把「写记忆」从纯 prompt 技巧下沉为 可复用模块，便于在多应用间复用同一套写入与
-冲突处理策略。
-面试表述：Mem0 偏 工程化记忆中间件；与 MemGPT 的「OS 分页」可互补——前者管 抽取
-与存储管线，后者管 上下文与外存之间的搬运策略。
-```
-
+  定位：面向应用的 记忆层（memory layer），把「从对话中抽取可复用记忆 → 更新 → 检索」
+  做成可集成组件，常与 向量检索、图结构、用户画像 组合使用。
+  价值：把「写记忆」从纯 prompt 技巧下沉为 可复用模块，便于在多应用间复用同一套写入与
+  冲突处理策略。
+  面试表述：Mem0 偏 工程化记忆中间件；与 MemGPT 的「OS 分页」可互补——前者管 抽取
+  与存储管线，后者管 上下文与外存之间的搬运策略。
 ### 7.2.3 记忆的反思与整合
 
   反思（Reflection）：周期性让模型回顾轨迹，生成更高层见解（「我哪里做错了」「用户真正想
@@ -715,16 +656,13 @@ return out
 ### 7.4 代码示例（Python）：极简「反思摘要」
 
 ```python
-
-```python
-def reflect(transcript: str, llm_complete) -> str:
-  prompt = (
-      "你是反思模块。请基于以下轨迹输出3条高层见解，"
-      "用中文条目列出：     \n"
-      f"{transcript}\n"
-  )
-  return llm_complete(prompt)
-```
+  def reflect(transcript: str, llm_complete) -> str:
+      prompt = (
+          "你是反思模块。请基于以下轨迹输出3条高层见解，"
+          "用中文条目列出：     \n"
+          f"{transcript}\n"
+      )
+      return llm_complete(prompt)
 
   # llm_complete   为调用大模型的函数占位
 

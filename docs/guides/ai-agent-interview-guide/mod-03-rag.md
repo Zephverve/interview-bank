@@ -81,27 +81,21 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 
  [离线流水线]
  原始文件(PDF/Word/HTML/MD/...)
-
-```text
-→ 解析与清洗(去噪、统一编码、元数据)
-→ 结构化分块(Chunking，含重叠/父子块可选)
-→ 文本嵌入(Embedding)
-→ 写入向量索引(+ 可选倒排索引/BM25)
-→ (可选) 版本管理与增量更新
-```
+    → 解析与清洗(去噪、统一编码、元数据)
+    → 结构化分块(Chunking，含重叠/父子块可选)
+    → 文本嵌入(Embedding)
+    → 写入向量索引(+ 可选倒排索引/BM25)
+    → (可选) 版本管理与增量更新
 
  [在线问答]
  用户 Query
-
-```text
-→ (可选) Query 改写 / 子问题分解 / HyDE
-→ 检索：向量相似度 Top-K (+ 可选 BM25 混合)
-→ (可选) Cross-Encoder 重排序
-→ (可选) MMR 去冗余
-→ 拼装 Prompt：系统指令 + 检索上下文 + 用户问题
-→ LLM 生成答案
-→ (可选) 引用出处、拒答策略、日志与评估回流
-```
+    → (可选) Query 改写 / 子问题分解 / HyDE
+    → 检索：向量相似度 Top-K (+ 可选 BM25 混合)
+    → (可选) Cross-Encoder 重排序
+    → (可选) MMR 去冗余
+    → 拼装 Prompt：系统指令 + 检索上下文 + 用户问题
+    → LLM 生成答案
+    → (可选) 引用出处、拒答策略、日志与评估回流
 
 面试 Q4：离线与在线的职责分别是什么？
 标准答案 A： 离线负责 把非结构化知识变成可检索的索引（解析、分块、向量化、建索引、更
@@ -113,31 +107,24 @@ RAG 通过 可检索的外部证据 提供「当下可查」的依据，让模�
 Key 与错误处理）。
 ```python
  #   最小概念示例：Embedding + 向量检索 + LLM（需安装 openai 等依赖）
-
-```python
  from typing import List
 
  def embed_texts(texts: List[str], model: str = "text-embedding-3-small") -
-```
-
  > List[List[float]]:
      """将文本列表转为向量；此处用          OpenAI风格接口举例。     """
 
-```python
- import openai
- resp = openai.embeddings.create(model=model, input=texts)
- return [d.embedding for d in resp.data]
+     import openai
+     resp = openai.embeddings.create(model=model, input=texts)
+     return [d.embedding for d in resp.data]
 
  def cosine_sim(a: List[float], b: List[float]) -> float:
- import math
- dot = sum(x * y for x, y in zip(a, b))
- na = math.sqrt(sum(x * x for x in a))
- nb = math.sqrt(sum(y * y for y in b))
- return dot / (na * nb + 1e-8)
+     import math
+     dot = sum(x * y for x, y in zip(a, b))
+     na = math.sqrt(sum(x * x for x in a))
+     nb = math.sqrt(sum(y * y for y in b))
+     return dot / (na * nb + 1e-8)
 
  def naive_retrieve(query: str, chunks: List[str], top_k: int = 3) ->
-```
-
  List[str]:
      q = embed_texts([query])[0]
      scores = [(cosine_sim(q, embed_texts([c])[0]), c) for c in chunks]   #
@@ -236,32 +223,26 @@ SQL/结构化检索 或 专用表格问答模型 辅助。
  PII 脱敏（电话、身份证）按合规要求
 代码示例：基础清洗
 ```python
+  import re
+  import unicodedata
 
-```python
-import re
-import unicodedata
-
-def normalize_text(s: str) -> str:
-  s = unicodedata.normalize("NFKC", s)
-  s = s.replace("\u200b", "") #  零宽字符
-  s = re.sub(r"\s+", " ", s).strip()
-  return s
-```
+  def normalize_text(s: str) -> str:
+      s = unicodedata.normalize("NFKC", s)
+      s = s.replace("\u200b", "") #  零宽字符
+      s = re.sub(r"\s+", " ", s).strip()
+      return s
 
 代码示例：PyPDF / Unstructured（按需安装： pip install pypdf unstructured ）
                                                                    python
   # ---方式 ： A pypdf    读取纯文本  PDF ---
+  from pypdf import PdfReader
 
-```python
-from pypdf import PdfReader
-
-def extract_pdf_pypdf(path: str) -> str:
-  reader = PdfReader(path)
-  parts = []
-  for page in reader.pages:
-      parts.append(page.extract_text() or "")
-  return normalize_text("\n".join(parts))
-```
+  def extract_pdf_pypdf(path: str) -> str:
+      reader = PdfReader(path)
+      parts = []
+      for page in reader.pages:
+          parts.append(page.extract_text() or "")
+      return normalize_text("\n".join(parts))
 
   # ---方式 ： B Unstructured 分区（适合后续按类型路由）          ---
   # from unstructured.partition.auto import partition
@@ -340,84 +321,58 @@ LangChain 中常见：按 分隔符优先级 递归切分，例如 ["\n\n", "\n"
 后送入。
 代码示例：父子块数据结构（最小示意）
 ```python
-
-```python
  from dataclasses import dataclass
  from typing import List
-```
 
  @dataclass
-
-```python
  class ParentChunk:
- parent_id: str
- text: str
- children: List["ChildChunk"]
-```
+     parent_id: str
+     text: str
+     children: List["ChildChunk"]
 
  @dataclass
-
-```python
  class ChildChunk:
- child_id: str
- parent_id: str
-  text: str   #   小块，用于 embedding
-```
-
+     child_id: str
+     parent_id: str
+      text: str   #   小块，用于 embedding
  #   索引阶段：只对 ChildChunk.text 做 embed，payload 带 parent_id
  #   检索阶段：命中 child_id -> 查 ParentChunk.text 作为生成上下文
 
 3.8 代码示例：LangChain 各种 TextSplitter
 需安装： pip install langchain langchain-text-splitters
+                                                                            python
+  from langchain_text_splitters import (
+      CharacterTextSplitter,
+      RecursiveCharacterTextSplitter,
+         MarkdownHeaderTextSplitter,
+  )
 
-```python
-from langchain_text_splitters import (
-  CharacterTextSplitter,
-  RecursiveCharacterTextSplitter,
-     MarkdownHeaderTextSplitter,
-)
-
-text = "   第一段。\n\n第二段更长一些，用于演示递归分割。\n\n第三段。\n"
-```
-
+  text = "   第一段。\n\n第二段更长一些，用于演示递归分割。\n\n第三段。\n"
   # 1)   固定字符分块
-
-```text
-fixed = CharacterTextSplitter(separator="\n\n", chunk_size=40,
-chunk_overlap=5)
-print("Fixed:", fixed.split_text(text))
-```
+  fixed = CharacterTextSplitter(separator="\n\n", chunk_size=40,
+  chunk_overlap=5)
+  print("Fixed:", fixed.split_text(text))
 
   # 2)   递归字符分割（推荐作为默认基线）
-
-```text
-recursive = RecursiveCharacterTextSplitter(
-   chunk_size=60,
-   chunk_overlap=10,
-   separators=["\n\n", "\n", " ", ""],
-)
-print("Recursive:", recursive.split_text(text))
-```
+  recursive = RecursiveCharacterTextSplitter(
+       chunk_size=60,
+       chunk_overlap=10,
+       separators=["\n\n", "\n", " ", ""],
+  )
+  print("Recursive:", recursive.split_text(text))
 
   # 3) Markdown 按标题分块
-
-```text
-md = "# 总则 内容A\n\n## 细则\n内容B\n"
-         \n
-headers = [("#", "一级"), ("##", "二级")]
-md_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers)
-md_docs = md_splitter.split_text(md)
-print("MD docs metadata:", [d.metadata for d in md_docs])
-```
+  md = "# 总则 内容A\n\n## 细则\n内容B\n"
+             \n
+  headers = [("#", "一级"), ("##", "二级")]
+  md_splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers)
+  md_docs = md_splitter.split_text(md)
+  print("MD docs metadata:", [d.metadata for d in md_docs])
 
   # 4)   语义分块（需 embedding 模型；此处仅展示 API 思路）
-
-```python
-try:
-     from langchain_experimental.text_splitter import SemanticChunker
-     from langchain_openai import OpenAIEmbeddings
-```
-
+  try:
+         from langchain_experimental.text_splitter import SemanticChunker
+         from langchain_openai import OpenAIEmbeddings
       # embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
       # semantic_splitter = SemanticChunker(embeddings,
   breakpoint_threshold_type="percentile")
@@ -471,13 +426,9 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 代码示例：sentence-transformers（本地 BGE）
 ```python
  # pip install sentence-transformers
-
-```python
  from sentence_transformers import SentenceTransformer
 
  model = SentenceTransformer("BAAI/bge-large-zh-v1.5")
-```
-
  sentences = ["RAG 检索增强生成    ", "大模型需要外部知识库       "]
  emb = model.encode(sentences, normalize_embeddings=True)   #   归一化后余弦=点积
  print(emb.shape) # (2, dim)
@@ -537,21 +488,17 @@ Embedding 把离散文本映射为 固定维度的稠密向量，语义相近的
 
 代码示例：FAISS + sentence-transformers（最小示例）
 ```python
-
-```python
  import faiss
  import numpy as np
  from sentence_transformers import SentenceTransformer
 
  model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
  texts = ["条款 A", "条款      无关内容
-                   B", "      C"]
+                       B", "      C"]
  emb = model.encode(texts, normalize_embeddings=True).astype("float32")
  dim = emb.shape[1]
 
  index = faiss.IndexFlatIP(dim)   #   归一化后内积=余弦相似度
-```
-
  index.add(emb)
 
                     和 相关的查询"],
@@ -581,20 +528,17 @@ BM25 是经典 词频-逆文档频率 加权排序函数，擅长 精确词匹�
 BM25 分数 + 向量分数 线性加权或归一化后融合，兼顾语义与字面。
 代码思路（概念）
 ```python
-
-```python
  def min_max_norm(scores):
- s_min, s_max = min(scores), max(scores)
- if s_max == s_min:
-     return [1.0 for _ in scores]
- return [(s - s_min) / (s_max - s_min) for s in scores]
+     s_min, s_max = min(scores), max(scores)
+     if s_max == s_min:
+         return [1.0 for _ in scores]
+     return [(s - s_min) / (s_max - s_min) for s in scores]
 
  def hybrid_fuse(vec_scores, bm25_scores, alpha=0.5):
- v = min_max_norm(vec_scores)
+     v = min_max_norm(vec_scores)
 
-   b = min_max_norm(bm25_scores)
-   return [alpha * vi + (1 - alpha) * bi for vi, bi in zip(v, b)]
-```
+       b = min_max_norm(bm25_scores)
+       return [alpha * vi + (1 - alpha) * bi for vi, bi in zip(v, b)]
 
 ```
 
@@ -613,21 +557,18 @@ RRF（Reciprocal Rank Fusion）：不依赖原始分数尺度，把多路检索�
 路是 概率、或分数 不可比 时，RRF 更稳，且少调参（经典 (k=60)）。
 代码示例：RRF 多路排名融合
 ```python
+  from typing import Dict, List, Sequence
 
-```python
-from typing import Dict, List, Sequence
-
-def rrf_fuse(
-  ranked_lists: Sequence[Sequence[str]],
-  k: int = 60,
-) -> List[tuple[str, float]]:
-   """ranked_lists:多路检索结果，每路为         doc_id从优到劣的列表。      """
-   scores: Dict[str, float] = {}
-   for ranks in ranked_lists:
-       for rank, doc_id in enumerate(ranks, start=1):
-           scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
-   return sorted(scores.items(), key=lambda x: x[1], reverse=True)
-```
+  def rrf_fuse(
+      ranked_lists: Sequence[Sequence[str]],
+      k: int = 60,
+  ) -> List[tuple[str, float]]:
+       """ranked_lists:多路检索结果，每路为         doc_id从优到劣的列表。      """
+       scores: Dict[str, float] = {}
+       for ranks in ranked_lists:
+           for rank, doc_id in enumerate(ranks, start=1):
+               scores[doc_id] = scores.get(doc_id, 0.0) + 1.0 / (k + rank)
+       return sorted(scores.items(), key=lambda x: x[1], reverse=True)
 
   #   示例：向量路 Top-K 与 BM25 路 Top-K 的 doc_id 列表
 
@@ -697,14 +638,11 @@ Step-back 用 更抽象的问题 再检索 原理/背景类 段落。HyDE 更激
 Step-back 相对 克制（仍停留在问题空间）。实践中可 并行检索 后由重排裁决。
 代码示例：Step-back（两次检索拼上下文，示意）
 ```python
-
-```python
-def step_back_queries(user_question: str) -> tuple[str, str]:
-  """第二步可用    LLM 生成      ；此处用占位演示结构。
-                       abstract_q                  """
-  abstract_q = f"与下列问题相关的背景原理与定义是什么？             {user_question}"
-  return user_question, abstract_q
-```
+  def step_back_queries(user_question: str) -> tuple[str, str]:
+      """第二步可用    LLM 生成      ；此处用占位演示结构。
+                           abstract_q                  """
+      abstract_q = f"与下列问题相关的背景原理与定义是什么？             {user_question}"
+      return user_question, abstract_q
 
   # concrete_ctx = retriever.invoke(q1)
   # background_ctx = retriever.invoke(q2)
@@ -746,52 +684,46 @@ S}\text{sim}(d,s)])。
 再生成，平衡延迟与效果。
 代码示例：MMR 贪心选择（向量已归一化时 sim 可用点积）
 ```python
+  import numpy as np
 
-```python
-import numpy as np
+  def mmr_select(query_vec: np.ndarray, doc_vecs: np.ndarray, top_k: int,
+  lambda_mult: float = 0.5):
+      """doc_vecs: shape (n, dim)  ，已归一化。  """
+      sim_to_q = doc_vecs @ query_vec
+      selected: list[int] = []
+      candidates = set(range(len(doc_vecs)))
+      while len(selected) < top_k and candidates:
+          best_idx, best_score = None, -1e9
+          for i in candidates:
+              redundant = 0.0
 
-def mmr_select(query_vec: np.ndarray, doc_vecs: np.ndarray, top_k: int,
-lambda_mult: float = 0.5):
-  """doc_vecs: shape (n, dim)  ，已归一化。  """
-  sim_to_q = doc_vecs @ query_vec
-  selected: list[int] = []
-  candidates = set(range(len(doc_vecs)))
-  while len(selected) < top_k and candidates:
-      best_idx, best_score = None, -1e9
-      for i in candidates:
-          redundant = 0.0
+              if selected:
+                  redundant = max(float(doc_vecs[i] @ doc_vecs[j]) for j in
+  selected)
+              score = lambda_mult * sim_to_q[i] - (1 - lambda_mult) *
+  redundant
+              if score > best_score:
+                  best_score, best_idx = score, i
+          selected.append(best_idx) # type: ignore
+          candidates.remove(best_idx)   # type: ignore
+      return selected
 
-          if selected:
-              redundant = max(float(doc_vecs[i] @ doc_vecs[j]) for j in
-selected)
-          score = lambda_mult * sim_to_q[i] - (1 - lambda_mult) *
-redundant
-          if score > best_score:
-              best_score, best_idx = score, i
-      selected.append(best_idx) # type: ignore
-      candidates.remove(best_idx)   # type: ignore
-  return selected
-
-                  问题
-```
-
+                      问题
   # q = model.encode(["   "], normalize_embeddings=True)[0]
   # d = model.encode(docs, normalize_embeddings=True)
   # idxs = mmr_select(q, d, top_k=3)
 
 代码示例：CrossEncoder 重排（sentence-transformers）
+                                                                          python
+  from sentence_transformers import CrossEncoder
 
-```python
-from sentence_transformers import CrossEncoder
-
-cross = CrossEncoder("BAAI/bge-reranker-base")
-query = "员工年假天数    "
-docs = ["本公司年假为15天...", "报销应提交发票原件..."]
-pairs = [[query, d] for d in docs]
-scores = cross.predict(pairs)
-ranked = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
-print(ranked)
-```
+  cross = CrossEncoder("BAAI/bge-reranker-base")
+  query = "员工年假天数    "
+  docs = ["本公司年假为15天...", "报销应提交发票原件..."]
+  pairs = [[query, d] for d in docs]
+  scores = cross.predict(pairs)
+  ranked = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+  print(ranked)
 
 ```
 
@@ -883,26 +815,23 @@ precision/recall），自动化评估 RAG 管道。
 ```python
   # pip install ragas datasets
   #   以下为结构示意，版本差异请以官方文档为准
+  from ragas import evaluate
+  from ragas.metrics import faithfulness, answer_relevancy,
+  context_precision
+  from datasets import Dataset
 
-```python
-from ragas import evaluate
-from ragas.metrics import faithfulness, answer_relevancy,
-context_precision
-from datasets import Dataset
-
-data = {
-               公司总部在哪？
-   "question": ["           "],
-              上海。
-   "answer": ["     "],
-                公司总部位于上海浦东新区……"]],
-   "contexts": [["
-                  上海
-   "ground_truth": ["   "],
-}
-ds = Dataset.from_dict(data)
-result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
-```
+  data = {
+                   公司总部在哪？
+       "question": ["           "],
+                  上海。
+       "answer": ["     "],
+                    公司总部位于上海浦东新区……"]],
+       "contexts": [["
+                      上海
+       "ground_truth": ["   "],
+  }
+  ds = Dataset.from_dict(data)
+  result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
 
  context_precision])
  print(result)
@@ -1163,15 +1092,13 @@ result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
 
 ```python
  # pip install langchain langchain-openai langchain-community faiss-cpu
-
-```python
  from langchain_community.vectorstores import FAISS
  from langchain_openai import OpenAIEmbeddings
  from langchain_text_splitters import RecursiveCharacterTextSplitter
  from langchain_core.documents import Document
 
  docs = [Document(page_content="公司年假 天，需提前申请。
-                                   15             ")]
+                                       15             ")]
  splitter = RecursiveCharacterTextSplitter(chunk_size=200,
  chunk_overlap=20)
  chunks = splitter.split_documents(docs)
@@ -1182,7 +1109,6 @@ result = evaluate(ds, metrics=[faithfulness, answer_relevancy,
 
  found = retriever.invoke("年假天数")
  print(found)
-```
 
 小结
 RAG 的本质是 用检索把「可更新证据」接到生成模型上；落地胜负手常在 解析与分块、混合检

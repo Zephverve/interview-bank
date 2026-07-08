@@ -78,15 +78,11 @@ Result：
 #### 1. 多路检索架构设计：
 
      向量检索（语义通道）： 使用 Milvus 存储文档向量，基于 embedding 相似度做语义召回，
-
-```text
- top_k=20。
- 关键词检索（精确通道）： 使用 Elasticsearch 做 BM25 检索，处理精确查询、编号匹配等
- 场景，top_k=20。
- 知识图谱检索（关系通道）： 针对实体关系类问题（如"张三负责哪些项目"），从 Neo4j 中
- 检索实体关系。
-```
-
+     top_k=20。
+     关键词检索（精确通道）： 使用 Elasticsearch 做 BM25 检索，处理精确查询、编号匹配等
+     场景，top_k=20。
+     知识图谱检索（关系通道）： 针对实体关系类问题（如"张三负责哪些项目"），从 Neo4j 中
+     检索实体关系。
 #### 2. 结果融合策略：
 
      采用 RRF（Reciprocal Rank Fusion）算法融合多路结果。
@@ -95,13 +91,9 @@ Result：
 #### 3. 查询路由策略：
 
      意图识别模块判断查询类型，动态激活不同检索通道。
-
-```text
- 精确查询（含编号、代码等）→ 优先走关键词通道。
- 概念性问题（"什么是微服务"）→ 优先走向量通道。
- 关系查询（"谁负责某项目"）→ 启用知识图谱通道。
-```
-
+     精确查询（含编号、代码等）→ 优先走关键词通道。
+     概念性问题（"什么是微服务"）→ 优先走向量通道。
+     关系查询（"谁负责某项目"）→ 启用知识图谱通道。
 Result：
    整体检索准确率（Precision@5）从单一向量检索的 72% 提升到多路融合的 89%。
    召回率（Recall@20）从 65% 提升到 93%。
@@ -122,15 +114,12 @@ Result：
 
 #### 1. 核心架构 —— 状态机 + 事件驱动：
 
-```text
-用户输入 → 意图识别 → 路由决策 → 执行计划 → 工具/检索调用 → 结果整合 → 响应生成
+   用户输入 → 意图识别 → 路由决策 → 执行计划 → 工具/检索调用 → 结果整合 → 响应生成
 
-定义了 7 个核心状态： INIT → INTENT_PARSED → PLANNED → EXECUTING → TOOL_CALLED
-→ SYNTHESIZING → COMPLETED
+   定义了 7 个核心状态： INIT → INTENT_PARSED → PLANNED → EXECUTING → TOOL_CALLED
+   → SYNTHESIZING → COMPLETED
 
- 每个状态转换由事件触发，通过状态转换表控制流程。
-```
-
+     每个状态转换由事件触发，通过状态转换表控制流程。
 #### 2. 编排器核心组件：
 
      AgentOrchestrator（总编排器）： 管理整体流程，维护执行上下文。
@@ -187,12 +176,9 @@ Result：
      结果汇总： 由 Supervisor Agent 整合各子 Agent 结果，生成最终回答。
 #### 4. 选择标准：
 
-```text
- 工具数 ≤ 8 且业务逻辑简单 → 单 Agent。
- 工具数 > 8 或需要专业分工 → 多 Agent。
- 有跨域协作需求（如同时查知识库和调外部 API）→ 多 Agent。
-```
-
+     工具数 ≤ 8 且业务逻辑简单 → 单 Agent。
+     工具数 > 8 或需要专业分工 → 多 Agent。
+     有跨域协作需求（如同时查知识库和调外部 API）→ 多 Agent。
 Result：
   迁移到多 Agent 后，工具选择准确率回升到 96%。
   每个 Agent 的 Prompt 控制在 2000 tokens 以内，维护性大幅提升。
@@ -215,13 +201,13 @@ Result：
 #### 1. 两阶段意图识别架构：
 
      第一阶段 —— 粗分类（基于规则 + 小模型）：
+        正则匹配高频模式（如订单号格式 [A-Z]{2}-\d{8}-\d{3} ）。
+        FastText 轻量分类器做初步意图分类（延迟 &lt; 5ms）。
+        覆盖 80% 的常见查询，快速响应。
+     第二阶段 —— 精细分类（基于 LLM）：
+        对第一阶段无法确定的复杂查询，调用 LLM 进行意图分析。
 
 ```text
-    正则匹配高频模式（如订单号格式 [A-Z]{2}-\d{8}-\d{3} ）。
-    FastText 轻量分类器做初步意图分类（延迟 &lt; 5ms）。
-    覆盖 80% 的常见查询，快速响应。
- 第二阶段 —— 精细分类（基于 LLM）：
-    对第一阶段无法确定的复杂查询，调用 LLM 进行意图分析。
     使用结构化 Prompt，输出标准 JSON： {"intents": [{"type": "...",
  "confidence": 0.9, "entities": {...}}]}
 
@@ -230,11 +216,9 @@ Result：
 
 #### 2. 意图体系设计（三级分类）：
 
-```text
-L1:   咨询/操作/投诉/闲聊
-L2:   产品咨询/技术咨询/订单查询/退款申请/...
-L3:   具体产品线/具体操作类型/...
-```
+   L1:   咨询/操作/投诉/闲聊
+   L2:   产品咨询/技术咨询/订单查询/退款申请/...
+   L3:   具体产品线/具体操作类型/...
 
 #### 3. 置信度阈值策略：
 
@@ -302,43 +286,36 @@ Result：
 #### 1. 插件化工具系统：
 
 ```python
+   class BaseTool(ABC):
+       @abstractmethod
+       def name(self) -> str: ...
+       @abstractmethod
+       def description(self) -> str: ...
+       @abstractmethod
+       def parameters_schema(self) -> dict: ...
 
-```python
-class BaseTool(ABC):
-   @abstractmethod
-   def name(self) -> str: ...
-   @abstractmethod
-   def description(self) -> str: ...
-   @abstractmethod
-   def parameters_schema(self) -> dict: ...
+       @abstractmethod
+       async def execute(self, **kwargs) -> ToolResult: ...
 
-   @abstractmethod
-   async def execute(self, **kwargs) -> ToolResult: ...
-
-所有工具继承 BaseTool ，通过 ToolRegistry 自动注册。
-工具描述自动生成 Function Calling 的 JSON Schema。
-```
-
+    所有工具继承 BaseTool ，通过 ToolRegistry 自动注册。
+    工具描述自动生成 Function Calling 的 JSON Schema。
 2. 可配置的检索管道：
     检索管道通过 YAML 配置文件定义：
+                                                                 yaml
+   retrieval_pipeline:
+     - name: vector_search
+       engine: milvus
+       top_k: 20
+       weight: 0.6
+     - name: keyword_search
+       engine: elasticsearch
+       top_k: 20
+       weight: 0.4
+   reranker:
+     model: bge-reranker-v2-m3
+     top_k: 5
 
-```yaml
-retrieval_pipeline:
- - name: vector_search
-   engine: milvus
-   top_k: 20
-   weight: 0.6
- - name: keyword_search
-   engine: elasticsearch
-   top_k: 20
-   weight: 0.4
-reranker:
- model: bge-reranker-v2-m3
- top_k: 5
-
- 新增检索通道只需添加配置项和实现对应引擎接口。
-```
-
+     新增检索通道只需添加配置项和实现对应引擎接口。
 3. 模型抽象层：
      统一的 LLMProvider 接口，支持 OpenAI、Anthropic、本地模型等。
      通过配置切换模型，不修改业务代码。
@@ -524,15 +501,12 @@ Result：
 #### 1. 统一接口抽象：
 
 ```python
-
-```python
-class LLMProvider(ABC):
-   async def chat(self, messages, **kwargs) -> LLMResponse: ...
-   async def stream_chat(self, messages, **kwargs) ->
-AsyncIterator[str]: ...
-   def count_tokens(self, text) -> int: ...
-   def get_model_info(self) -> ModelInfo: ...
-```
+   class LLMProvider(ABC):
+       async def chat(self, messages, **kwargs) -> LLMResponse: ...
+       async def stream_chat(self, messages, **kwargs) ->
+   AsyncIterator[str]: ...
+       def count_tokens(self, text) -> int: ...
+       def get_model_info(self) -> ModelInfo: ...
 
 ```
 
@@ -546,13 +520,10 @@ AsyncIterator[str]: ...
     LocalProvider   ：适配 vLLM / Ollama 部署的本地模型。
 #### 3. 差异化处理：
 
-```text
- Function Calling 格式：OpenAI 用 tools 字段，Claude 用 tool_use ，统一抽象后业
- 务无感知。
- Token 计算：不同模型的 tokenizer 不同，每个 Provider 实现自己的 count_tokens 。
- 流式响应：不同 API 的 SSE 格式略有差异，在 Provider 层统一处理。
-```
-
+     Function Calling 格式：OpenAI 用 tools 字段，Claude 用 tool_use ，统一抽象后业
+     务无感知。
+     Token 计算：不同模型的 tokenizer 不同，每个 Provider 实现自己的 count_tokens 。
+     流式响应：不同 API 的 SSE 格式略有差异，在 Provider 层统一处理。
 Result：
    支持 6 种模型提供商，切换只需改配置。
    新模型适配：平均 1 天完成（实现 Provider + 测试）。
@@ -655,12 +626,9 @@ Result：
      传输灵活： 支持 stdio（本地进程）和 SSE（远程服务）两种传输方式。
 #### 2. 与 Function Calling 的对比：
 
-```text
- Function Calling 是模型厂商的私有协议，每个厂商格式不同。
- MCP 是开放协议，理论上可以跨模型、跨客户端复用工具。
- MCP 更适合构建工具生态，Function Calling 更适合简单集成。
-```
-
+     Function Calling 是模型厂商的私有协议，每个厂商格式不同。
+     MCP 是开放协议，理论上可以跨模型、跨客户端复用工具。
+     MCP 更适合构建工具生态，Function Calling 更适合简单集成。
 #### 3. 在系统中的应用：
 
      将现有工具封装为 MCP Server，对外提供标准化接口。
@@ -690,11 +658,9 @@ Result：
 
 #### 1. 分层错误处理：
 
-```text
- 可恢复错误（Retryable）： 网络超时、API 限流 → 指数退避重试（最多 3 次）。
- 可降级错误（Degradable）： 主模型不可用 → 切换到备用模型。
- 不可恢复错误（Fatal）： 权限不足、参数错误 → 向用户报告错误原因。
-```
+     可恢复错误（Retryable）： 网络超时、API 限流 → 指数退避重试（最多 3 次）。
+     可降级错误（Degradable）： 主模型不可用 → 切换到备用模型。
+     不可恢复错误（Fatal）： 权限不足、参数错误 → 向用户报告错误原因。
 
 #### 2. 指数退避重试：
 
@@ -800,20 +766,16 @@ Result： 这些观点不仅是对技术趋势的判断，也指导了我们的�
 #### 2. 分块策略设计：
 
      递归字符分块（默认策略）：
-
-```text
-    分隔符优先级： \n\n → \n → 。 → ， → 空格
-    chunk_size = 512 tokens，chunk_overlap = 50 tokens（约 10%）
- 语义分块（高质量场景）：
-    先计算每个句子的 embedding。
-   相邻句子的余弦相似度低于阈值 0.7 时，视为语义断点。
-   在语义断点处切分，保证每个 chunk 语义完整。
- 结构化分块（特殊文档）：
-   Markdown：按标题层级分块（ # 、 ## 、 ### ）。
-   代码文档：按函数/类分块。
-   表格：整表作为一个 chunk，附加上下文描述。
-```
-
+        分隔符优先级： \n\n → \n → 。 → ， → 空格
+        chunk_size = 512 tokens，chunk_overlap = 50 tokens（约 10%）
+     语义分块（高质量场景）：
+        先计算每个句子的 embedding。
+       相邻句子的余弦相似度低于阈值 0.7 时，视为语义断点。
+       在语义断点处切分，保证每个 chunk 语义完整。
+     结构化分块（特殊文档）：
+       Markdown：按标题层级分块（ # 、 ## 、 ### ）。
+       代码文档：按函数/类分块。
+       表格：整表作为一个 chunk，附加上下文描述。
 #### 3. 分块元数据管理：
 
      每个 chunk 存储元数据：文档ID、标题、章节路径、页码、分块位置。
@@ -845,31 +807,26 @@ Action → Observation 的循环模式，同时保持灵活性。
    你是一个企业级 助手。请严格按照以下格式回答问题：
                AI
 
-```text
-Thought: 分析用户问题，决定下一步行动
-Action: 选择要调用的工具
-Action Input: 工具的输入参数（JSON格式）
-Observation: 工具返回的结果
-... （可以重复多次 Thought/Action/Observation）
-Thought: 综合所有信息，给出最终答案
-Final Answer: 最终回答
+   Thought: 分析用户问题，决定下一步行动
+   Action: 选择要调用的工具
+   Action Input: 工具的输入参数（JSON格式）
+   Observation: 工具返回的结果
+   ... （可以重复多次 Thought/Action/Observation）
+   Thought: 综合所有信息，给出最终答案
+   Final Answer: 最终回答
 
-可用工具：
-                  搜索知识库 - 参数: {"query": "搜索内容"}
-```
-
+   可用工具：
+                      搜索知识库 - 参数: {"query": "搜索内容"}
 #### 1. search_knowledge:
 
 #### 2. query_database:查询数据库 - 参数: {"sql": "SQL语句"}
 
-```text
-...
+   ...
 
-重要规则：
-- 每次只调用一个工具
-- 如果不需要工具，直接给出 Final Answer
-- 最多进行5轮工具调用
-```
+   重要规则：
+   - 每次只调用一个工具
+   - 如果不需要工具，直接给出 Final Answer
+   - 最多进行5轮工具调用
 
 #### 2. 关键设计原则：
 
@@ -911,47 +868,42 @@ Result：
      HALF_OPEN（半开/探测）： 允许少量探测请求通过，检测下游是否恢复。
 #### 2. 状态转换规则：
 
-```text
-CLOSED → OPEN：最近 内失败率超过 50%（至少 10 次请求）
-                  60s
-OPEN → HALF_OPEN：熔断 后自动进入半开状态
-                     30s
-                ：连续 次探测成功 → 恢复正常
-HALF_OPEN → CLOSED      3
-HALF_OPEN → OPEN：任何一次探测失败 → 重新熔断
-```
+   CLOSED → OPEN：最近 内失败率超过 50%（至少 10 次请求）
+                      60s
+   OPEN → HALF_OPEN：熔断 后自动进入半开状态
+                         30s
+                    ：连续 次探测成功 → 恢复正常
+   HALF_OPEN → CLOSED      3
+   HALF_OPEN → OPEN：任何一次探测失败 → 重新熔断
 
 #### 3. 实现细节：
 
 ```python
+   class CircuitBreaker:
+       def __init__(self, failure_threshold=0.5, recovery_timeout=30,
+                    min_requests=10, probe_success_threshold=3):
+           self.state = State.CLOSED
+           self.failure_count = 0
+           self.success_count = 0
+           self.last_failure_time = None
 
-```python
-class CircuitBreaker:
-   def __init__(self, failure_threshold=0.5, recovery_timeout=30,
-                min_requests=10, probe_success_threshold=3):
-       self.state = State.CLOSED
-       self.failure_count = 0
-       self.success_count = 0
-       self.last_failure_time = None
+           self.probe_success_count = 0
+           self._window = deque(maxlen=100)     #   滑动窗口
+       async def call(self, func, *args, **kwargs):
+           if self.state == State.OPEN:
+               if time.time() - self.last_failure_time >
+   self.recovery_timeout:
+                   self.state = State.HALF_OPEN
+                  else:
+                      raise CircuitOpenError("Circuit is open")
 
-       self.probe_success_count = 0
-       self._window = deque(maxlen=100)     #   滑动窗口
-   async def call(self, func, *args, **kwargs):
-       if self.state == State.OPEN:
-           if time.time() - self.last_failure_time >
-self.recovery_timeout:
-               self.state = State.HALF_OPEN
-              else:
-                  raise CircuitOpenError("Circuit is open")
-
-       try:
-              result = await func(*args, **kwargs)
-           self._on_success()
-           return result
-       except Exception as e:
-           self._on_failure()
-           raise
-```
+           try:
+                  result = await func(*args, **kwargs)
+               self._on_success()
+               return result
+           except Exception as e:
+               self._on_failure()
+               raise
 
 ```
 
@@ -1042,15 +994,11 @@ Markdown 等，且包含大量表格和图片。
 #### 2. 表格处理策略：
 
     简单表格（&lt; 10行10列）： 转为 Markdown 表格格式，整表作为一个 chunk。
+    复杂表格（大型数据表）： 转为结构化描述文本（"表格共 X 行 Y 列，列名分别是..."），并
+    生成自然语言摘要。
+    合并单元格： 通过 pdfplumber 的表格检测算法处理单元格合并情况。
 
-```text
-复杂表格（大型数据表）： 转为结构化描述文本（"表格共 X 行 Y 列，列名分别是..."），并
-生成自然语言摘要。
-合并单元格： 通过 pdfplumber 的表格检测算法处理单元格合并情况。
-
- 表格上下文： 每个表格 chunk 附加所在章节的标题和前后段落，增强语义理解。
-```
-
+     表格上下文： 每个表格 chunk 附加所在章节的标题和前后段落，增强语义理解。
 #### 3. 图片处理策略：
 
      OCR 提取： 使用 PaddleOCR 提取图片中的文字。
@@ -1088,13 +1036,10 @@ Result：
         Cross-encoder/ms-marco-MiniLM-L-12-v2： 英文效果好，中文不行。
 #### 2. 重排序流程：
 
-```text
-多路检索结果（~40条）→ 去重 → Reranker 打分 → 按分数排序 → 取 Top-5
+   多路检索结果（~40条）→ 去重 → Reranker 打分 → 按分数排序 → 取 Top-5
 
- Reranker 输入： (query, chunk) pair，输出相关性分数 [0, 1]。
- 去重策略：基于 chunk 内容的 MinHash 去重（相似度 > 0.9 视为重复）。
-```
-
+     Reranker 输入： (query, chunk) pair，输出相关性分数 [0, 1]。
+     去重策略：基于 chunk 内容的 MinHash 去重（相似度 > 0.9 视为重复）。
 #### 3. 性能优化：
 
      Reranker 模型部署在 GPU 服务器上（T4 显卡），batch 推理。
@@ -1194,13 +1139,10 @@ Result：
 
 #### 4. 待解决的问题
 
-```text
-对话历史：{history}
+   对话历史：{history}
 
-摘要后通常可以将 3000 tokens 的对话压缩到 500-800 tokens。
-压缩比约 4:1 到 6:1。
-```
-
+   摘要后通常可以将 3000 tokens 的对话压缩到 500-800 tokens。
+   压缩比约 4:1 到 6:1。
 #### 4. 增量摘要（渐进式压缩）：
 
      不是一次性压缩所有历史，而是每次只压缩最旧的 3-5 轮。
@@ -1225,16 +1167,14 @@ Result：
 
 #### 1. RRF（Reciprocal Rank Fusion）公式：
 
-```text
-RRF_score(d) = Σ(i=1 to n) 1 / (k + rank_i(d))
+   RRF_score(d) = Σ(i=1 to n) 1 / (k + rank_i(d))
 
-d   ：文档
- n ：检索通道数量
+   d   ：文档
+     n ：检索通道数量
 
- rank_i(d) ：文档 d 在第 i 个通道中的排名（从 1 开始）
+     rank_i(d) ：文档 d 在第 i 个通道中的排名（从 1 开始）
 
- k ：平滑常数（默认 60）
-```
+     k ：平滑常数（默认 60）
 
 #### 2. 为什么用 RRF 而不是加权分数融合？
 
@@ -1244,13 +1184,10 @@ d   ：文档
 
 #### 3. 加权 RRF（Weighted RRF）：
 
-```text
-WRRF_score(d) = Σ(i=1 to n) w_i / (k + rank_i(d))
+    WRRF_score(d) = Σ(i=1 to n) w_i / (k + rank_i(d))
 
- 不同通道可以设置权重 w_i ，反映不同通道的置信度。
- 默认权重：向量 0.6、关键词 0.3、知识图谱 0.1。
-```
-
+     不同通道可以设置权重 w_i ，反映不同通道的置信度。
+     默认权重：向量 0.6、关键词 0.3、知识图谱 0.1。
 #### 4. 权重调优方法：
 
      建立标注评估集（500 条 query + 标准答案）。
@@ -1345,25 +1282,22 @@ Result：
 #### 4. 可扩展设计：
 
 ```python
+   class BaseGuardrail(ABC):
+       @abstractmethod
+       async def check(self, content: str, context: dict) ->
 
-```python
-class BaseGuardrail(ABC):
-   @abstractmethod
-   async def check(self, content: str, context: dict) ->
+    GuardrailResult: ...
 
-GuardrailResult: ...
+    class GuardrailPipeline:
+        def __init__(self, guardrails: List[BaseGuardrail]):
+            self.guardrails = guardrails
 
-class GuardrailPipeline:
-    def __init__(self, guardrails: List[BaseGuardrail]):
-        self.guardrails = guardrails
-
-    async def run(self, content, context):
-        for guardrail in self.guardrails:
-            result = await guardrail.check(content, context)
-            if not result.passed:
-                return result #   快速失败
-        return GuardrailResult(passed=True)
-```
+        async def run(self, content, context):
+            for guardrail in self.guardrails:
+                result = await guardrail.check(content, context)
+                if not result.passed:
+                    return result #   快速失败
+            return GuardrailResult(passed=True)
 
 Result：
   Prompt 注入拦截率 97%。
@@ -1394,43 +1328,33 @@ Result：
 ```python
 
    @app.post("/chat/stream")
+   async def chat_stream(request: ChatRequest):
+       async def generate():
+           async for chunk in agent.stream_chat(request.messages):
+               data = json.dumps({"content": chunk, "type": "token"})
+               yield f"data: {data}\n\n"
+           yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
-```python
-async def chat_stream(request: ChatRequest):
-   async def generate():
-       async for chunk in agent.stream_chat(request.messages):
-           data = json.dumps({"content": chunk, "type": "token"})
-           yield f"data: {data}\n\n"
-       yield f"data: {json.dumps({'type': 'done'})}\n\n"
-
-   return StreamingResponse(
-       generate(),
-       media_type="text/event-stream",
-       headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
-   )
-```
+       return StreamingResponse(
+           generate(),
+           media_type="text/event-stream",
+           headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+       )
 
 ```
 
 #### 3. 关键技术点：
 
-```text
- 禁用缓冲： Nginx 设置 X-Accel-Buffering: no ，防止代理层缓冲 SSE。
- 心跳保活： 每 15 秒发送一个心跳事件，防止连接超时。
- 错误处理： 流式过程中出错时发送 error 事件，前端展示错误信息。
- 取消机制： 用户关闭页面时，后端检测到连接断开，取消 LLM API 调用。
-```
-
+     禁用缓冲： Nginx 设置 X-Accel-Buffering: no ，防止代理层缓冲 SSE。
+     心跳保活： 每 15 秒发送一个心跳事件，防止连接超时。
+     错误处理： 流式过程中出错时发送 error 事件，前端展示错误信息。
+     取消机制： 用户关闭页面时，后端检测到连接断开，取消 LLM API 调用。
 #### 4. ReAct 模式下的流式处理：
 
      Thought 阶段：不输出给用户（内部推理过程）。
-
-```text
- Action 阶段：输出 "正在查询..." 等状态提示。
- Final Answer 阶段：逐 token 流式输出给用户。
- 通过解析 token 流，区分不同阶段。
-```
-
+     Action 阶段：输出 "正在查询..." 等状态提示。
+     Final Answer 阶段：逐 token 流式输出给用户。
+     通过解析 token 流，区分不同阶段。
 Result：
    首 token 延迟（TTFT）从非流式的 3s 降低到 500ms。
    用户感知的响应速度提升 5x。
@@ -1457,20 +1381,17 @@ Result：
 #### 2. 结构化日志格式：
 
 ```json
-
-```text
-{
-   "trace_id": "abc-123",
-   "span_id": "span-456",
-   "timestamp": "2024-03-15T10:30:00Z",
-   "service": "agent-orchestrator",
-   "event": "tool_call",
-   "tool_name": "search_knowledge",
-   "latency_ms": 245,
-   "status": "success",
-   "metadata": {"query": "...", "result_count": 5}
-}
-```
+   {
+       "trace_id": "abc-123",
+       "span_id": "span-456",
+       "timestamp": "2024-03-15T10:30:00Z",
+       "service": "agent-orchestrator",
+       "event": "tool_call",
+       "tool_name": "search_knowledge",
+       "latency_ms": 245,
+       "status": "success",
+       "metadata": {"query": "...", "result_count": 5}
+   }
 
 ```
 
@@ -1479,8 +1400,9 @@ Result：
     每个请求分配唯一 trace_id 。
     Agent 执行的每个阶段创建独立的 span ：
 
+       trace_id: abc-123
+
 ```text
-   trace_id: abc-123
    ├── span: intent_recognition (50ms)
    ├── span: retrieval (250ms)
    │   ├── span: vector_search (120ms)
@@ -1493,12 +1415,9 @@ Result：
 
 #### 4. 可视化和告警：
 
-```text
- 日志收集：Fluentd → Elasticsearch → Kibana。
- 链路追踪可视化：Jaeger。
- 告警规则：P99 延迟 > 10s、错误率 > 1%、LLM 幻觉率 > 5% 时触发告警。
-```
-
+     日志收集：Fluentd → Elasticsearch → Kibana。
+     链路追踪可视化：Jaeger。
+     告警规则：P99 延迟 > 10s、错误率 > 1%、LLM 幻觉率 > 5% 时触发告警。
 Result：
    问题定位时间从平均 2 小时缩短到 15 分钟。
    全链路 trace 覆盖率 100%。
@@ -1526,17 +1445,14 @@ Result：
      多路检索并行： 向量检索、关键词检索、知识图谱查询同时发起。
 ```python
 
-```text
-results = await asyncio.gather(
-    vector_search(query),
-    keyword_search(query),
-    kg_search(query)
-)
+    results = await asyncio.gather(
+        vector_search(query),
+        keyword_search(query),
+        kg_search(query)
+    )
 
- 多工具并行调用： 当 Agent 需要调用多个独立工具时，并行执行。
- 批量 embedding 计算： 文档入库时批量并行计算 embedding。
-```
-
+     多工具并行调用： 当 Agent 需要调用多个独立工具时，并行执行。
+     批量 embedding 计算： 文档入库时批量并行计算 embedding。
 3. 并发控制：
      使用 asyncio.Semaphore 控制最大并发数。
      LLM API 调用并发限制为 50（受 API 限流限制）。
@@ -1575,27 +1491,20 @@ Result：
     存储： Neo4j 图数据库。
 #### 2. 自动化构建管道：
 
-```text
-文档 → 分段 → LLM 实体抽取 → LLM 关系抽取 → 去重合并 → 写入 Neo4j
+   文档 → 分段 → LLM 实体抽取 → LLM 关系抽取 → 去重合并 → 写入 Neo4j
 
-使用 Prompt 模板约束输出格式。
-人工审核：抽取结果的置信度 &lt; 0.8 时进入审核队列。
-```
-
+    使用 Prompt 模板约束输出格式。
+    人工审核：抽取结果的置信度 &lt; 0.8 时进入审核队列。
 #### 3. 查询集成：
 
     意图识别模块判断是否需要图谱查询。
     生成 Cypher 查询语句：
                                                                     cypher
+     MATCH (p:Person)-[:MANAGES]->(proj:Project)
+     WHERE p.name = '张三 '
+     RETURN proj.name, proj.status
 
-```text
- MATCH (p:Person)-[:MANAGES]->(proj:Project)
- WHERE p.name = '张三 '
- RETURN proj.name, proj.status
-
- 图谱查询结果与向量检索结果融合后送入 LLM。
-```
-
+     图谱查询结果与向量检索结果融合后送入 LLM。
 Result：
   知识图谱包含 5 万个实体、12 万条关系。
   实体关系类查询的准确率从纯向量检索的 45% 提升到 87%。
@@ -1780,14 +1689,11 @@ Result：
 #### 1. 链路分析（各环节耗时）：
 
    意图识别：300ms
-
-```text
-检索（串行）：500ms → 并行后 200ms
-Reranking：130ms
-LLM 生成（主要瓶颈）：4500ms → 优化后 2500ms
-后处理：100ms
-总计：5530ms → 3130ms
-```
+   检索（串行）：500ms → 并行后 200ms
+   Reranking：130ms
+   LLM 生成（主要瓶颈）：4500ms → 优化后 2500ms
+   后处理：100ms
+   总计：5530ms → 3130ms
 
 #### 2. 优化措施：
 
@@ -1874,19 +1780,13 @@ Result：
      避免后端缓冲累积 token 再发送。
 #### 3. 流式中的工具调用处理：
 
-```text
- 检测到 Action 开始时，发送状态消息"正在查询..."。
- 工具执行完成后，继续流式输出 Final Answer。
- 前端展示 loading 动画和工具调用状态。
-```
-
+     检测到 Action 开始时，发送状态消息"正在查询..."。
+     工具执行完成后，继续流式输出 Final Answer。
+     前端展示 loading 动画和工具调用状态。
 Result：
-
-```text
-TTFT P50 = 450ms，P99 = 800ms。
-用户感知的响应速度提升 5x。
-用户满意度提升 22%。
-```
+   TTFT P50 = 450ms，P99 = 800ms。
+   用户感知的响应速度提升 5x。
+   用户满意度提升 22%。
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q5</span><span class="guide-q-text">异步处理在哪些地方使用了？</span></div>
@@ -1920,14 +1820,11 @@ TTFT P50 = 450ms，P99 = 800ms。
 #### 4. 并行编排：
 
 ```python
-
-```python
-async def process_query(query):
-   intent_task = asyncio.create_task(identify_intent(query))
-   retrieval_task = asyncio.create_task(retrieve_documents(query))
-   intent, docs = await asyncio.gather(intent_task, retrieval_task)
-   return await generate_answer(intent, docs, query)
-```
+   async def process_query(query):
+       intent_task = asyncio.create_task(identify_intent(query))
+       retrieval_task = asyncio.create_task(retrieve_documents(query))
+       intent, docs = await asyncio.gather(intent_task, retrieval_task)
+       return await generate_answer(intent, docs, query)
 
 Result：
   系统 QPS 从 30 提升到 85（2.8 倍）。
@@ -1995,23 +1892,17 @@ Result：
      启用 CUDA 加速和 TensorRT 优化。
 #### 3. 批处理（Batching）：
 
-```text
- Embedding 计算支持批量输入（batch_size=64）。
- Reranking 支持批量推理（一次性对 40 个候选打分）。
- 使用动态批处理（Dynamic Batching）：收集短时间内的请求合并处理。
-```
-
+     Embedding 计算支持批量输入（batch_size=64）。
+     Reranking 支持批量推理（一次性对 40 个候选打分）。
+     使用动态批处理（Dynamic Batching）：收集短时间内的请求合并处理。
 #### 4. 模型预加载：
 
      服务启动时预加载模型到 GPU 显存。
      避免首次请求的冷启动延迟。
 Result：
-
-```text
-Embedding 计算延迟：单条 15ms → 批量 1000 条 3s（均摊 3ms/条）。
-Reranking 延迟：40 条候选 120ms（batch 推理）。
-GPU 利用率从 30% 提升到 75%。
-```
+   Embedding 计算延迟：单条 15ms → 批量 1000 条 3s（均摊 3ms/条）。
+   Reranking 延迟：40 条候选 120ms（batch 推理）。
+   GPU 利用率从 30% 提升到 75%。
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q8</span><span class="guide-q-text">前端渲染性能怎么优化？</span></div>
@@ -2166,25 +2057,22 @@ Result：
 
 ```yaml
 
-```text
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-spec:
- minReplicas: 2
- maxReplicas: 10
- metrics:
-   - type: Pods
-     pods:
-       metric:
-         name: requests_per_second
-       target:
-         type: AverageValue
-         averageValue: "50"
+   apiVersion: autoscaling/v2
+   kind: HorizontalPodAutoscaler
+   spec:
+     minReplicas: 2
+     maxReplicas: 10
+     metrics:
+       - type: Pods
+         pods:
+           metric:
+             name: requests_per_second
+           target:
+             type: AverageValue
+             averageValue: "50"
 
- QPS > 50/Pod 时扩容。
- QPS < 20/Pod 持续 5 分钟时缩容。
-```
-
+     QPS > 50/Pod 时扩容。
+     QPS < 20/Pod 持续 5 分钟时缩容。
 3. 预测性扩容：
      基于历史数据预测高峰时段，提前扩容。
      促销等已知高峰事件手动预扩容。
@@ -2210,12 +2098,9 @@ Result：
 
 #### 1. 硬性限制：
 
-```text
- 最大迭代次数： max_iterations = 10 ，超过强制结束。
- 最大执行时间： max_execution_time = 60s ，超时强制结束。
- 最大 token 消耗：单次请求总 token ≤ 30000。
-```
-
+     最大迭代次数： max_iterations = 10 ，超过强制结束。
+     最大执行时间： max_execution_time = 60s ，超时强制结束。
+     最大 token 消耗：单次请求总 token ≤ 30000。
 #### 2. 智能检测：
 
      重复动作检测： 连续 2 次调用相同工具且参数相同（或高度相似），判定为循环。
@@ -2296,11 +2181,9 @@ Result：
      总超时： 60s（整个请求的最长时间）。
 #### 2. 超时处理流程：
 
-```text
-首次调用超时 → 自动重试（切换备用端点，最多1次）
-         → 重试超时 → 降级到备用模型
-         → 备用模型也超时 → 返回兜底话术
-```
+   首次调用超时 → 自动重试（切换备用端点，最多1次）
+             → 重试超时 → 降级到备用模型
+             → 备用模型也超时 → 返回兜底话术
 
 #### 3. 降级矩阵：
 
@@ -2333,8 +2216,9 @@ Result：
 
 #### 1. 问题诊断流程：
 
+   用户反馈 → 复现查询 → 查看检索结果 → 定位问题环节
+
 ```text
-用户反馈 → 复现查询 → 查看检索结果 → 定位问题环节
 ├── 分块问题：关键信息被切断 → 优化分块策略
 ├── Embedding 质量：语义表示不准 → 评估/更换模型
 ├── 检索参数：top_k 太小 → 调整参数
@@ -2397,16 +2281,12 @@ Result：
 #### 3. 错误信息标准化：
 
 ```python
-
-```python
-class ToolError:
-   error_type: str    #
-TIMEOUT/PARAM_ERROR/AUTH_ERROR/NOT_FOUND/SYSTEM_ERROR
-   message: str       #   人可读的错误描述
-   retryable: bool    #   是否可重试
-   suggestion: str    #   建议的处理方式
-```
-
+   class ToolError:
+       error_type: str    #
+   TIMEOUT/PARAM_ERROR/AUTH_ERROR/NOT_FOUND/SYSTEM_ERROR
+       message: str       #   人可读的错误描述
+       retryable: bool    #   是否可重试
+       suggestion: str    #   建议的处理方式
 ```
 
 #### 4. 兜底机制：
@@ -2517,12 +2397,9 @@ Result：
 
 #### 4. 自动降级触发条件：
 
-```text
- QPS > 阈值的 80% → L1。
- LLM API 错误率 > 10% → L2。
- 系统 CPU > 90% 或内存 > 85% → L3。
-```
-
+     QPS > 阈值的 80% → L1。
+     LLM API 错误率 > 10% → L2。
+     系统 CPU > 90% 或内存 > 85% → L3。
 Result：
    在 5 倍突发流量下，核心功能仍然可用。
    降级响应延迟 &lt; 200ms（缓存/FAQ）。
@@ -2541,13 +2418,10 @@ Result：
 
 #### 1. 数据分级：
 
-```text
- 核心数据（RPO=0）： 知识库原始文档、用户配置 → 实时同步备份。
- 重要数据（RPO&lt;1h）： 对话历史、向量索引 → 每小时增量备份。
+     核心数据（RPO=0）： 知识库原始文档、用户配置 → 实时同步备份。
+     重要数据（RPO&lt;1h）： 对话历史、向量索引 → 每小时增量备份。
 
- 可重建数据（RPO&lt;24h）： 缓存数据、统计报表 → 每日备份。
-```
-
+     可重建数据（RPO&lt;24h）： 缓存数据、统计报表 → 每日备份。
 #### 2. 备份策略：
 
      PostgreSQL：流式复制（主从同步）+ 每日全量备份 + WAL 归档。
@@ -2559,12 +2433,9 @@ Result：
      模拟场景：数据库主节点故障、向量库数据损坏、Redis 全部清空。
      记录恢复时间（RTO），确保满足 SLA 要求。
 Result：
-
-```text
-核心数据零丢失（RPO=0，主从同步）。
-数据库故障恢复时间 &lt; 5 分钟（主从切换）。
-向量库重建时间：约 6 小时（从原始文档重新计算 embedding）。
-```
+   核心数据零丢失（RPO=0，主从同步）。
+   数据库故障恢复时间 &lt; 5 分钟（主从切换）。
+   向量库重建时间：约 6 小时（从原始文档重新计算 embedding）。
 
 <div class="guide-qa">
 <div class="guide-question"><span class="guide-q-label">Q10</span><span class="guide-q-text">模型输出格式异常怎么处理？</span></div>
@@ -2584,14 +2455,11 @@ Result：
 
 #### 2. 具体实现：
 
-```text
-第一层（严格正则）： 标准格式匹配（如 Thought:(.*)Action:(.*) ）。
+    第一层（严格正则）： 标准格式匹配（如 Thought:(.*)Action:(.*) ）。
 
- 第二层（宽松正则）： 忽略大小写、多余空格等微小差异。
- 第三层（LLM 修复）： 用轻量模型将非标格式输出修复为标准格式。
- 第四层（降级）： 将整个输出作为 Final Answer 直接返回。
-```
-
+     第二层（宽松正则）： 忽略大小写、多余空格等微小差异。
+     第三层（LLM 修复）： 用轻量模型将非标格式输出修复为标准格式。
+     第四层（降级）： 将整个输出作为 Final Answer 直接返回。
 #### 3. 预防措施：
 
      在 Prompt 中强调格式要求，提供明确示例。
@@ -2658,14 +2526,11 @@ Result：
 
 #### 2. 关键资源评估：
 
-```text
-API Pod： 每 Pod 处理 25 QPS，峰值 200 QPS → 需要 12 Pod（冗余）。
-Milvus： 1000 万向量约需 48GB 内存，3 节点每节点 16GB。
+    API Pod： 每 Pod 处理 25 QPS，峰值 200 QPS → 需要 12 Pod（冗余）。
+    Milvus： 1000 万向量约需 48GB 内存，3 节点每节点 16GB。
 
- Redis： 缓存约 10GB，会话状态约 5GB → 16GB 集群。
- PostgreSQL： 对话记录约 500GB/年 → 提前规划存储扩展。
-```
-
+     Redis： 缓存约 10GB，会话状态约 5GB → 16GB 集群。
+     PostgreSQL： 对话记录约 500GB/年 → 提前规划存储扩展。
 #### 3. 增长预测：
 
      基于历史数据线性回归，预测未来 3-6 个月的增长。
@@ -2794,24 +2659,19 @@ Result：
 
 #### 1. CI 流水线（代码合入前）：
 
-```text
-代码提交 → 代码扫描（lint + type check）→ 单元测试 → 集成测试
-    → AI 评估测试 → 安全扫描 → 构建 Docker 镜像 → 推送镜像仓库
+   代码提交 → 代码扫描（lint + type check）→ 单元测试 → 集成测试
+        → AI 评估测试 → 安全扫描 → 构建 Docker 镜像 → 推送镜像仓库
 
-全部通过后才允许合入主分支。
-CI 时间目标：&lt; 15 分钟。
-```
+   全部通过后才允许合入主分支。
+   CI 时间目标：&lt; 15 分钟。
 
 #### 2. CD 流水线（发布流程）：
 
-```text
-主分支合入 → 自动部署到 Staging → 冒烟测试 → 人工验证
-       → 灰度发布（10% → 50% → 100%）→ 全量部署
+    主分支合入 → 自动部署到 Staging → 冒烟测试 → 人工验证
+           → 灰度发布（10% → 50% → 100%）→ 全量部署
 
- 灰度发布使用 Kubernetes 的金丝雀部署策略。
- 每个阶段观察 30 分钟，无异常后进入下一阶段。
-```
-
+     灰度发布使用 Kubernetes 的金丝雀部署策略。
+     每个阶段观察 30 分钟，无异常后进入下一阶段。
 #### 3. 回滚机制：
 
      保留最近 5 个版本的 Docker 镜像。
@@ -2819,12 +2679,9 @@ CI 时间目标：&lt; 15 分钟。
      灰度期间发现问题自动回滚。
 #### 4. 环境管理：
 
-```text
- Dev → Staging → Production 三个环境。
- 使用 Helm Chart 管理 Kubernetes 部署配置。
- 环境配置通过 ConfigMap 和 Secret 管理。
-```
-
+     Dev → Staging → Production 三个环境。
+     使用 Helm Chart 管理 Kubernetes 部署配置。
+     环境配置通过 ConfigMap 和 Secret 管理。
 Result：
    发布频率从月到周。
    发布成功率 98%（2% 的发布在灰度阶段被回滚）。
@@ -2995,15 +2852,13 @@ Result：
     PATCH：Bug 修复
 #### 2. 分支策略：
 
-```text
- main ：生产分支，始终可发布。
+     main ：生产分支，始终可发布。
 
- develop ：开发分支，集成最新功能。
+     develop ：开发分支，集成最新功能。
 
- feature/* ：功能分支，完成后合入 develop。
+     feature/* ：功能分支，完成后合入 develop。
 
- hotfix/* ：紧急修复，直接合入 main。
-```
+     hotfix/* ：紧急修复，直接合入 main。
 
 #### 3. 发布流程：
 
@@ -3033,20 +2888,14 @@ Result：
 
 #### 1. 技术债务识别：
 
-```text
- Code Review 中标记技术债务（ TODO: tech-debt 注释）。
- 每次 Sprint 回顾时收集技术债务。
- 静态分析工具自动检测代码坏味道。
-```
-
+     Code Review 中标记技术债务（ TODO: tech-debt 注释）。
+     每次 Sprint 回顾时收集技术债务。
+     静态分析工具自动检测代码坏味道。
 #### 2. 分级管理：
 
-```text
- P0（紧急）： 影响稳定性或安全性 → 下个 Sprint 必须解决。
- P1（重要）： 影响可维护性或性能 → 1 个月内解决。
- P2（一般）： 代码风格、小优化 → 机会主义偿还。
-```
-
+     P0（紧急）： 影响稳定性或安全性 → 下个 Sprint 必须解决。
+     P1（重要）： 影响可维护性或性能 → 1 个月内解决。
+     P2（一般）： 代码风格、小优化 → 机会主义偿还。
 #### 3. 偿还策略：
 
      每个 Sprint 预留 20% 的工时用于偿还技术债务。
@@ -3215,12 +3064,10 @@ Result：
      定期调研： 每月向活跃用户发送满意度问卷。
 #### 2. 反馈处理流程：
 
-```text
-用户反馈 → 自动分类（满意/不满意/建议）→ 不满意反馈人工审核
-    → 根因分析（检索问题/生成问题/知识缺失/其他）
+   用户反馈 → 自动分类（满意/不满意/建议）→ 不满意反馈人工审核
+        → 根因分析（检索问题/生成问题/知识缺失/其他）
 
-    →   制定优化措施 → 更新知识库/优化Prompt → 验证效果
-```
+        →   制定优化措施 → 更新知识库/优化Prompt → 验证效果
 
 #### 3. 数据驱动的优化：
 
@@ -3378,13 +3225,10 @@ Result：
        其他（10%）：格式问题、延迟等。
 #### 3. 逐个击破：
 
-```text
- 检索问题 → 引入多路检索 + reranker，检索准确率提升 17%。
- 幻觉问题 → 多层幻觉防控（引用机制 + NLI 检查 + temperature=0），幻觉率从 18% 降到
- 3%。
- 理解偏差 → 优化意图识别（两阶段分类 + 置信度阈值），准确率提升到 94%。
-```
-
+     检索问题 → 引入多路检索 + reranker，检索准确率提升 17%。
+     幻觉问题 → 多层幻觉防控（引用机制 + NLI 检查 + temperature=0），幻觉率从 18% 降到
+     3%。
+     理解偏差 → 优化意图识别（两阶段分类 + 置信度阈值），准确率提升到 94%。
 #### 4. 方法论： 不是凭感觉优化，而是"数据驱动 + 逐个击破"。
 
 Result：
@@ -3405,30 +3249,20 @@ Result：
 
 #### 1. 成本投入：
 
-```text
- 研发成本：6 人 × 6 个月 × 平均月薪 = X 万元。
- 基础设施成本：云服务 + API 费用 = Y 万元/月。
- 运维成本：1 人 × 月薪 = Z 万元/月。
-```
-
+     研发成本：6 人 × 6 个月 × 平均月薪 = X 万元。
+     基础设施成本：云服务 + API 费用 = Y 万元/月。
+     运维成本：1 人 × 月薪 = Z 万元/月。
 #### 2. 收益计算：
 
-```text
- 直接节省： AI 替代 40% 客服人力 = N 人 × 月薪 = A 万元/月。
- 效率提升： 人工客服效率提升 30%（AI 提供上下文辅助）= B 万元/月。
- 收入增长： 客户满意度提升带来的续费率提升 = C 万元/月。
-```
-
+     直接节省： AI 替代 40% 客服人力 = N 人 × 月薪 = A 万元/月。
+     效率提升： 人工客服效率提升 30%（AI 提供上下文辅助）= B 万元/月。
+     收入增长： 客户满意度提升带来的续费率提升 = C 万元/月。
 #### 3. ROI 公式：
 
           年化收益 - 年化成本) / 年化成本 × 100%
+    ROI = (
 
-```text
-ROI = (
-
- 典型值：6 个月回本，年化 ROI 约 200%。
-```
-
+     典型值：6 个月回本，年化 ROI 约 200%。
 Result：
   项目在第 7 个月实现回本。
   年化 ROI 约 180%。
@@ -3444,38 +3278,29 @@ Self-Attention 的计算过程：
 
 #### 1. 线性变换生成 Q、K、V：
 
-```text
-Q = X · W_Q   (Query)
-K = X · W_K   (Key)
-V = X · W_V   (Value)
+    Q = X · W_Q   (Query)
+    K = X · W_K   (Key)
+    V = X · W_V   (Value)
 
-其中 X 是输入序列的 embedding 矩阵（n × d_model），W_Q、W_K、W_V 是可学习参数矩
-阵。
-```
-
+   其中 X 是输入序列的 embedding 矩阵（n × d_model），W_Q、W_K、W_V 是可学习参数矩
+   阵。
 #### 2. 计算注意力分数：
 
-```text
-Attention(Q, K, V) = softmax(Q · K^T / √d_k) · V
+   Attention(Q, K, V) = softmax(Q · K^T / √d_k) · V
 
-Q · K^T   ：计算每个 token 对其他所有 token 的相关性分数（n × n 矩阵）。
-  √d_k ：缩放因子，防止点积值过大导致 softmax 梯度消失。d_k = d_model /
- num_heads。
-  softmax ：归一化为概率分布。
+    Q · K^T   ：计算每个 token 对其他所有 token 的相关性分数（n × n 矩阵）。
+      √d_k ：缩放因子，防止点积值过大导致 softmax 梯度消失。d_k = d_model /
+     num_heads。
+      softmax ：归一化为概率分布。
 
- 最终与 V 相乘，得到加权后的输出。
-```
-
+     最终与 V 相乘，得到加权后的输出。
 #### 3. Multi-Head Attention：
 
-```text
-MultiHead(Q, K, V) = Concat(head_1, ..., head_h) · W_O
-head_i = Attention(Q · W_Qi, K · W_Ki, V · W_Vi)
+   MultiHead(Q, K, V) = Concat(head_1, ..., head_h) · W_O
+   head_i = Attention(Q · W_Qi, K · W_Ki, V · W_Vi)
 
-多个 Head 并行计算，每个 Head 关注不同的语义子空间。
-最后拼接并通过线性变换。
-```
-
+    多个 Head 并行计算，每个 Head 关注不同的语义子空间。
+    最后拼接并通过线性变换。
 #### 4. 计算复杂度： O(n²·d)，其中 n 是序列长度，d 是维度。这也是长序列处理的瓶颈。
 
 #### 5. 为什么 Self-Attention 有效？
@@ -3493,13 +3318,10 @@ head_i = Attention(Q · W_Qi, K · W_Ki, V · W_Vi)
 
      在微调时不修改原始模型的权重 W，而是添加一个低秩分解的增量 ΔW。
 
-```text
-W' = W + ΔW = W + B · A
-其中  W ∈ R^(d×d), B ∈ R^(d×r), A ∈ R^(r×d), r &lt;&lt; d
+   W' = W + ΔW = W + B · A
+   其中  W ∈ R^(d×d), B ∈ R^(d×r), A ∈ R^(r×d), r &lt;&lt; d
 
- 例如 d=4096, r=8 时，参数量从 4096² = 16M 降到 2×4096×8 = 65K（减少 99.6%）。
-```
-
+     例如 d=4096, r=8 时，参数量从 4096² = 16M 降到 2×4096×8 = 65K（减少 99.6%）。
 #### 2. 为什么低秩有效？
 
      内在维度假说（Intrinsic Dimensionality）： 预训练模型在微调时，参数变化实际上存在于
@@ -3508,12 +3330,9 @@ W' = W + ΔW = W + B · A
      类比：一个 4096 维的参数空间，微调时真正需要变化的方向可能只有几个。
 #### 3. LoRA 实现细节：
 
-```text
- A 矩阵用高斯初始化，B 矩阵初始化为零（保证训练开始时 ΔW=0）。
- 只在 Attention 的 Q、V 投影矩阵上应用 LoRA（实践中效果最好）。
- 推理时可以将 ΔW 合并到 W 中，不增加推理开销。
-```
-
+     A 矩阵用高斯初始化，B 矩阵初始化为零（保证训练开始时 ΔW=0）。
+     只在 Attention 的 Q、V 投影矩阵上应用 LoRA（实践中效果最好）。
+     推理时可以将 ΔW 合并到 W 中，不增加推理开销。
 #### 4. 与其他方法对比：
 
      全量微调： 效果最好，但需要大量显存和计算资源。
@@ -3599,13 +3418,10 @@ W' = W + ΔW = W + B · A
 
 #### 4. 内存开销：
 
-```text
-KV Cache 大小 = 2 × num_layers × num_heads × seq_len × head_dim × batch_size ×
-dtype_size
-例如 GPT-4 级别模型，128K context 的 KV Cache 可达数十 GB。
-这也是大模型推理需要大量显存的原因之一。
-```
-
+    KV Cache 大小 = 2 × num_layers × num_heads × seq_len × head_dim × batch_size ×
+    dtype_size
+    例如 GPT-4 级别模型，128K context 的 KV Cache 可达数十 GB。
+    这也是大模型推理需要大量显存的原因之一。
 #### 5. 优化技术：
 
     GQA（Grouped Query Attention）： 多个 Q Head 共享同一组 K、V，减少 KV Cache 大
@@ -3621,36 +3437,30 @@ dtype_size
 
 #### 1. RLHF（Reinforcement Learning from Human Feedback）：
 
-```text
-流程：SFT → 训练 Reward Model → PPO 优化
+    流程：SFT → 训练 Reward Model → PPO 优化
 
-第一步（SFT）： 用高质量数据做监督微调。
+    第一步（SFT）： 用高质量数据做监督微调。
 
- 第二步（Reward Model）： 收集人类偏好数据（A 回答 vs B 回答，标注哪个更好），训练
- 奖励模型。
- 第三步（PPO）： 用 PPO 算法优化策略模型，最大化奖励模型的打分。
- 优点： 效果好，是 ChatGPT 等模型使用的方法。
- 缺点： 流程复杂（需要训练两个模型）、PPO 训练不稳定、超参数敏感。
-```
-
+     第二步（Reward Model）： 收集人类偏好数据（A 回答 vs B 回答，标注哪个更好），训练
+     奖励模型。
+     第三步（PPO）： 用 PPO 算法优化策略模型，最大化奖励模型的打分。
+     优点： 效果好，是 ChatGPT 等模型使用的方法。
+     缺点： 流程复杂（需要训练两个模型）、PPO 训练不稳定、超参数敏感。
 #### 2. DPO（Direct Preference Optimization）：
 
-```text
-流程：SFT → 直接从偏好数据优化
+   流程：SFT → 直接从偏好数据优化
 
-核心思想：跳过 Reward Model，直接从偏好数据优化策略模型。
-数学上证明了 DPO 的目标函数等价于 RLHF 的最优解。
-损失函数：
+   核心思想：跳过 Reward Model，直接从偏好数据优化策略模型。
+   数学上证明了 DPO 的目标函数等价于 RLHF 的最优解。
+   损失函数：
 
-L_DPO = -log σ(β(log π(y_w|x)/π_ref(y_w|x) - log π(y_l|x)/
-π_ref(y_l|x)))
+    L_DPO = -log σ(β(log π(y_w|x)/π_ref(y_w|x) - log π(y_l|x)/
+    π_ref(y_l|x)))
 
- y_w：偏好回答（win），y_l：不偏好回答（lose）
- π_ref：参考模型（SFT 模型）
-优点： 简单（只需训练一个模型）、稳定、超参少。
-缺点： 依赖高质量的偏好数据对。
-```
-
+     y_w：偏好回答（win），y_l：不偏好回答（lose）
+     π_ref：参考模型（SFT 模型）
+    优点： 简单（只需训练一个模型）、稳定、超参少。
+    缺点： 依赖高质量的偏好数据对。
 #### 3. 对比表：
 
 | 维度 | RLHF | DPO |
@@ -3682,15 +3492,12 @@ L_DPO = -log σ(β(log π(y_w|x)/π_ref(y_w|x) - log π(y_l|x)/
     负样本对（Negative Pair）： 语义不相关的文本对。
     InfoNCE 损失函数：
 
-```text
-L = -log(exp(sim(q, k+)/τ) / Σ exp(sim(q, ki)/τ))
+    L = -log(exp(sim(q, k+)/τ) / Σ exp(sim(q, ki)/τ))
 
-sim：余弦相似度
-τ：温度参数（控制分布的锐度）
+    sim：余弦相似度
+    τ：温度参数（控制分布的锐度）
 
-    k+：正样本，ki：所有样本（包含 in-batch 负样本）
-```
-
+        k+：正样本，ki：所有样本（包含 in-batch 负样本）
 #### 3. 负样本策略：
 
      In-batch Negatives： 同一 batch 内其他样本的正样本作为当前样本的负样本。
@@ -3760,12 +3567,9 @@ sim：余弦相似度
     高质量示例（Few-shot Examples）。
 #### 2. 关键技巧：
 
-```text
-Chain of Thought（CoT）： 引导模型逐步推理。
+    Chain of Thought（CoT）： 引导模型逐步推理。
 
- 请一步一步分析这个问题：
-```
-
+     请一步一步分析这个问题：
 #### 1. 首先...
 
 #### 2. 然后...
@@ -3815,11 +3619,9 @@ Chain of Thought（CoT）： 引导模型逐步推理。
    Qwen2.5                        128K
 #### 2. 长上下文的挑战：
 
-```text
-"Lost in the Middle"现象：模型对中间位置的信息关注度低。
-计算成本随序列长度平方增长。
-即使模型支持长上下文，实际效果在超长文本时也会下降。
-```
+    "Lost in the Middle"现象：模型对中间位置的信息关注度低。
+    计算成本随序列长度平方增长。
+    即使模型支持长上下文，实际效果在超长文本时也会下降。
 
 #### 3. 突破方法：
 
@@ -3849,16 +3651,13 @@ Chain of Thought（CoT）： 引导模型逐步推理。
      引入随机性，输出更多样化。
 #### 3. Temperature（温度参数）：
 
-```text
-P(token_i) = exp(logit_i / T) / Σ exp(logit_j / T)
+   P(token_i) = exp(logit_i / T) / Σ exp(logit_j / T)
 
-T = 0：等同于贪心解码，完全确定性。
-T = 1：标准分布，正常采样。
-T > 1：分布更平坦，低概率 token 被选择的概率增大 → 更随机。
- T &lt; 1：分布更尖锐，高概率 token 更容易被选择 → 更确定。
- 建议： 事实性任务 T=0，创意任务 T=0.7-1.0。
-```
-
+   T = 0：等同于贪心解码，完全确定性。
+   T = 1：标准分布，正常采样。
+   T > 1：分布更平坦，低概率 token 被选择的概率增大 → 更随机。
+     T &lt; 1：分布更尖锐，高概率 token 更容易被选择 → 更确定。
+     建议： 事实性任务 T=0，创意任务 T=0.7-1.0。
 #### 4. Top-p（Nucleus Sampling）：
 
      只从概率总和达到 p 的最小 token 集合中采样。
@@ -3890,14 +3689,10 @@ T > 1：分布更平坦，低概率 token 被选择的概率增大 → 更随机
        使用工具调用的标注数据微调模型。
        如 Gorilla、ToolLLM 等工作。
        优点：更准确。缺点：需要训练数据。
-
-```text
-Function Calling（API 级别）：
-  OpenAI、Anthropic 等厂商在 API 层面支持工具调用。
-  模型经过专门训练以支持 function calling。
-  优点：最可靠。缺点：依赖特定厂商。
-```
-
+    Function Calling（API 级别）：
+      OpenAI、Anthropic 等厂商在 API 层面支持工具调用。
+      模型经过专门训练以支持 function calling。
+      优点：最可靠。缺点：依赖特定厂商。
 #### 3. 挑战：
 
     工具选择准确性：工具数量多时容易选错。
@@ -3923,14 +3718,11 @@ Function Calling（API 级别）：
     实现了"大模型容量 + 小模型推理成本"的目标。
 #### 2. 架构细节：
 
-```text
-输入 → Router → 选择 Top-K Expert → 加权合并输出
+   输入 → Router → 选择 Top-K Expert → 加权合并输出
 
-每个 Expert 是一个独立的 FFN（前馈网络）。
- Router 是一个轻量级线性层，输出每个 Expert 的激活概率。
- 通常每次激活 2 个 Expert（如 Mixtral 8x7B）。
-```
-
+   每个 Expert 是一个独立的 FFN（前馈网络）。
+     Router 是一个轻量级线性层，输出每个 Expert 的激活概率。
+     通常每次激活 2 个 Expert（如 Mixtral 8x7B）。
 #### 3. 为什么重要？
 
      参数效率： Mixtral 8x7B 总参数 47B，但每次推理只激活约 13B 参数。
@@ -3965,14 +3757,10 @@ Function Calling（API 级别）：
 #### 4. Result（结果）： 用数据量化成果。没有具体数字时，描述定性的改善。
 
 常见追问应对
-
-```text
  "为什么不用 XXX 方案？" → 说明你评估过，给出具体的对比理由。
  "如果数据量增长 10 倍呢？" → 描述水平扩展策略和架构演进路线。
  "你遇到过什么坑？" → 真实分享踩坑经历和解决方案，展示学习能力。
  "这个指标怎么测的？" → 描述评估方法、数据集、统计方法。
-```
-
 核心竞争力总结
 #### 1. 系统思维： 不只是会调 API，而是能设计完整的企业级架构。
 

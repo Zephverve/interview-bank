@@ -104,14 +104,10 @@ Schema 的对象，描述参数类型、是否必填、枚举等）。
 证：用 JSON Schema 校验类型、范围、枚举；业务层再校验权限与资源是否存在。
 原理详解
    模型可能输出不完整 JSON（流式）或多余字段（若你未禁止）；需在服务端
+   additionalProperties: false （若支持）并剥离未知键。
 
-```text
-additionalProperties: false （若支持）并剥离未知键。
-
-对数字、日期做规范化（时区）。
-失败策略：返回错误信息给模型「请重试」或降级为只读工具。
-```
-
+   对数字、日期做规范化（时区）。
+   失败策略：返回错误信息给模型「请重试」或降级为只读工具。
 面试 Q4：如何做参数校验？
 <div class="guide-answer">
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
@@ -124,121 +120,93 @@ additionalProperties: false （若支持）并剥离未知键。
 OPENAI_API_KEY ）。为便于阅读，省略生产级重试与日志。
 
 ```python
-
-```python
  import json
  from typing import Any
 
  from jsonschema import validate, ValidationError
  from openai import OpenAI
-```
 
  #   工具             （
        JSON Schema parameters  ）
-
-```text
  WEATHER_PARAMS = {
-  "type": "object",
-  "properties": {
-                                                城市名，中文或英文"},
-      "city": {"type": "string", "description": "
-                                                日期 YYYY-MM-DD"},
-      "date": {"type": "string", "description": "
-  },
-  "required": ["city"],
-  "additionalProperties": False,
-```
-
+      "type": "object",
+      "properties": {
+                                                    城市名，中文或英文"},
+          "city": {"type": "string", "description": "
+                                                    日期 YYYY-MM-DD"},
+          "date": {"type": "string", "description": "
+      },
+      "required": ["city"],
+      "additionalProperties": False,
  }
 
-```text
  TOOLS = [
-  {
-      "type": "function",
-      "function": {
-          "name": "get_weather",
-          "description": "查询指定城市在某日期的天气。用户只说「今天」时，请换算为
-```
-
+      {
+          "type": "function",
+          "function": {
+              "name": "get_weather",
+              "description": "查询指定城市在某日期的天气。用户只说「今天」时，请换算为
  具体日期再调用。",
-
-```text
-           "parameters": WEATHER_PARAMS,
-      },
-  }
-```
-
+               "parameters": WEATHER_PARAMS,
+          },
+      }
  ]
 
  #   假实现：真实项目里对接      HTTP API
-
-```python
  def get_weather(city: str, date: str | None = None) -> dict[str, Any]:
-                                                              晴
- return {"city": city, "date": date or "today", "condition": " ",
-```
-
+                                                                  晴
+     return {"city": city, "date": date or "today", "condition": " ",
  "temp_c": 22}
 
-```python
  def run_tool(name: str, arguments: str) -> str:
 
- args = json.loads(arguments or "{}")
- validate(instance=args, schema=WEATHER_PARAMS)    #   与 TOOLS 中一致
- if name == "get_weather":
-     return json.dumps(get_weather(**args), ensure_ascii=False)
- raise ValueError(f"unknown tool: {name}")
+     args = json.loads(arguments or "{}")
+     validate(instance=args, schema=WEATHER_PARAMS)    #   与 TOOLS 中一致
+     if name == "get_weather":
+         return json.dumps(get_weather(**args), ensure_ascii=False)
+     raise ValueError(f"unknown tool: {name}")
 
 def chat_with_tools(user_message: str) -> str:
-  client = OpenAI()
-  messages: list[dict[str, Any]] = [
-      {"role": "system", "content": "    你是助手，需要数据时调用工具，不要编造天
-```
-
+      client = OpenAI()
+      messages: list[dict[str, Any]] = [
+          {"role": "system", "content": "    你是助手，需要数据时调用工具，不要编造天
 气。   "},
+          {"role": "user", "content": user_message},
+     ]
 
-```text
-      {"role": "user", "content": user_message},
- ]
+     for _ in range(5): #  防止死循环
+         resp = client.chat.completions.create(
+             model="gpt-4o-mini",
+             messages=messages,
+             tools=TOOLS,
+             tool_choice="auto",
+         )
+         msg = resp.choices[0].message
+         messages.append(msg.model_dump())
 
- for _ in range(5): #  防止死循环
-     resp = client.chat.completions.create(
-         model="gpt-4o-mini",
-         messages=messages,
-         tools=TOOLS,
-         tool_choice="auto",
-     )
-     msg = resp.choices[0].message
-     messages.append(msg.model_dump())
+         if not msg.tool_calls:
+             return msg.content or ""
 
-     if not msg.tool_calls:
-         return msg.content or ""
-
-     for tc in msg.tool_calls:
-         try:
-              result = run_tool(tc.function.name, tc.function.arguments)
-         except (json.JSONDecodeError, ValidationError, ValueError) as
-```
-
+         for tc in msg.tool_calls:
+             try:
+                  result = run_tool(tc.function.name, tc.function.arguments)
+             except (json.JSONDecodeError, ValidationError, ValueError) as
 e:
+                 result = json.dumps({"error": str(e)}, ensure_ascii=False)
+             messages.append(
+                 {
+                     "role": "tool",
+                     "tool_call_id": tc.id,
+                     "content": result,
+                 }
 
-```text
-             result = json.dumps({"error": str(e)}, ensure_ascii=False)
-         messages.append(
-             {
-                 "role": "tool",
-                 "tool_call_id": tc.id,
-                 "content": result,
-             }
-
-            )
-        超过最大工具调用轮次"
- return "
+                )
+            超过最大工具调用轮次"
+     return "
 
  if __name__ == "__main__":
-                       北京明天天气怎么样？"))
- print(chat_with_tools("
-```
+                           北京明天天气怎么样？"))
+     print(chat_with_tools("
 
 追问应对
  问：为什么要循环 for _ in range(5) ？
@@ -256,13 +224,9 @@ e:
 在应用内部，「Tool」= 可执行能力单元：名称、描述、参数规范、处理函数。注册指在 Agent 启
 动时把工具对象加入注册表（字典或列表），运行时由路由器/模型选择并派发。
 原理详解
-
-```text
-注册表常见结构： name -> callable 或 List[BaseTool] 。
-与纯 Function Calling 映射：把同一套元数据转成各厂商 API 需要的 tools 格式（适配
-层）。
-```
-
+  注册表常见结构： name -> callable 或 List[BaseTool] 。
+  与纯 Function Calling 映射：把同一套元数据转成各厂商 API 需要的 tools 格式（适配
+  层）。
 面试 Q5：Tool 与业务里的普通 Python 函数有何不同？
 <div class="guide-answer">
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
@@ -321,31 +285,24 @@ description
 以下使用 LangChain 1.x 风格（ langchain-core 的 @tool ；版本差异请以官方文档为准）。
 若你环境版本不同，可改为 StructuredTool.from_function 。
 ```python
-
-```python
  from typing import Literal
 
  from langchain_core.tools import tool
-```
 
  @tool
-
-```python
  def search_product(
- query: str,
- category: Literal["book", "electronics", ""] = "",
+     query: str,
+     category: Literal["book", "electronics", ""] = "",
  ) -> str:
-   在电商站内搜索商品。用户要找商品、比价、看库存时用；不要用于闲聊。
- """
+       在电商站内搜索商品。用户要找商品、比价、看库存时用；不要用于闲聊。
+     """
 
- Args:
+     Args:
 
-       query:搜索关键词
-               可选类目过滤，不知道则留空
-       category:
- """
-```
-
+           query:搜索关键词
+                   可选类目过滤，不知道则留空
+           category:
+     """
      # 伪实现
      return f"[dummy] results for {query!r} in {category or 'all'}"
 
@@ -419,18 +376,15 @@ C」：一次实现 Server，多个客户端（Claude Desktop、IDE、自研 Age
  try:
      from mcp.server.fastmcp import FastMCP
  except ImportError:
-
-```python
- FastMCP = None #     环境未安装时仅作结构说明
+     FastMCP = None #     环境未安装时仅作结构说明
 
  if FastMCP:
- mcp = FastMCP("demo")
+     mcp = FastMCP("demo")
 
-    @mcp.tool()
-    def add(a: int, b: int) -> int:
-        """ 返回两个整数之和。     """
-        return a + b
-```
+        @mcp.tool()
+        def add(a: int, b: int) -> int:
+            """ 返回两个整数之和。     """
+            return a + b
 
         #   通常以 `mcp.run(transport="stdio")` 由 Host 拉起子进程
 
@@ -506,38 +460,31 @@ import numpy as np
 from openai import OpenAI
 
 @dataclass
-
-```python
 class ToolSpec:
-name: str
-description: str
+    name: str
+    description: str
 
 def embed_texts(client: OpenAI, model: str, texts: list[str]) ->
-```
-
 np.ndarray:
-
-```python
-resp = client.embeddings.create(model=model, input=texts)
-vecs = [np.array(d.embedding, dtype=np.float32) for d in resp.data]
-mat = np.stack(vecs, axis=0)
- norms = np.linalg.norm(mat, axis=1, keepdims=True) + 1e-8
- return mat / norms
+    resp = client.embeddings.create(model=model, input=texts)
+    vecs = [np.array(d.embedding, dtype=np.float32) for d in resp.data]
+    mat = np.stack(vecs, axis=0)
+     norms = np.linalg.norm(mat, axis=1, keepdims=True) + 1e-8
+     return mat / norms
 
 def route_tools(
- query: str,
- tools: list[ToolSpec],
- client: OpenAI,
- embed_model: str = "text-embedding-3-small",
- top_k: int = 3,
+     query: str,
+     tools: list[ToolSpec],
+     client: OpenAI,
+     embed_model: str = "text-embedding-3-small",
+     top_k: int = 3,
 ) -> list[ToolSpec]:
-corpus = [f"{t.name}\n{t.description}" for t in tools]
-doc_emb = embed_texts(client, embed_model, corpus)
-q_emb = embed_texts(client, embed_model, [query])[0]
- scores = doc_emb @ q_emb
- idx = np.argsort(-scores)[:top_k]
- return [tools[i] for i in idx]
-```
+    corpus = [f"{t.name}\n{t.description}" for t in tools]
+    doc_emb = embed_texts(client, embed_model, corpus)
+    q_emb = embed_texts(client, embed_model, [query])[0]
+     scores = doc_emb @ q_emb
+     idx = np.argsort(-scores)[:top_k]
+     return [tools[i] for i in idx]
 
 #   使用：仅把 route_tools 返回的子集塞进 chat.completions 的 tools 参数
 
@@ -598,8 +545,6 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
 ### 5.6 代码示例（简单编排：先路由再并行）
 
 ```python
-
-```python
  import concurrent.futures
  import json
  from typing import Any, Callable
@@ -607,43 +552,38 @@ Pipeline，也可以是 LLM 每步决定下一步（ReAct / Agent）。
  ToolFn = Callable[..., Any]
 
 def safe_call(name: str, fn: ToolFn, kwargs: dict[str, Any]) -> dict[str,
-```
-
 Any]:
-
-```python
-try:
-    return {"tool": name, "ok": True, "result": fn(**kwargs)}
-except Exception as e:
-    return {"tool": name, "ok": False, "error": str(e)}
+    try:
+        return {"tool": name, "ok": True, "result": fn(**kwargs)}
+    except Exception as e:
+        return {"tool": name, "ok": False, "error": str(e)}
 
 def run_parallel_tools(
-calls: list[tuple[str, ToolFn, dict[str, Any]]],
+    calls: list[tuple[str, ToolFn, dict[str, Any]]],
 ) -> list[dict[str, Any]]:
-with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
-    futs = [ex.submit(safe_call, n, f, k) for n, f, k in calls]
-    return [f.result() for f in futs]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
+        futs = [ex.submit(safe_call, n, f, k) for n, f, k in calls]
+        return [f.result() for f in futs]
 
 #例：先串行拿      user_id ，再并行查订单与积分（伪函数）
 def lookup_user_id(email: str) -> str:
-return "u_123"
+    return "u_123"
 
 def fetch_orders(uid: str) -> list:
-return [{"id": 1}]
+    return [{"id": 1}]
 
 def fetch_points(uid: str) -> int:
-return 42
+    return 42
 
 def orchestrate(user_email: str) -> str:
-uid = lookup_user_id(user_email)
-second = run_parallel_tools(
-    [
-        ("orders", fetch_orders, {"uid": uid}),
-        ("points", fetch_points, {"uid": uid}),
-    ]
-)
-return json.dumps(second, ensure_ascii=False)
-```
+    uid = lookup_user_id(user_email)
+    second = run_parallel_tools(
+        [
+            ("orders", fetch_orders, {"uid": uid}),
+            ("points", fetch_points, {"uid": uid}),
+        ]
+    )
+    return json.dumps(second, ensure_ascii=False)
 
 6. 安全性
 ```
@@ -693,29 +633,21 @@ return json.dumps(second, ensure_ascii=False)
 进入上下文。
 Python 示意
 ```python
-
-```python
  import os
  import urllib.parse
  import urllib.request
 
  def web_search(query: str, max_results: int = 5) -> list[dict]:
- """ 占位：真实环境使用官方搜索         API并处理分页。     """
- q = urllib.parse.quote(query)
- url = f"https://duckduckgo.com/html/?q={q}" # 示例仅作结构说明，生产请用合
-```
-
+     """ 占位：真实环境使用官方搜索         API并处理分页。     """
+     q = urllib.parse.quote(query)
+     url = f"https://duckduckgo.com/html/?q={q}" # 示例仅作结构说明，生产请用合
  规 API
      req = urllib.request.Request(url, headers={"User-Agent":
  "AgentBot/1.0"})
+     with urllib.request.urlopen(req, timeout=10) as resp:
+         html = resp.read(200_000)
 
-```text
- with urllib.request.urlopen(req, timeout=10) as resp:
-     html = resp.read(200_000)
-
- return [{"title": "stub", "snippet":
-```
-
+     return [{"title": "stub", "snippet":
  html[:200].decode(errors="ignore"), "url": url}]
 
 ```
@@ -728,12 +660,9 @@ Python 示意
  def query_user_orders(conn, user_id: str, limit: int = 20) -> list:
      sql = "SELECT id, amount, created_at FROM orders WHERE user_id = %s
  ORDER BY created_at DESC LIMIT %s"
-
-```text
- with conn.cursor() as cur:
-     cur.execute(sql, (user_id, limit))
-     return list(cur.fetchall())
-```
+     with conn.cursor() as cur:
+         cur.execute(sql, (user_id, limit))
+         return list(cur.fetchall())
 
 ```
 
@@ -754,19 +683,16 @@ token。
 概念解释
 限制根目录（chroot 或路径规范化），禁止任意路径；写操作需备份或 diff；大文件分块读。
 ```python
-
-```python
  import os
 
  SANDBOX_ROOT = "/var/agent_sandbox"
 
  def safe_read_file(path: str, max_bytes: int = 50_000) -> str:
- full = os.path.realpath(os.path.join(SANDBOX_ROOT, path))
- if not full.startswith(os.path.realpath(SANDBOX_ROOT) + os.sep):
-     raise PermissionError("path escapes sandbox")
- with open(full, "rb") as f:
-     return f.read(max_bytes).decode("utf-8", errors="replace")
-```
+     full = os.path.realpath(os.path.join(SANDBOX_ROOT, path))
+     if not full.startswith(os.path.realpath(SANDBOX_ROOT) + os.sep):
+         raise PermissionError("path escapes sandbox")
+     with open(full, "rb") as f:
+         return f.read(max_bytes).decode("utf-8", errors="replace")
 
 ```
 
@@ -775,47 +701,33 @@ token。
 概念解释
 对数学表达式用 AST 解析或 numexpr ，禁止 eval 任意字符串，以防代码执行。
 ```python
-
-```python
  import ast
  import operator
 
  _ALLOWED = {
- ast.Add: operator.add,
- ast.Sub: operator.sub,
- ast.Mult: operator.mul,
- ast.Div: operator.truediv,
- ast.USub: operator.neg,
- ast.Pow: operator.pow,
-```
-
+     ast.Add: operator.add,
+     ast.Sub: operator.sub,
+     ast.Mult: operator.mul,
+     ast.Div: operator.truediv,
+     ast.USub: operator.neg,
+     ast.Pow: operator.pow,
  }
 
-```python
  def eval_expr(node: ast.AST) -> float:
 
- if isinstance(node, ast.Constant) and isinstance(node.value, (int,
-```
-
+     if isinstance(node, ast.Constant) and isinstance(node.value, (int,
  float)):
-
-```text
-      return float(node.value)
- if isinstance(node, ast.BinOp) and type(node.op) in _ALLOWED:
-     return _ALLOWED[type(node.op)](eval_expr(node.left),
-```
-
+          return float(node.value)
+     if isinstance(node, ast.BinOp) and type(node.op) in _ALLOWED:
+         return _ALLOWED[type(node.op)](eval_expr(node.left),
  eval_expr(node.right))
-
-```python
- if isinstance(node, ast.UnaryOp) and type(node.op) in _ALLOWED:
-     return _ALLOWED[type(node.op)](eval_expr(node.operand))
- raise ValueError("unsupported expression")
+     if isinstance(node, ast.UnaryOp) and type(node.op) in _ALLOWED:
+         return _ALLOWED[type(node.op)](eval_expr(node.operand))
+     raise ValueError("unsupported expression")
 
  def calculator(expr: str) -> float:
- tree = ast.parse(expr, mode="eval")
- return eval_expr(tree.body)
-```
+     tree = ast.parse(expr, mode="eval")
+     return eval_expr(tree.body)
 
 ```
 

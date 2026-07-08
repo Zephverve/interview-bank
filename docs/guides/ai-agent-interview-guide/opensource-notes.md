@@ -27,31 +27,25 @@ aside: true
 而不是教学 Demo。
 ### 1.2 技术栈
 
-```text
-运行时 / 构建：以 Bun 为打包与运行环境（源码中广泛使用 bun:bundle 等内置能力）。
-语言：TypeScript。
-终端 UI：React + Ink（Ink 为终端中的 React 渲染层；与本仓库中 claude-code-
-rust/spec/08_ink_terminal.md 等规范文档可对照阅读）
-                                     。
-```
-
+  运行时 / 构建：以 Bun 为打包与运行环境（源码中广泛使用 bun:bundle 等内置能力）。
+  语言：TypeScript。
+  终端 UI：React + Ink（Ink 为终端中的 React 渲染层；与本仓库中 claude-code-
+  rust/spec/08_ink_terminal.md 等规范文档可对照阅读）
+                                         。
 ### 1.3 核心架构分析（含具体路径）
 
  工SC src/tools/ 
  职责：每个业务工具（Bash、文件读写、Grep、MCP、子 Agent 等）以目录或模块形式组
  织，内含 Tool 实现、Prompt 片段、权限相关 UI、常量 等。
  典型路径示例：
-
-```text
-基类与工具发现： {ROOT}/claude-code-main/src/Tool.ts （含 findToolByName 、工
-具上下文类型、与权限/进度类型的耦合边界）。
-Bash： {ROOT}/claude-code-main/src/tools/BashTool/ （含
-bashPermissions.ts 、 readOnlyValidation.ts 等纵深安全逻辑）     。
-子 Agent： {ROOT}/claude-code-main/src/tools/AgentTool/ （ runAgent.ts 、
-forkSubagent.ts 、 loadAgentsDir.ts 等） 。
-MCP： {ROOT}/claude-code-main/src/tools/MCPTool/MCPTool.ts 及
-src/services/mcp/ 下客户端、传输层。
-```
+  基类与工具发现： {ROOT}/claude-code-main/src/Tool.ts （含 findToolByName 、工
+  具上下文类型、与权限/进度类型的耦合边界）。
+  Bash： {ROOT}/claude-code-main/src/tools/BashTool/ （含
+   bashPermissions.ts 、 readOnlyValidation.ts 等纵深安全逻辑）     。
+  子 Agent： {ROOT}/claude-code-main/src/tools/AgentTool/ （ runAgent.ts 、
+   forkSubagent.ts 、 loadAgentsDir.ts 等） 。
+  MCP： {ROOT}/claude-code-main/src/tools/MCPTool/MCPTool.ts 及
+   src/services/mcp/ 下客户端、传输层。
 
  注册 / 发现 / 执行（理解要点）：
   注册：工具在单一类型体系中实现统一接口（见 Tool.ts 及其导出），由上层 Query 循环
@@ -72,14 +66,10 @@ src/services/mcp/ 下客户端、传输层。
  （analytics）、自动摘要（如 toolUseSummary ）、语音、插件、远程托管设置等。
 
 典型路径：
-
-```text
-API： {ROOT}/claude-code-main/src/services/api/ （ client.ts 、 claude.ts 、
-withRetry 等，与重试/降级相关）        。
-会话记忆： {ROOT}/claude-code-main/src/services/SessionMemory/ 。
-压缩： {ROOT}/claude-code-main/src/services/compact/ 。
-```
-
+   API： {ROOT}/claude-code-main/src/services/api/ （ client.ts 、 claude.ts 、
+    withRetry 等，与重试/降级相关）        。
+   会话记忆： {ROOT}/claude-code-main/src/services/SessionMemory/ 。
+   压缩： {ROOT}/claude-code-main/src/services/compact/ 。
 学习价值：这里体现了「Agent 主循环瘦、服务胖」——主循环负责编排，复杂策略下沉到
 service 模块并单测友好。
 %ULGJH模式$JHQWì外部C的桥接
@@ -96,15 +86,11 @@ require('./commands/bridge/index.js') ，避免无关构建体积与攻击面。
 核心文件： {ROOT}/claude-code-main/src/query.ts （体量很大，涵盖多轮对话、流式事
 件、compact、工具结果摘要等）。
 设计要点：
-
-```text
-与 Tool.js / findToolByName 联动完成 tool_use → 执行 → tool_result 闭环。
-通过 feature('REACTIVE_COMPACT') 、 feature('CONTEXT_COLLAPSE') 等 按构建裁剪
-不同压缩/折叠策略（见文件头部 require 分支）。
-Token 与预算： src/query/tokenBudget.ts 、 src/services/compact/ 等与上下文长
-度控制强相关。
-```
-
+  与 Tool.js / findToolByName 联动完成 tool_use → 执行 → tool_result 闭环。
+  通过 feature('REACTIVE_COMPACT') 、 feature('CONTEXT_COLLAPSE') 等 按构建裁剪
+  不同压缩/折叠策略（见文件头部 require 分支）。
+  Token 与预算： src/query/tokenBudget.ts 、 src/services/compact/ 等与上下文长
+  度控制强相关。
 并列入口：仓库中还存在 src/query/ 子目录（如 deps.ts 、 config.ts 、
 stopHooks.ts ）
              ，承担查询依赖注入、配置与停止钩子，体现 「query 横切配置」与「query
@@ -165,35 +151,32 @@ stopHooks.ts ）
     映射。
 ### 2.3 Rust 工作区架构 src-rust/
 
-```text
-工作区清单： {ROOT}/claude-code-rust/src-rust/Cargo.toml （members 定义多 crate
-结构）。
-与规范对应的 crate 目录（路径均在 src-rust/crates/ 下）：
-cli ： cli/src/main.rs 、 oauth_flow.rs —— 进程入口与 OAuth 等。
+  工作区清单： {ROOT}/claude-code-rust/src-rust/Cargo.toml （members 定义多 crate
+  结构）。
+  与规范对应的 crate 目录（路径均在 src-rust/crates/ 下）：
+    cli ： cli/src/main.rs 、 oauth_flow.rs —— 进程入口与 OAuth 等。
 
-core ： core/src/lib.rs 及 system_prompt.rs 、 team_memory_sync.rs 、
-oauth_config.rs 等 —— 核心领域逻辑与配置。
+    core ： core/src/lib.rs 及 system_prompt.rs 、 team_memory_sync.rs 、
+    oauth_config.rs 等 —— 核心领域逻辑与配置。
 
-api ：对外 API 抽象层。
+    api ：对外 API 抽象层。
 
-tools ： tools/src/lib.rs 及 bash.rs 、 file_read.rs 、 grep_tool.rs 、
-mcp_resources.rs 、 agent_tool.rs 等 —— 与各工具一一对应。
+    tools ： tools/src/lib.rs 及 bash.rs 、 file_read.rs 、 grep_tool.rs 、
+    mcp_resources.rs 、 agent_tool.rs 等 —— 与各工具一一对应。
 
-query ： query/src/coordinator.rs 、 compact.rs 、 cron_scheduler.rs 、
-auto_dream.rs 等 —— 查询循环与协调。
+    query ： query/src/coordinator.rs 、 compact.rs 、 cron_scheduler.rs 、
+    auto_dream.rs 等 —— 查询循环与协调。
 
-tui ：终端界面。
+    tui ：终端界面。
 
-commands ： commands/src/named_commands.rs 等 —— 命名命令注册。
+    commands ： commands/src/named_commands.rs 等 —— 命名命令注册。
 
-mcp ：MCP 协议与资源。
+    mcp ：MCP 协议与资源。
 
-bridge ：桥接层。
+    bridge ：桥接层。
 
-buddy ：与「伙伴/养成」类扩展相关（规范 11_special_systems.md 中有 buddy 条
-目，可与源码对照）。
-```
-
+    buddy ：与「伙伴/养成」类扩展相关（规范 11_special_systems.md 中有 buddy 条
+   目，可与源码对照）。
 ### 2.4 关键设计模式：规范驱动开发（SDD）
 
   Spec 先行：每个域（入口、命令、工具、Bridge、Ink）在 Markdown 中 定边界、定数据契
@@ -254,17 +237,14 @@ buddy ：与「伙伴/养成」类扩展相关（规范 11_special_systems.md �
 
 ### 3.3 Rust 子树
 
-```text
-              ： {ROOT}/claude-code/rust/crates/rusty-claude-cli/
-rusty-claude-cli
-main.rs 、 app.rs 、 args.rs 、 input.rs 、 render.rs —— 偏 CLI/TUI 实验或性能
-路径，与 Python 并存。
+                  ： {ROOT}/claude-code/rust/crates/rusty-claude-cli/
+   rusty-claude-cli
+  main.rs 、 app.rs 、 args.rs 、 input.rs 、 render.rs —— 偏 CLI/TUI 实验或性能
+  路径，与 Python 并存。
 
-       ： {ROOT}/claude-code/rust/crates/compat-harness/
-compat-harness
-用于 兼容性/行为对齐测试 的 harness（具体断言见 lib.rs ）。
-```
-
+           ： {ROOT}/claude-code/rust/crates/compat-harness/
+  compat-harness
+  用于 兼容性/行为对齐测试 的 harness（具体断言见 lib.rs ）。
 ### 3.4 学习价值
 
   理解 「如何用少量 Python 模块 + manifest 表达移植范围」，而不是一次性复制全部 TS 功
@@ -308,11 +288,9 @@ compat-harness
 这些脚本体现：文档 + 工具链 一体化，而不是纯手写结论。
 ### 4.4 学习价值
 
-```text
-与 claude-code-main 交叉验证：HitCC 描述「运行时与边界」，源码提供「真实实现」；两
-者对照可发现 版本漂移 与 文档滞后。
-适合准备 「请说明 Claude Code 的 Prompt 分层与权限边界」 类深度面试题。
-```
+  与 claude-code-main 交叉验证：HitCC 描述「运行时与边界」，源码提供「真实实现」；两
+  者对照可发现 版本漂移 与 文档滞后。
+  适合准备 「请说明 Claude Code 的 Prompt 分层与权限边界」 类深度面试题。
 
 第二部分：网上优秀项目分析
 
@@ -393,9 +371,7 @@ ragent是社区中较典型的 企业级 Agentic RAG 开源实现，强调 检�
 │ 分·澄清    │           │ 融合·重排·溯源 │         │ 系统调用      │
 └──────┬──────┘            └────────┬────────┘         └───────┬───────┘
        │                            │                           │
-```
 
-```text
          └───────────────────────────┼───────────────────────────┘
                                      ▼
                   ┌─────────────────────────────────────┐

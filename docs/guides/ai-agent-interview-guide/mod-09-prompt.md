@@ -518,24 +518,20 @@ model_validate 。
 
 代码示例
 ```python
-
-```python
  from pydantic import BaseModel, Field, ValidationError
  from typing import List, Optional
  import json
 
  class Item(BaseModel):
- name: str = Field(..., description="  商品名称")
- price: float = Field(..., ge=0)
+     name: str = Field(..., description="  商品名称")
+     price: float = Field(..., ge=0)
 
  class OrderSummary(BaseModel):
- summary: str
- items: List[Item]
- note: Optional[str] = None
+     summary: str
+     items: List[Item]
+     note: Optional[str] = None
 
  def parse_llm_json(text: str) -> OrderSummary:
-```
-
      # 生产环境应先剥离      ```json 代码块、修复常见       JSON   问题
      data = json.loads(text)
      return OrderSummary.model_validate(data)
@@ -733,22 +729,18 @@ shot 组合。
 极简代码示意（需安装 dspy-ai ，仅作面试口述辅助）
 ```python
   # 伪代码：展示「可优化 Prompt」这一思想，非可运行完整业务
+  import dspy
 
-```python
-import dspy
+  lm = dspy.LM("openai/gpt-4o-mini", api_key="...")
+  dspy.settings.configure(lm=lm)
 
-lm = dspy.LM("openai/gpt-4o-mini", api_key="...")
-dspy.settings.configure(lm=lm)
+  class QA(dspy.Signature):
+      """根据上下文回答问题。       """
+      context = dspy.InputField()
+      question = dspy.InputField()
+      answer = dspy.OutputField()
 
-class QA(dspy.Signature):
-  """根据上下文回答问题。       """
-  context = dspy.InputField()
-  question = dspy.InputField()
-  answer = dspy.OutputField()
-
-predictor = dspy.ChainOfThought(QA)
-```
-
+  predictor = dspy.ChainOfThought(QA)
   # 使用  Teleprompter（如   BootstrapFewShot     ）在
                                              trainset 上优化   predictor
   # tp = dspy.teleprompt.BootstrapFewShot(metric=your_metric)

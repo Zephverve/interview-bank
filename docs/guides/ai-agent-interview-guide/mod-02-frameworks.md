@@ -34,15 +34,12 @@ ReAct 的全称是 Reasoning + Acting（推理 + 行动）。可以把它想象�
 「更会想」，而是 想与做的闭环：
 
  用户问题
-
-```text
-→ Thought：拆解子目标
-→ Action：选择工具并执行
-→ Observation：获得外部反馈
-→ Thought：根据观察修正计划
-→ …
-→ Final Answer
-```
+   → Thought：拆解子目标
+   → Action：选择工具并执行
+   → Observation：获得外部反馈
+   → Thought：根据观察修正计划
+   → …
+   → Final Answer
 
 ### 1.2.2 标准工作流程（伪代码）
 
@@ -151,112 +148,90 @@ Final Answer: ...
 ### 1.5 代码示例（Python，简化版 ReAct 循环）
 
 ```python
-
-```python
  from dataclasses import dataclass
  from typing import Callable, Dict, List, Tuple
-```
 
  @dataclass
-
-```python
  class Tool:
- name: str
- run: Callable[[str], str]
+     name: str
+     run: Callable[[str], str]
 
  def build_prompt(question: str, history: List[Tuple[str, str, str]],
  tool_names: str) -> str:
- lines = [
-     "You solve tasks with tools. Use EXACTLY this format each turn:",
-     "Thought: ...",
-     f"Action: one of {tool_names}",
-     "Action Input: ...",
-     "Stop when you can answer:",
-     "Final Answer: ...",
-     "",
-     f"Tools available: {tool_names}",
-     "",
+     lines = [
+         "You solve tasks with tools. Use EXACTLY this format each turn:",
+         "Thought: ...",
+         f"Action: one of {tool_names}",
+         "Action Input: ...",
+         "Stop when you can answer:",
+         "Final Answer: ...",
+         "",
+         f"Tools available: {tool_names}",
+         "",
 
-     f"Question: {question}",
-     "",
-]
-for thought, action, obs in history:
-     lines += [f"Thought: {thought}", f"Action: {action}",
-```
-
+         f"Question: {question}",
+         "",
+    ]
+    for thought, action, obs in history:
+         lines += [f"Thought: {thought}", f"Action: {action}",
 f"Observation: {obs}", ""]
-
-```python
-return "\n".join(lines)
+    return "\n".join(lines)
 
 def parse_action(text: str) -> Tuple[str | None, str | None]:
-```
-
     #   极简解析：生产环境请用更稳健的正则/JSON
-
-```python
-action = None
-action_input = None
-for line in text.splitlines():
-     if line.startswith("Action:"):
-           action = line.split("Action:", 1)[1].strip()
-     if line.startswith("Action Input:"):
-           action_input = line.split("Action Input:", 1)[1].strip()
-return action, action_input
+    action = None
+    action_input = None
+    for line in text.splitlines():
+         if line.startswith("Action:"):
+               action = line.split("Action:", 1)[1].strip()
+         if line.startswith("Action Input:"):
+               action_input = line.split("Action Input:", 1)[1].strip()
+    return action, action_input
 
 def react_loop(
-question: str,
-tools: Dict[str, Tool],
-llm: Callable[[str], str],
-max_steps: int = 6,
+    question: str,
+    tools: Dict[str, Tool],
+    llm: Callable[[str], str],
+    max_steps: int = 6,
 ) -> str:
-tool_names = "[" + ", ".join(tools.keys()) + "]"
-history: List[Tuple[str, str, str]] = []
+    tool_names = "[" + ", ".join(tools.keys()) + "]"
+    history: List[Tuple[str, str, str]] = []
 
-for _ in range(max_steps):
-     prompt = build_prompt(question, history, tool_names)
-     out = llm(prompt)
+    for _ in range(max_steps):
+         prompt = build_prompt(question, history, tool_names)
+         out = llm(prompt)
 
-     if "Final Answer:" in out:
-           return out.split("Final Answer:", 1)[1].strip()
+         if "Final Answer:" in out:
+               return out.split("Final Answer:", 1)[1].strip()
 
-     thought = ""
-     for line in out.splitlines():
-           if line.startswith("Thought:"):
-              thought = line.split("Thought:", 1)[1].strip()
+         thought = ""
+         for line in out.splitlines():
+               if line.startswith("Thought:"):
+                  thought = line.split("Thought:", 1)[1].strip()
 
-       action, action_input = parse_action(out)
-       if not action or action not in tools:
-            obs = f"ERROR: invalid Action. Must be one of
-```
-
+           action, action_input = parse_action(out)
+           if not action or action not in tools:
+                obs = f"ERROR: invalid Action. Must be one of
  {list(tools.keys())}."
+           else:
+                obs = tools[action].run(action_input or "")
 
-```text
-       else:
-            obs = tools[action].run(action_input or "")
+           history.append((thought, f"{action}[{action_input}]", obs))
 
-       history.append((thought, f"{action}[{action_input}]", obs))
-
-  return "Failed: max steps exceeded."
-```
+      return "Failed: max steps exceeded."
 
  #   用法示例（llm 替换为真实 API 调用）
  if __name__ == "__main__":
       def fake_llm(prompt: str) -> str:
            #   仅演示：真实场景接 OpenAI/Claude/本地模型
+           return (
+                "Thought: I need to add numbers.\n"
+                "Action: calculator\n"
+                "Action Input: 21+21\n"
+           )
 
-```text
-       return (
-            "Thought: I need to add numbers.\n"
-            "Action: calculator\n"
-            "Action Input: 21+21\n"
-       )
-
-  tools = {
-       "calculator": Tool("calculator", lambda s: str(eval(s)) if s else
-```
-
+      tools = {
+           "calculator": Tool("calculator", lambda s: str(eval(s)) if s else
  "NaN"),
       }
       print(react_loop("What is 21+21?", tools, fake_llm))
@@ -386,60 +361,45 @@ if error or inconsistency:
 ### 2.5 代码示例（Python，极简 Planner + Executor）
 
 ```python
-
-```python
  from typing import Any, Dict, List
 
  def plan(task: str, llm) -> List[str]:
- prompt = f"""
- Break the task into 3-7 concrete steps. Return ONE step per line.
- Task: {task}
- """
- text = llm(prompt)
- steps = [s.strip("- ").strip() for s in text.splitlines() if
-```
-
+     prompt = f"""
+     Break the task into 3-7 concrete steps. Return ONE step per line.
+     Task: {task}
+     """
+     text = llm(prompt)
+     steps = [s.strip("- ").strip() for s in text.splitlines() if
  s.strip()]
-
-```python
- return steps
+     return steps
 
  def execute_step(step: str, state: Dict[str, Any], tools, llm) -> str:
-```
-
      #   这里可把 ReAct 当作单步执行器
-
-```python
- prompt = f"Step: {step}\nContext: {state}\nAnswer succinctly."
- return llm(prompt)
+     prompt = f"Step: {step}\nContext: {state}\nAnswer succinctly."
+     return llm(prompt)
 
  def plan_and_execute(task: str, llm, tools, max_replans: int = 2) -> str:
- steps = plan(task, llm)
- state: Dict[str, Any] = {}
+     steps = plan(task, llm)
+     state: Dict[str, Any] = {}
 
- for _ in range(max_replans + 1):
-       for i, st in enumerate(steps):
+     for _ in range(max_replans + 1):
+           for i, st in enumerate(steps):
 
-         try:
-              out = execute_step(st, state, tools, llm)
-              state[f"step_{i}"] = out
-         except Exception as e:
-```
-
+             try:
+                  out = execute_step(st, state, tools, llm)
+                  state[f"step_{i}"] = out
+             except Exception as e:
                   #   触发重规划（演示）
                   replan_prompt = f"Task: {task}\nFailed step: {st}\nError:
  {e}\nGive a new plan."
-
-```text
-              text = llm(replan_prompt)
-              steps = [s.strip("- ").strip() for s in text.splitlines()
+                  text = llm(replan_prompt)
+                  steps = [s.strip("- ").strip() for s in text.splitlines()
  if s.strip()]
-              break
-     else:
-         return llm(f"Summarize final result based on: {state}")
+                  break
+         else:
+             return llm(f"Summarize final result based on: {state}")
 
-  return "Failed after replanning."
-```
+      return "Failed after replanning."
 
 ```
 
@@ -523,21 +483,18 @@ repeat until success or max_trials:
 
 ```python
 
-```python
  def reflexion_loop(task: str, actor, evaluator, reflector, max_trials: int
  = 3) -> str:
- reflections: list[str] = []
+     reflections: list[str] = []
 
- for t in range(max_trials):
-     mem = "\n".join(f"- {r}" for r in reflections) or "(none)"
-     out = actor(f"Task: {task}\nReflections:\n{mem}\n")
-     score, feedback = evaluator(out)   #   例如 (0.0~1.0, str)
-     if score >= 0.9:
-         return out
+     for t in range(max_trials):
+         mem = "\n".join(f"- {r}" for r in reflections) or "(none)"
+         out = actor(f"Task: {task}\nReflections:\n{mem}\n")
+         score, feedback = evaluator(out)   #   例如 (0.0~1.0, str)
+         if score >= 0.9:
+             return out
 
-     r = reflector(f"Output:\n{out}\nFeedback:\n{feedback}\nWrite
-```
-
+         r = reflector(f"Output:\n{out}\nFeedback:\n{feedback}\nWrite
  concise lessons.")
          reflections.append(r)
 
@@ -604,15 +561,11 @@ while budget remains:
 ### 4.5 代码示例（Python，极度简化的「多候选一步扩展」）
 
 ```python
-
-```python
  import random
  from typing import List
 
  def expand_candidates(state: str, llm, k: int = 3) -> List[str]:
- prompt = f"State:\n{state}\nPropose {k} distinct next actions (one
-```
-
+     prompt = f"State:\n{state}\nPropose {k} distinct next actions (one
  line each)."
      text = llm(prompt)
      return [line.strip("- ") for line in text.splitlines() if
@@ -620,13 +573,10 @@ while budget remains:
 
  def score_action(state: str, action: str, scorer) -> float:
      return scorer(state, action)   #   可用启发式或小型模型
-
-```python
  def lats_one_step(state: str, llm, scorer) -> str:
- cands = expand_candidates(state, llm, k=3)
- best = max(cands, key=lambda a: score_action(state, a, scorer))
- return best
-```
+     cands = expand_candidates(state, llm, k=3)
+     best = max(cands, key=lambda a: score_action(state, a, scorer))
+     return best
 
 ```
 
@@ -713,24 +663,20 @@ loop:
  #   示意代码：突出 AgentExecutor 的“循环本质”
  def simple_agent_executor(llm, tools, user_input: str, max_iterations: int
  = 5):
+      messages = [{"role": "user", "content": user_input}]
 
-```text
-  messages = [{"role": "user", "content": user_input}]
+      for _ in range(max_iterations):
+         resp = llm.chat(messages, tools=tools)   #   伪 API
+         if resp.final_text and not resp.tool_calls:
+             return resp.final_text
 
-  for _ in range(max_iterations):
-     resp = llm.chat(messages, tools=tools)   #   伪 API
-     if resp.final_text and not resp.tool_calls:
-         return resp.final_text
-
-     for call in resp.tool_calls:
-         name = call.name
-         args = call.args
-         tool_fn = next(t for t in tools if t.name == name)
-         observation = tool_fn.invoke(args)
-         messages.append({"role": "assistant", "tool_calls": [call]})
-         messages.append({"role": "tool", "name": name, "content":
-```
-
+         for call in resp.tool_calls:
+             name = call.name
+             args = call.args
+             tool_fn = next(t for t in tools if t.name == name)
+             observation = tool_fn.invoke(args)
+             messages.append({"role": "assistant", "tool_calls": [call]})
+             messages.append({"role": "tool", "name": name, "content":
  observation})
 
       return "Stopped: max iterations."
@@ -807,25 +753,22 @@ else: goto continue
 ### 6.5 代码示例（Python，最小状态机草图）
 
 ```python
-
-```python
  from typing import TypedDict, Literal
 
  class AgentState(TypedDict):
- task: str
- notes: str
- route: str
+     task: str
+     notes: str
+     route: str
 
  def planner_node(state: AgentState) -> AgentState:
- return {**state, "notes": "plan: step1...", "route": "exec"}
+     return {**state, "notes": "plan: step1...", "route": "exec"}
 
-def exec_node(state: AgentState) -> AgentState:
-   return {**state, "notes": state["notes"] + " | executed", "route":
-"end"}
+  def exec_node(state: AgentState) -> AgentState:
+       return {**state, "notes": state["notes"] + " | executed", "route":
+  "end"}
 
-def route_fn(state: AgentState) -> Literal["exec", "end"]:
-   return "exec" if state["route"] == "exec" else "end"
-```
+  def route_fn(state: AgentState) -> Literal["exec", "end"]:
+       return "exec" if state["route"] == "exec" else "end"
 
   #   伪代码：LangGraph 中会把 node/route_fn 注册到 StateGraph
   # graph.add_node("planner", planner_node)
@@ -868,11 +811,9 @@ for round in 1..N:
 
 ### 7.2.3 适用场景
 
-```text
-内容生产流水线（调研→写作→校对）。
-软件工程（需求→设计→实现→Code review）。
-需要 强分工 与 过程质量控制 的组织化任务。
-```
+  内容生产流水线（调研→写作→校对）。
+  软件工程（需求→设计→实现→Code review）。
+  需要 强分工 与 过程质量控制 的组织化任务。
 
 ### 7.3 面试问题（Q）+ 标准答案（A）
 
@@ -904,20 +845,17 @@ for round in 1..N:
 ### 7.5 代码示例（Python，概念演示：多角色轮询）
 
 ```python
-
-```python
  def run_crew(task: str, roles: dict, llm, rounds: int = 2) -> str:
- thread = f"Task: {task}\n"
- order = ["researcher", "writer", "reviewer"]
+     thread = f"Task: {task}\n"
+     order = ["researcher", "writer", "reviewer"]
 
- for _ in range(rounds):
-    for r in order:
-        prompt = roles[r] + "\n\n" + thread
-        reply = llm(prompt)
-        thread += f"\n[{r}]:\n{reply}\n"
+     for _ in range(rounds):
+        for r in order:
+            prompt = roles[r] + "\n\n" + thread
+            reply = llm(prompt)
+            thread += f"\n[{r}]:\n{reply}\n"
 
- return thread
-```
+     return thread
 
 ```
 
@@ -1055,18 +993,6 @@ for round in 1..N:
 <div class="guide-answer">
 <div class="guide-answer-head"><span class="guide-a-label">答</span><span class="guide-a-title">标准答案</span></div>
 <div class="guide-answer-body">
-<p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→Observation</p>
+<p>LLM 靠描述做路由与填参；描述就是 人机接口，直接影响成功率。附录：对比速记表框架/概念           关键词                          典型循环ReAct              推理+行动交替            Thought→Action→ObservationPlan-and-Execute   先计划后执行             Plan→Execute→(Replan)Reflexion          反思记忆               Act→Eval→Reflect→RetryLATS               树搜索 / MCTS         Select→Expand→Evaluate→BackpropLangChain Agent    Executor 循环        decide→tool→observeLangGraph          图编排                node→conditional edge多 Agent            角色协作               对话/流水线文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。</p>
 </div></div>
 </div>
-
-```text
- Plan-and-Execute   先计划后执行             Plan→Execute→(Replan)
- Reflexion          反思记忆               Act→Eval→Reflect→Retry
- LATS               树搜索 / MCTS         Select→Expand→Evaluate→Backprop
-```
-
- LangChain Agent    Executor 循环        decide→tool→observe
- LangGraph          图编排                node→conditional edge
- 多 Agent            角色协作               对话/流水线
-
-文档版本：面向入门详解；落地代码请以你所使用的库版本官方文档为准。

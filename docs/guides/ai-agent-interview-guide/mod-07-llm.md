@@ -70,13 +70,10 @@ Concat 再乘 (W_O) 投回 (d_{model})。
 会用三个矩阵，等价于门控 FFN）。
 ### 1.2.6 Layer Normalization：Pre-Norm vs Post-Norm
 
-```text
-Post-Norm（原始 Transformer）：(x \leftarrow x + \text{Sublayer}(x))，再在子层输出上做
-Norm。
-Pre-Norm（现代 LLM 常见）：先 Norm 再进子层：(x \leftarrow x + \text{Sublayer}
-(\text{LN}(x)))。
-```
-
+  Post-Norm（原始 Transformer）：(x \leftarrow x + \text{Sublayer}(x))，再在子层输出上做
+  Norm。
+  Pre-Norm（现代 LLM 常见）：先 Norm 再进子层：(x \leftarrow x + \text{Sublayer}
+  (\text{LN}(x)))。
 Pre-Norm 通常更稳定、更易训练深层网络；Post-Norm 在理论上与残差更「经典」，但深层时
 更难训。
 ### 1.2.7 Residual Connection（残差连接）
@@ -101,25 +98,18 @@ Q：Transformer 和 RNN 相比，核心优势是什么？
 ### 1.5 代码示例：缩放点积注意力（PyTorch 风格伪代码）
 
 ```python
+  import torch
+  import torch.nn.functional as F
+  import math
 
-```python
-import torch
-import torch.nn.functional as F
-import math
-
-def scaled_dot_product_attention(Q, K, V, attn_mask=None):
-```
-
+  def scaled_dot_product_attention(Q, K, V, attn_mask=None):
       # Q,K,V: (batch, heads, seq_len, d_k)
+      scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(Q.size(-1))
+       if attn_mask is not None:
+           scores = scores.masked_fill(attn_mask == 0, float("-inf"))
 
-```text
-  scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(Q.size(-1))
-   if attn_mask is not None:
-       scores = scores.masked_fill(attn_mask == 0, float("-inf"))
-
-   attn = F.softmax(scores, dim=-1)
-   return torch.matmul(attn, V), attn
-```
+       attn = F.softmax(scores, dim=-1)
+       return torch.matmul(attn, V), attn
 
 ```
 
@@ -285,19 +275,16 @@ Q：Prefill 和 Decode 哪个更吃算力？哪个更吃带宽？
 ### 4.5 代码示例：简单 Greedy + 温度（概念）
 
 ```python
+  import torch
+  import torch.nn.functional as F
 
-```python
-import torch
-import torch.nn.functional as F
-
-def sample_next_token(logits, temperature=1.0, top_k=50):
-  logits = logits / temperature
-  if top_k > 0:
-      v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-      logits[logits < v[:, [-1]]] = float("-inf")
-  probs = F.softmax(logits, dim=-1)
-  return torch.multinomial(probs, num_samples=1)
-```
+  def sample_next_token(logits, temperature=1.0, top_k=50):
+      logits = logits / temperature
+      if top_k > 0:
+          v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+          logits[logits < v[:, [-1]]] = float("-inf")
+      probs = F.softmax(logits, dim=-1)
+      return torch.multinomial(probs, num_samples=1)
 
 ```
 

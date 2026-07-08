@@ -74,70 +74,49 @@ aside: true
 下面用极简类展示：单 Agent 长链 vs 多 Agent 分步，便于理解「上下文切分」的价值（非真实
 框架，仅教学）。
 ```python
-
-```python
  from dataclasses import dataclass
  from typing import List, Callable, Dict, Any
-```
 
  @dataclass
-
-```python
  class SimpleAgent:
- name: str
- system_hint: str
-```
-
+     name: str
+     system_hint: str
      # 真实场景此处应是       LLM   调用；这里用占位函数模拟
+     model: Callable[[str, str], str]
 
-```python
- model: Callable[[str, str], str]
-
- def run(self, user_input: str, scratchpad: str = "") -> str:
-     prompt = f"{self.system_hint}\n\n[   上下文                  用
-                                            ]\n{scratchpad}\n\n[
-```
+     def run(self, user_input: str, scratchpad: str = "") -> str:
+         prompt = f"{self.system_hint}\n\n[   上下文                  用
+                                                ]\n{scratchpad}\n\n[
 
  户]\n{user_input}"
-
-```python
-      return self.model(self.name, prompt)
+          return self.model(self.name, prompt)
 
  def demo_single_long_chain(model: Callable[[str, str], str]) -> str:
-     单
-```
-
+         单
      """ Agent  ：把所有子任务说明塞进一次调用（易长、易混）。              """
                    你是全能助手。依次完成：需求分析、接口设计、写代码、写测试、审
      mega_prompt = "
  查。 "
-
-```python
-  return model("single", mega_prompt)
+      return model("single", mega_prompt)
 
  def demo_multi_agents(model: Callable[[str, str], str]) -> Dict[str, str]:
-     多
-```
-
+         多
      """ Agent  ：每步短上下文，下一步只带必要摘要。            """
-
-```text
-  roles = [
-                  你只输出需求要点列表。"),
-      ("analyst", "
-                   你只输出模块与接口草案。"),
-      ("architect", "
-      ("coder", "你只输出代码。"),
-  ]
-  outputs: Dict[str, str] = {}
-  scratch = ""
-  for name, hint in roles:
-      agent = SimpleAgent(name, hint, model)
-      out = agent.run(" 根据上一轮摘要继续。      ", scratchpad=scratch)
-      outputs[name] = out
-      scratch = out[:500]   #   教学用：摘要代替全文传递
-  return outputs
-```
+      roles = [
+                      你只输出需求要点列表。"),
+          ("analyst", "
+                       你只输出模块与接口草案。"),
+          ("architect", "
+          ("coder", "你只输出代码。"),
+      ]
+      outputs: Dict[str, str] = {}
+      scratch = ""
+      for name, hint in roles:
+          agent = SimpleAgent(name, hint, model)
+          out = agent.run(" 根据上一轮摘要继续。      ", scratchpad=scratch)
+          outputs[name] = out
+          scratch = out[:500]   #   教学用：摘要代替全文传递
+      return outputs
 
 ```
 
@@ -188,57 +167,46 @@ aside: true
 
 下面演示三种模式的 控制流骨架（无真实 LLM）。
 ```python
-
-```python
  from typing import List, Dict, Any, Callable
 
  class BossWorker:
- def __init__(self, boss: Callable[[str], List[Dict]], workers:
-```
-
+     def __init__(self, boss: Callable[[str], List[Dict]], workers:
  Dict[str, Callable[[str], str]]):
+         self.boss = boss
+         self.workers = workers
 
-```python
-     self.boss = boss
-     self.workers = workers
-
-    def run(self, task: str) -> Dict[str, str]:
-        subtasks = self.boss(task) # [{"agent": "w1", "prompt": "..."},
+        def run(self, task: str) -> Dict[str, str]:
+            subtasks = self.boss(task) # [{"agent": "w1", "prompt": "..."},
  ...]
-        results: Dict[str, str] = {}
-        for st in subtasks:
-            name = st["agent"]
-            results[name] = self.workers[name](st["prompt"])
-        return results
+            results: Dict[str, str] = {}
+            for st in subtasks:
+                name = st["agent"]
+                results[name] = self.workers[name](st["prompt"])
+            return results
 
  class Pipeline:
- def __init__(self, stages: List[Callable[[str], str]]):
-     self.stages = stages
+     def __init__(self, stages: List[Callable[[str], str]]):
+         self.stages = stages
 
-    def run(self, x: str) -> str:
-        for fn in self.stages:
-            x = fn(x)
-        return x
+        def run(self, x: str) -> str:
+            for fn in self.stages:
+                x = fn(x)
+            return x
 
  class JointDiscussion:
- def __init__(self, agents: List[Callable[[str, List[str]], str]],
-```
-
+     def __init__(self, agents: List[Callable[[str, List[str]], str]],
  max_rounds: int = 3):
+         self.agents = agents
+            self.max_rounds = max_rounds
 
-```python
-     self.agents = agents
-        self.max_rounds = max_rounds
+        def run(self, topic: str) -> List[str]:
 
-    def run(self, topic: str) -> List[str]:
-
-       transcript: List[str] = []
-       for _ in range(self.max_rounds):
-           for i, ag in enumerate(self.agents):
-               msg = ag(topic, transcript)
-               transcript.append(f"agent{i}: {msg}")
-       return transcript
-```
+           transcript: List[str] = []
+           for _ in range(self.max_rounds):
+               for i, ag in enumerate(self.agents):
+                   msg = ag(topic, transcript)
+                   transcript.append(f"agent{i}: {msg}")
+           return transcript
 
 ```
 
@@ -288,42 +256,36 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
 
 下面用内存结构模拟 黑板 与 简单 Pub-Sub（生产环境应换 Redis/RabbitMQ/Kafka 等）。
 ```python
-
-```python
  import threading
  from typing import Dict, Any, Callable, List, DefaultDict
  from collections import defaultdict
 
  class Blackboard:
- def __init__(self):
-     self._data: Dict[str, Any] = {}
-     self._lock = threading.Lock()
+     def __init__(self):
+         self._data: Dict[str, Any] = {}
+         self._lock = threading.Lock()
 
- def write(self, key: str, value: Any) -> None:
-     with self._lock:
-         self._data[key] = value
+     def write(self, key: str, value: Any) -> None:
+         with self._lock:
+             self._data[key] = value
 
- def read(self, key: str) -> Any:
-     with self._lock:
+     def read(self, key: str) -> Any:
+         with self._lock:
 
-          return self._data.get(key)
+              return self._data.get(key)
 
  class PubSub:
- def __init__(self):
-     self._subs: DefaultDict[str, List[Callable[[str, Any], None]]] =
-```
-
+     def __init__(self):
+         self._subs: DefaultDict[str, List[Callable[[str, Any], None]]] =
  defaultdict(list)
 
      def subscribe(self, topic: str, handler: Callable[[str, Any], None]) -
  > None:
          self._subs[topic].append(handler)
 
-```python
-  def publish(self, topic: str, payload: Any) -> None:
-      for h in self._subs.get(topic, []):
-          h(topic, payload)
-```
+      def publish(self, topic: str, payload: Any) -> None:
+          for h in self._subs.get(topic, []):
+              h(topic, payload)
 
  #   用法示意
  bb = Blackboard()
@@ -334,21 +296,19 @@ Sub 的差别：队列通常 点对点消费一条消息（或竞争消费）；
  bus.publish("task.done", {"agent": "coder", "ok": True})
 
 简单消息队列（内存版，教学用）：
+                                                                        python
+ from collections import deque
+ from typing import Deque, Any, Optional
 
-```python
-from collections import deque
-from typing import Deque, Any, Optional
+ class InMemoryQueue:
+      def __init__(self) -> None:
+          self._q: Deque[Any] = deque()
 
-class InMemoryQueue:
-  def __init__(self) -> None:
-      self._q: Deque[Any] = deque()
+      def enqueue(self, item: Any) -> None:
+          self._q.append(item)
 
-  def enqueue(self, item: Any) -> None:
-      self._q.append(item)
-
-def dequeue(self) -> Optional[Any]:
-    return self._q.popleft() if self._q else None
-```
+    def dequeue(self) -> Optional[Any]:
+        return self._q.popleft() if self._q else None
 
 ```
 
@@ -382,49 +342,35 @@ def dequeue(self) -> Optional[Any]:
 
 下面演示 能力匹配 + 简单负载计数 的分配器。
 ```python
-
-```python
  from dataclasses import dataclass, field
  from typing import List, Dict, Set
-```
 
  @dataclass
-
-```python
  class WorkerAgent:
- name: str
- skills: Set[str]
- load: int = 0
+     name: str
+     skills: Set[str]
+     load: int = 0
 
- def can_handle(self, required: Set[str]) -> bool:
-     return required.issubset(self.skills)
-```
+     def can_handle(self, required: Set[str]) -> bool:
+         return required.issubset(self.skills)
 
  @dataclass
-
-```python
  class Scheduler:
- workers: List[WorkerAgent]
+     workers: List[WorkerAgent]
 
- def assign(self, required_skills: Set[str]) -> WorkerAgent:
-     candidates = [w for w in self.workers if
-```
-
+     def assign(self, required_skills: Set[str]) -> WorkerAgent:
+         candidates = [w for w in self.workers if
  w.can_handle(required_skills)]
          if not candidates:
              raise RuntimeError("no capable worker")
          #    负载优先：相同能力选最闲
-
-```text
-     chosen = sorted(candidates, key=lambda w: w.load)[0]
-     chosen.load += 1
-     return chosen
+         chosen = sorted(candidates, key=lambda w: w.load)[0]
+         chosen.load += 1
+         return chosen
 
  workers = [
- WorkerAgent("w1", {"python", "test"}),
- WorkerAgent("w2", {"python", "security"}),
-```
-
+     WorkerAgent("w1", {"python", "test"}),
+     WorkerAgent("w2", {"python", "security"}),
  ]
  sched = Scheduler(workers)
  print(sched.assign({"python", "test"}).name)
@@ -464,35 +410,28 @@ def dequeue(self) -> Optional[Any]:
 
 下面演示 加权投票 与 优先级规则 的极简合并。
 ```python
-
-```python
  from enum import IntEnum
  from typing import List, Dict
 
  class Severity(IntEnum):
- LOW = 1
- MEDIUM = 2
- HIGH = 3
- CRITICAL = 4
+     LOW = 1
+     MEDIUM = 2
+     HIGH = 3
+     CRITICAL = 4
 
  def weighted_vote(opinions: List[Dict]) -> str:
-```
-
      # opinions: [{"choice": "block", "weight": 2.0}, ...]
-
-```python
- score: Dict[str, float] = {}
- for o in opinions:
-     score[o["choice"]] = score.get(o["choice"], 0.0) + o["weight"]
- return max(score, key=score.get)
+     score: Dict[str, float] = {}
+     for o in opinions:
+         score[o["choice"]] = score.get(o["choice"], 0.0) + o["weight"]
+     return max(score, key=score.get)
 
  def priority_arbitration(findings: List[Severity]) -> str:
- if any(f >= Severity.CRITICAL for f in findings):
-     return "block_release"
- if any(f >= Severity.HIGH for f in findings):
-     return "require_fix"
- return "accept"
-```
+     if any(f >= Severity.CRITICAL for f in findings):
+         return "block_release"
+     if any(f >= Severity.HIGH for f in findings):
+         return "require_fix"
+     return "accept"
 
 ```
 
@@ -525,39 +464,32 @@ def dequeue(self) -> Optional[Any]:
 
 下面用 enum + 显式迁移 演示小型状态机（可对接持久化层）。
 ```python
-
-```python
  from enum import Enum, auto
  from dataclasses import dataclass
 
  class Phase(Enum):
- INIT = auto()
- PLAN = auto()
- EXEC = auto()
- VERIFY = auto()
- DONE = auto()
+     INIT = auto()
+     PLAN = auto()
+     EXEC = auto()
+     VERIFY = auto()
+     DONE = auto()
 
  ALLOWED = {
- Phase.INIT: {Phase.PLAN},
- Phase.PLAN: {Phase.EXEC},
- Phase.EXEC: {Phase.VERIFY},
- Phase.VERIFY: {Phase.DONE, Phase.EXEC},   #   不通过可打回重做
- Phase.DONE: set(),
-```
-
+     Phase.INIT: {Phase.PLAN},
+     Phase.PLAN: {Phase.EXEC},
+     Phase.EXEC: {Phase.VERIFY},
+     Phase.VERIFY: {Phase.DONE, Phase.EXEC},   #   不通过可打回重做
+     Phase.DONE: set(),
  }
 
  @dataclass
-
-```python
  class TaskState:
- phase: Phase = Phase.INIT
+     phase: Phase = Phase.INIT
 
- def move(self, nxt: Phase) -> None:
-     if nxt not in ALLOWED[self.phase]:
-         raise ValueError(f"illegal {self.phase} -> {nxt}")
-     self.phase = nxt
-```
+     def move(self, nxt: Phase) -> None:
+         if nxt not in ALLOWED[self.phase]:
+             raise ValueError(f"illegal {self.phase} -> {nxt}")
+         self.phase = nxt
 
 ```
 
@@ -627,35 +559,25 @@ def dequeue(self) -> Optional[Any]:
  # graph.set_entry_point("plan")
 
  # --- Crew思路：角色 任务列表+         ---
-
-```python
  from dataclasses import dataclass
  from typing import List
-```
 
  @dataclass
-
-```python
  class Role:
- name: str
- goal: str
- backstory: str
-```
+     name: str
+     goal: str
+     backstory: str
 
  @dataclass
-
-```python
  class Task:
- description: str
+     description: str
 
-  agent: str
+      agent: str
 
  crew = (
-             澄清需求", "..."), Role("Dev", "实现功能", "...")],
-  [Role("PM", "
-  [Task("写用户故事", "PM"), Task("实现 API", "Dev")],
-```
-
+                 澄清需求", "..."), Role("Dev", "实现功能", "...")],
+      [Role("PM", "
+      [Task("写用户故事", "PM"), Task("实现 API", "Dev")],
  )
 
 ```
@@ -695,16 +617,13 @@ def dequeue(self) -> Optional[Any]:
  def de_identify(table_rows):
      # 真实场景：哈希 泛化 抑制
                    /   /
-
-```python
- return [{"user": "***", "amount": r["amount"]} for r in table_rows]
+     return [{"user": "***", "amount": r["amount"]} for r in table_rows]
 
  def analyst_agent(rows):
- return f"洞察：共    {len(rows)}   笔，总额 {sum(r['amount'] for r in rows)}"
+     return f"洞察：共    {len(rows)}   笔，总额 {sum(r['amount'] for r in rows)}"
  def pipeline(raw_rows):
- safe = de_identify(raw_rows)
- return analyst_agent(safe)
-```
+     safe = de_identify(raw_rows)
+     return analyst_agent(safe)
 
 ```
 
@@ -751,29 +670,22 @@ def dequeue(self) -> Optional[Any]:
 
 下面演示 步数上限 + 重复计划检测 的简单「刹车」。
 ```python
-
-```python
  from typing import Callable, Any, Set, List
 
  def run_with_guard(agent_step: Callable[[List[str]], str], user_goal: str,
-```
-
  max_steps: int = 20):
-
-```text
- transcript: List[str] = []
- seen: Set[str] = set()
- for _ in range(max_steps):
-     action = agent_step(transcript + [f"GOAL: {user_goal}"])
-     h = action.strip()
-     if h in seen:
-         raise RuntimeError("detected repeated action; abort")
-     seen.add(h)
-     transcript.append(action)
-     if "DONE" in action:
-         return transcript
- raise RuntimeError("max steps exceeded")
-```
+     transcript: List[str] = []
+     seen: Set[str] = set()
+     for _ in range(max_steps):
+         action = agent_step(transcript + [f"GOAL: {user_goal}"])
+         h = action.strip()
+         if h in seen:
+             raise RuntimeError("detected repeated action; abort")
+         seen.add(h)
+         transcript.append(action)
+         if "DONE" in action:
+             return transcript
+     raise RuntimeError("max steps exceeded")
 
 附：更多高频面试题（Q16～Q20）与简短标准
 答

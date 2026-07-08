@@ -111,107 +111,95 @@ aside: true
 ### 1.5 代码示例：Python 实现简易熔断器 + 指数退避
 
 ```python
-
-```python
  import random
  import time
  from dataclasses import dataclass
  from enum import Enum, auto
 
  class State(Enum):
- CLOSED = auto()
- OPEN = auto()
- HALF_OPEN = auto()
-```
+     CLOSED = auto()
+     OPEN = auto()
+     HALF_OPEN = auto()
 
  @dataclass
-
-```python
  class CircuitBreaker:
- failure_threshold: int = 5
- success_threshold: int = 2   #   半开阶段连续成功次数
- open_seconds: float = 30.0
-```
+     failure_threshold: int = 5
+     success_threshold: int = 2   #   半开阶段连续成功次数
+     open_seconds: float = 30.0
 
 half_open_max_calls: int = 3
 
-```python
 def __post_init__(self):
-self.state = State.CLOSED
-self.failures = 0
-self.successes_half = 0
-self.open_until = 0.0
-self.half_open_inflight = 0
+   self.state = State.CLOSED
+   self.failures = 0
+   self.successes_half = 0
+   self.open_until = 0.0
+   self.half_open_inflight = 0
 
 def _trip(self):
-self.state = State.OPEN
-self.open_until = time.time() + self.open_seconds
-self.failures = 0
-self.successes_half = 0
-self.half_open_inflight = 0
+   self.state = State.OPEN
+   self.open_until = time.time() + self.open_seconds
+   self.failures = 0
+   self.successes_half = 0
+   self.half_open_inflight = 0
 
 def allow(self) -> bool:
-now = time.time()
-if self.state == State.OPEN:
-    if now >= self.open_until:
-       self.state = State.HALF_OPEN
-       self.successes_half = 0
-       self.half_open_inflight = 0
-    else:
-       return False
-if self.state == State.HALF_OPEN:
-    return self.half_open_inflight < self.half_open_max_calls
-return True
+   now = time.time()
+   if self.state == State.OPEN:
+        if now >= self.open_until:
+           self.state = State.HALF_OPEN
+           self.successes_half = 0
+           self.half_open_inflight = 0
+        else:
+           return False
+   if self.state == State.HALF_OPEN:
+        return self.half_open_inflight < self.half_open_max_calls
+   return True
 
 def before_call(self):
-if self.state == State.HALF_OPEN:
-    self.half_open_inflight += 1
+   if self.state == State.HALF_OPEN:
+        self.half_open_inflight += 1
 
 def on_success(self):
-if self.state == State.HALF_OPEN:
-    self.successes_half += 1
-    if self.successes_half >= self.success_threshold:
-       self.state = State.CLOSED
-       self.successes_half = 0
-else:
+   if self.state == State.HALF_OPEN:
+        self.successes_half += 1
+        if self.successes_half >= self.success_threshold:
+           self.state = State.CLOSED
+           self.successes_half = 0
+   else:
 
-           self.failures = 0
-    if self.state == State.HALF_OPEN:
-           self.half_open_inflight = max(0, self.half_open_inflight - 1)
+               self.failures = 0
+        if self.state == State.HALF_OPEN:
+               self.half_open_inflight = max(0, self.half_open_inflight - 1)
 
-def on_failure(self):
-    self.failures += 1
-    if self.state == State.HALF_OPEN or self.failures >=
-```
-
+    def on_failure(self):
+        self.failures += 1
+        if self.state == State.HALF_OPEN or self.failures >=
 self.failure_threshold:
                self._trip()
-
-```python
-    if self.state == State.HALF_OPEN:
-           self.half_open_inflight = max(0, self.half_open_inflight - 1)
+        if self.state == State.HALF_OPEN:
+               self.half_open_inflight = max(0, self.half_open_inflight - 1)
 
 def exponential_backoff(attempt: int, base: float = 0.5, cap: float = 8.0)
 -> float:
-jitter = random.random() * 0.25
-return min(cap, base * (2**attempt) + jitter)
+    jitter = random.random() * 0.25
+    return min(cap, base * (2**attempt) + jitter)
 
 def call_with_breaker_and_retry(fn, breaker: CircuitBreaker, max_retries:
 int = 3):
-for attempt in range(max_retries):
-    if not breaker.allow():
-           raise RuntimeError("circuit_open")
-    breaker.before_call()
-    try:
-           result = fn()
-           breaker.on_success()
-           return result
-    except Exception:
-           breaker.on_failure()
-           if attempt == max_retries - 1:
-              raise
-           time.sleep(exponential_backoff(attempt))
-```
+    for attempt in range(max_retries):
+        if not breaker.allow():
+               raise RuntimeError("circuit_open")
+        breaker.before_call()
+        try:
+               result = fn()
+               breaker.on_success()
+               return result
+        except Exception:
+               breaker.on_failure()
+               if attempt == max_retries - 1:
+                  raise
+               time.sleep(exponential_backoff(attempt))
 
 2. Token 成本控制
 ```
@@ -283,43 +271,33 @@ for attempt in range(max_retries):
 ### 2.5 代码示例：tiktoken 计数 + 简单请求哈希缓存
 
 ```python
-
-```python
  import hashlib
  import json
 
 from functools import lru_cache
-```
 
 try:
        import tiktoken
 except ImportError:
-
-```python
-   tiktoken = None
+       tiktoken = None
 
 def approx_token_count(text: str, model: str = "gpt-4o") -> int:
-   if tiktoken is None:
-      return max(1, len(text) // 4)
-   enc = tiktoken.encoding_for_model(model)
-   return len(enc.encode(text))
+       if tiktoken is None:
+          return max(1, len(text) // 4)
+       enc = tiktoken.encoding_for_model(model)
+       return len(enc.encode(text))
 
 def request_fingerprint(system: str, user: str, model: str) -> str:
-   raw = json.dumps({"system": system, "user": user, "model": model},
+       raw = json.dumps({"system": system, "user": user, "model": model},
 sort_keys=True)
-   return hashlib.sha256(raw.encode("utf-8")).hexdigest()
-```
+       return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 #   生产环境请用 Redis；此处演示 LRU
 @lru_cache(maxsize=1024)
-
-```python
 def cached_exact(system: str, user: str, model: str) -> str | None:
-   return None   #   占位：实际应 get from Redis
+       return None   #   占位：实际应 get from Redis
 
 def set_exact_cache(system: str, user: str, model: str, response: str) ->
-```
-
 None:
        key = request_fingerprint(system, user, model)
        # redis.setex(key, ttl, response)
@@ -387,46 +365,40 @@ OpenTelemetry，或写入 Kafka 再由 Flink 聚合。
 ### 3.5 代码示例：简易 Span + 结构化日志
 
 ```python
-
-```python
  import json
  import time
  import uuid
  from contextvars import ContextVar
-```
 
  trace_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
 
-```python
  def new_trace() -> str:
- tid = str(uuid.uuid4())
- trace_var.set(tid)
- return tid
+     tid = str(uuid.uuid4())
+     trace_var.set(tid)
+     return tid
 
  def log_event(level: str, msg: str, **fields):
- payload = {
+     payload = {
 
-      "level": level,
-      "msg": msg,
-      "trace_id": trace_var.get(),
-      **fields,
-  }
-  print(json.dumps(payload, ensure_ascii=False))
+          "level": level,
+          "msg": msg,
+          "trace_id": trace_var.get(),
+          **fields,
+      }
+      print(json.dumps(payload, ensure_ascii=False))
 
  class Span:
-  def __init__(self, name: str):
-      self.name = name
+      def __init__(self, name: str):
+          self.name = name
 
-  def __enter__(self):
-      self.start = time.perf_counter()
-      log_event("INFO", "span_start", span=self.name)
-      return self
+      def __enter__(self):
+          self.start = time.perf_counter()
+          log_event("INFO", "span_start", span=self.name)
+          return self
 
-  def __exit__(self, exc_type, exc, tb):
-      ms = (time.perf_counter() - self.start) * 1000
-      log_event("INFO", "span_end", span=self.name, latency_ms=round(ms,
-```
-
+      def __exit__(self, exc_type, exc, tb):
+          ms = (time.perf_counter() - self.start) * 1000
+          log_event("INFO", "span_end", span=self.name, latency_ms=round(ms,
  2), error=bool(exc))
           return False
 
@@ -495,36 +467,30 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 ### 4.5 代码示例：工具参数 JSON Schema 校验（Python）
 
 ```python
-
-```python
  from jsonschema import Draft202012Validator, FormatChecker
 
  TOOL_SCHEMAS = {
- "send_email": {
-     "type": "object",
-     "properties": {
-          "to": {"type": "string", "format": "email"},
-          "subject": {"type": "string", "maxLength": 200},
-          "body": {"type": "string", "maxLength": 8000},
-     },
-     "required": ["to", "subject", "body"],
-     "additionalProperties": False,
- }
-```
-
+     "send_email": {
+         "type": "object",
+         "properties": {
+              "to": {"type": "string", "format": "email"},
+              "subject": {"type": "string", "maxLength": 200},
+              "body": {"type": "string", "maxLength": 8000},
+         },
+         "required": ["to", "subject", "body"],
+         "additionalProperties": False,
+     }
  }
 
-```python
  def validate_tool_call(name: str, args: dict) -> None:
- schema = TOOL_SCHEMAS.get(name)
- if not schema:
-     raise ValueError("unknown_tool")
- v = Draft202012Validator(schema, format_checker=FormatChecker())
- errors = sorted(v.iter_errors(args), key=lambda e: e.path)
+     schema = TOOL_SCHEMAS.get(name)
+     if not schema:
+         raise ValueError("unknown_tool")
+     v = Draft202012Validator(schema, format_checker=FormatChecker())
+     errors = sorted(v.iter_errors(args), key=lambda e: e.path)
 
-  if errors:
-      raise ValueError(errors[0].message)
-```
+      if errors:
+          raise ValueError(errors[0].message)
 
 ```
 
@@ -582,53 +548,47 @@ Agent 能读数据、调工具、执行动作，攻击面大于普通聊天。�
 
 Dockerfile（应用镜像骨架）
                                                            dockerfile
+  FROM python:3.12-slim
+  WORKDIR /app
+  ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+  COPY requirements.txt .
+  RUN pip install --no-cache-dir -r requirements.txt
+  COPY . .
+  EXPOSE 8000
+  HEALTHCHECK --interval=30s --timeout=3s CMD curl -fsS
 
-```text
-FROM python:3.12-slim
-WORKDIR /app
-ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
-EXPOSE 8000
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -fsS
-
-http://127.0.0.1:8000/health || exit 1
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
+  http://127.0.0.1:8000/health || exit 1
+  CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 deployment.yaml（单副本示意，生产请调 probes 与 resources）
 ```yaml
-
-```text
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-name: agent-api
-spec:
-replicas: 2
-selector:
-  matchLabels:
-      app: agent-api
-template:
+  apiVersion: apps/v1
+  kind: Deployment
   metadata:
-      labels:
-       app: agent-api
+    name: agent-api
   spec:
-      containers:
-       - name: api
-          image: your-registry/agent-api:v20260401
-          ports:
-            - containerPort: 8000
-          envFrom:
-            - secretRef:
-                  name: llm-keys
-          readinessProbe:
-            httpGet:
-                path: /health
-                port: 8000
-            initialDelaySeconds: 5
-```
+    replicas: 2
+    selector:
+      matchLabels:
+          app: agent-api
+    template:
+      metadata:
+          labels:
+           app: agent-api
+      spec:
+          containers:
+           - name: api
+              image: your-registry/agent-api:v20260401
+              ports:
+                - containerPort: 8000
+              envFrom:
+                - secretRef:
+                      name: llm-keys
+              readinessProbe:
+                httpGet:
+                    path: /health
+                    port: 8000
+                initialDelaySeconds: 5
 
 6. 性能优化
 ```
@@ -675,36 +635,26 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 6.5 代码示例：异步 + 信号量 + 简易双层缓存
 
 ```python
-
-```python
  import asyncio
  import time
 
  class TwoLevelCache:
- def __init__(self):
-       self.l1 = {}
-       self.redis = None    #   接入 redis.asyncio
- async def get(self, key: str):
-       if key in self.l1:
-           return self.l1[key]
-```
-
+     def __init__(self):
+           self.l1 = {}
+           self.redis = None    #   接入 redis.asyncio
+     async def get(self, key: str):
+           if key in self.l1:
+               return self.l1[key]
            # val = await redis.get(key)
+           return None
 
-```python
-       return None
-
- async def set(self, key: str, value: str, ttl: int = 300):
-       self.l1[key] = value
-```
-
+     async def set(self, key: str, value: str, ttl: int = 300):
+           self.l1[key] = value
            # await redis.setex(key, ttl, value)
 
-```python
  async def limited_llm_call(sema: asyncio.Semaphore, fn, *args, **kwargs):
- async with sema:
-       return await fn(*args, **kwargs)
-```
+     async with sema:
+           return await fn(*args, **kwargs)
 
 7. 评估与测试
 ```
@@ -769,48 +719,42 @@ HTTP 客户端复用 keep-alive；数据库用连接池。减少握手开销。
 ### 7.5 代码示例：pytest 集成测试（Mock LLM）
 
 ```python
-
-```python
  import pytest
 
  class FakeLLM:
- def __init__(self, replies):
-       self.replies = iter(replies)
+     def __init__(self, replies):
+           self.replies = iter(replies)
 
- def chat(self, messages):
-       return next(self.replies)
+     def chat(self, messages):
+           return next(self.replies)
 
  def run_agent_stub(user_goal: str, tools: dict, llm: FakeLLM) -> str:
- """ 最小编排：第一轮让模型返回 tool JSON，第二轮返回最终答案。"""
- first = llm.chat([])
-```
-
+     """ 最小编排：第一轮让模型返回 tool JSON，第二轮返回最终答案。"""
+     first = llm.chat([])
      #   简化：假定 first 就是要调用的 JSON 字符串
 
-```python
-  import json
+      import json
 
-  action = json.loads(first)
-  obs = tools[action["tool"]](**action["args"])
-  second = llm.chat([{"role": "user", "content": str(obs)}])
-  return second
+      action = json.loads(first)
+      obs = tools[action["tool"]](**action["args"])
+      second = llm.chat([{"role": "user", "content": str(obs)}])
+      return second
 
-def test_agent_calls_tool_once():
-  replies = [
-      '{"tool":"search","args":{"q":"Python"}}',
-      "最终答案基于工具结果。",
-  ]
-  calls = []
+  def test_agent_calls_tool_once():
+      replies = [
+          '{"tool":"search","args":{"q":"Python"}}',
+          "最终答案基于工具结果。",
+      ]
+      calls = []
 
-  def search(q: str):
-      calls.append(q)
-      return ["doc1"]
+      def search(q: str):
+          calls.append(q)
+          return ["doc1"]
 
-  tools = {"search": search}
-  out = run_agent_stub("查 Python", tools, FakeLLM(replies))
-  assert calls == ["Python"]
-  assert " 最终" in out
-```
+      tools = {"search": search}
+      out = run_agent_stub("查 Python", tools, FakeLLM(replies))
+      assert calls == ["Python"]
+      assert " 最终" in out
 
 ```
 
