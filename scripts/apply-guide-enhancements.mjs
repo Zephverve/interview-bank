@@ -3,7 +3,7 @@
  */
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath } from 'url'
+import { fileURLToPath, pathToFileURL } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ENHANCE_DIR = path.resolve(__dirname, '../guides/ai-agent-interview-guide/enhancements')
@@ -107,7 +107,7 @@ export function loadChapterEnhancements(slug) {
 export async function applyGuideEnhancements(text, slug) {
   const file = path.join(ENHANCE_DIR, `${slug}.mjs`)
   if (!fs.existsSync(file)) return text
-  const mod = await import(`${file}?t=${Date.now()}`)
+  const mod = await import(`${pathToFileURL(file).href}?t=${Date.now()}`)
   const data = mod.default || mod.enhancements
   if (!data) return text
   let result = text

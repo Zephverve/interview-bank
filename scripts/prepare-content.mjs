@@ -162,6 +162,15 @@ const CUSTOM_MERGE_GROUPS = [
     order: 15,
     interviewFormat: true,
   },
+  {
+    prefix: 'my-',
+    slug: 'my-bank',
+    title: '个人面试题库',
+    icon: '📚',
+    color: '#14b8a6',
+    desc: '个人面试专题 · 8 大主题',
+    order: 50,
+  },
 ]
 
 function getBase() {
