@@ -48,6 +48,14 @@ const HERMES_CHAPTER_GROUPS = [
 /** 学习笔记：原文完整拷贝到 docs/notes/，不做题目卡片转换 */
 const NOTE_ENTRIES = [
   {
+    slug: 'agent-engineering-7weeks',
+    title: 'Agent 工程七周实战教程',
+    desc: 'MCP · Skills · Multi-Agent · 评测 · 安全 · vLLM · 微调 · 贯穿项目',
+    icon: '🛠️',
+    color: '#0ea5e9',
+    sourceCandidates: [path.join(NOTES, 'agent-engineering-7weeks.md')],
+  },
+  {
     slug: 'hermes-agent',
     title: 'Hermes Agent 学习笔记',
     desc: '通俗详解 · 架构 · 记忆 · 技能 · 面试题',
